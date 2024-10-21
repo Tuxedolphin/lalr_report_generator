@@ -1,34 +1,52 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import { useEffect, useState } from "react";
+import { createTheme } from "@mui/material";
+import { AppProvider, DashboardLayout } from "@toolpad/core";
+
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
 import "./App.css";
 
+import Form from "./Form.tsx"
+
 function App() {
-  const [count, setCount] = useState(0);
+  const theme = createTheme({
+    cssVariables: {
+      colorSchemeSelector: "data-toolpad-color-scheme",
+    },
+    colorSchemes: { light: true, dark: true },
+    breakpoints: {
+      values: {
+        xs: 0,
+        sm: 600,
+        md: 600,
+        lg: 1200,
+        xl: 1536,
+      },
+    },
+  });
+
+  useEffect(() => {
+    console.log(theme);
+  }, [theme]);
+
+  console.log(theme);
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <AppProvider
+      theme={theme}
+      branding={{
+        logo: <></>,
+        title: "LALR Report Generator",
+      }}
+    >
+      <DashboardLayout hideNavigation>
+        <div className="Form">
+          <Form theme={ theme }/>
+        </div>
+      </DashboardLayout>
+    </AppProvider>
   );
 }
 
