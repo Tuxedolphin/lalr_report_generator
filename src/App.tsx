@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { createTheme } from "@mui/material";
-import { AppProvider, DashboardLayout } from "@toolpad/core";
+import { createTheme, useColorScheme, ThemeProvider, CssBaseline, Switch, SwitchProps } from "@mui/material";
 
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
@@ -8,45 +7,25 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import "./App.css";
 
-import Form from "./Form.tsx"
+import Form from "./Form.tsx";
+import NavBar from "./NavBar.tsx";
 
 function App() {
+
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
   const theme = createTheme({
-    cssVariables: {
-      colorSchemeSelector: "data-toolpad-color-scheme",
-    },
-    colorSchemes: { light: true, dark: true },
-    breakpoints: {
-      values: {
-        xs: 0,
-        sm: 600,
-        md: 600,
-        lg: 1200,
-        xl: 1536,
-      },
-    },
+    palette: {
+      mode: isDarkMode ? "dark" : "light"
+    }
   });
 
-  useEffect(() => {
-    console.log(theme);
-  }, [theme]);
-
-  console.log(theme);
-
   return (
-    <AppProvider
-      theme={theme}
-      branding={{
-        logo: <></>,
-        title: "LALR Report Generator",
-      }}
-    >
-      <DashboardLayout hideNavigation>
-        <div className="Form">
-          <Form theme={ theme }/>
-        </div>
-      </DashboardLayout>
-    </AppProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline enableColorScheme />
+      <NavBar isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+      <Form />
+    </ThemeProvider>
   );
 }
 
