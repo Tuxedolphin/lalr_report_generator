@@ -18,11 +18,7 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
-interface FormProps {
-  theme: Theme;
-};
-
-const Form:FC<FormProps> = (props) => {
+const AddEntryPage: FC = () => {
   const [activeStep, setActiveStep] = useState(0);
   const maxSteps = 3;
 
@@ -35,7 +31,7 @@ const Form:FC<FormProps> = (props) => {
   };
 
   return (
-    <Box sx={{ maxWidth: 400, flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1 }}>
       <Paper elevation={1} square={false}>
         <Paper
           square
@@ -49,8 +45,13 @@ const Form:FC<FormProps> = (props) => {
         >
           <Typography variant="h5">General Information</Typography>
         </Paper>
-        <Box sx={{ height: "78vh", maxWidth: 400, width: "100%", p: 2 }}>
-          <TextField id="incNumber" label="Incident Number" variant="outlined" fullWidth />
+        <Box sx={{ height: "78vh", width: "100%", p: 2 }}>
+          <TextField
+            id="incNumber"
+            label="Incident Number"
+            variant="outlined"
+            fullWidth
+          />
         </Box>
         <MobileStepper
           variant="text"
@@ -81,6 +82,6 @@ const Form:FC<FormProps> = (props) => {
       </Paper>
     </Box>
   );
-}
+};
 
-export default Form;
+export default AddEntryPage;

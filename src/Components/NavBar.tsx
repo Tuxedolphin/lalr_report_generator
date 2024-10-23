@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Typography, Button, Mode } from "@mui/material";
+import { AppBar, Toolbar, Typography, Button } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { FC, useState, useEffect } from "react";
 import { DarkModeSwitch } from "animated-toggle-button";
@@ -16,7 +16,7 @@ const NavBar: FC<NavProps> = (props) => {
   };
 
   return (
-    <AppBar>
+    <AppBar position="sticky">
       <Toolbar>
         <Grid container width={"100%"} spacing={2}>
           <Grid size="grow"></Grid>
