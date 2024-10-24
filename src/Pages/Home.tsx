@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { FC, useState } from "react";
 import { createTheme, ThemeProvider, CssBaseline, Box } from "@mui/material";
 import { Divider } from "@mui/material";
 
@@ -12,29 +12,17 @@ import NavBar from "../Components/NavBar.tsx";
 import ActionButton from "../Components/ActionButton.tsx";
 import "./Home.css";
 
-function Home() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+interface HomeProps {
+  setText: React.Dispatch<React.SetStateAction<string>>;
+}
 
-  const theme = createTheme({
-    palette: {
-      mode: isDarkMode ? "dark" : "light",
-    },
-  });
+const Home: FC<HomeProps> = (props) => {
+  props.setText("LALR Generator");
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline enableColorScheme />
-      <NavBar isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
-      <Box className={"container"}>
-        <ActionButton />
-        <AddIncident />
-        <Divider>LA</Divider>
-        <AddIncident />
-        <Divider>LR</Divider>
-        <AddIncident />
-      </Box>
-    </ThemeProvider>
+    
+    <ActionButton />
   );
-}
+};
 
 export default Home;
