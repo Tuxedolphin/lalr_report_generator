@@ -8,7 +8,9 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
 import FirstPageForm from "../Components/FirstPageForm";
-import AcesForm from "../Components/AcesForm";
+import { AcesForm } from "../Components/AcesForm";
+import LRAcesForm from "../Components/LRAcesForm";
+import AddPhotosForm from "../Components/AddPhotosForm";
 
 const mainGridFormat = {
   container: true,
@@ -28,17 +30,31 @@ const largeInput = {
   md: 8,
 };
 
-const stepsContent = [<FirstPageForm key={0} />, <AcesForm key={1} />];
-
 interface AddEntryPageProps {
   setText: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const AddEntryPage: FC<AddEntryPageProps> = (props) => {
   const [activeStep, setActiveStep] = useState(0);
-  const [maxSteps, setMaxSteps] = useState(3);
+  const [maxSteps, setMaxSteps] = useState(4);
+  const [isLA, setIsLA] = useState<boolean | null>(null);
+  const [opsCenterAcknowledge, setOpsCenterAcknowledge] = useState<
+    boolean | null
+  >(null);
 
   props.setText("Add Incident");
+
+  const stepsContent = [
+    <FirstPageForm key={0} />,
+    <AcesForm
+      isLA={isLA}
+      opsCenterAcknowledge={opsCenterAcknowledge}
+      setText={props.setText}
+      key={1}
+    />,
+    <LRAcesForm key={2} />,
+    <AddPhotosForm isLA={isLA} key={3} />,
+  ];
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
