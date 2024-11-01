@@ -17,7 +17,8 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
-import { getItem } from "../Functions/formFunctions";
+import { getItem } from "../Functions/functions";
+import { Report } from "../Classes/Report";
 
 const mainGridFormat = {
   container: true,
@@ -37,7 +38,12 @@ const largeInput = {
   md: 8,
 };
 
-const FirstPageForm: FC = () => {
+interface FirstPageFormProps {
+  reportEntry: Report;
+  updateEntry: (key: string, value: string) => void;
+}
+
+const FirstPageForm: FC<FirstPageFormProps> = (props) => {
   const [incNumb, setIncNumber] = useState("");
   const [station, setStation] = useState("");
   const [appliance, setAppliance] = useState("");
@@ -141,6 +147,7 @@ const FirstPageForm: FC = () => {
           fullWidth
           sx={{ marginTop: 2 }}
         />
+        <TextField label="Incident Location" fullWidth sx={{ marginTop: 2 }} />
       </Paper>
 
       <Paper sx={{ p: 1, marginTop: 2 }}>
