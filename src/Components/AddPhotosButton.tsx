@@ -3,7 +3,7 @@ import { FC, useState } from "react";
 import ImageIcon from "@mui/icons-material/Image";
 import EditPhotoModal from "./EditPhotoModal";
 import Canvas from "./Canvas";
-import { Report } from "../Classes/Report";
+import { Report, type EditsType } from "../Classes/Report";
 import { Crop } from "react-image-crop";
 
 const VisuallyHiddenInput = styled("input")({
@@ -21,7 +21,7 @@ const VisuallyHiddenInput = styled("input")({
 interface AddPhotosFormProps {
   uploadPhotoText: string;
   reportEntry: Report;
-  updateEntry: (key: string, value: string) => void;
+  updateEntry: (edits: EditsType) => void;
 }
 
 const AddPhotosButton: FC<AddPhotosFormProps> = (props) => {
@@ -66,7 +66,7 @@ const AddPhotosButton: FC<AddPhotosFormProps> = (props) => {
             >
               <ImageIcon sx={{ width: 50, height: 50 }} />
               <Typography fontSize={18}>
-                {props.uploadPhotoText.toUpperCase()}
+                {uploadPhotoText.toUpperCase()}
               </Typography>
             </Box>
             <VisuallyHiddenInput
