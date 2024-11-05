@@ -86,38 +86,44 @@ export interface LRInformationType {
   };
 }
 
-export interface InformationType {
-  generalInformation: {
-    boundary?: string;
-    justification?: string;
-    weather?: string;
-  };
+export interface generalInformationType {
+  boundary?: string;
+  justification?: string;
+  weather?: string;
+}
 
-  acesInformation: {
-    timeDispatched?: Dayjs;
-    timeResponded?: Dayjs;
-    timeEnRoute?: Dayjs;
-    acesScreenshot?: ReportImage;
-  };
+export interface acesInformationType {
+  timeDispatched?: Dayjs;
+  timeResponded?: Dayjs;
+  timeEnRoute?: Dayjs;
+  acesScreenshot?: ReportImage;
+}
 
-  cameraInformation: {
-    timeDispatched?: Dayjs;
-    timeResponded?: Dayjs;
-    timeMoveOff?: Dayjs;
-    timeArrived?: Dayjs;
-    allInPhoto?: ReportImage;
-    bufferingTime?: Dayjs | 0 | null;
-    bufferingLocation?: string;
-    moveOffPhoto?: ReportImage;
-    arrivedPhoto?: ReportImage;
-  };
+export interface cameraInformationType {
+  timeDispatched?: Dayjs;
+  timeResponded?: Dayjs;
+  timeMoveOff?: Dayjs;
+  timeArrived?: Dayjs;
+  allInPhoto?: ReportImage;
+  bufferingTime?: Dayjs | 0 | null;
+  bufferingLocation?: string;
+  moveOffPhoto?: ReportImage;
+  arrivedPhoto?: ReportImage;
 }
 
 export type EditsType = {
   key: ReportValueKeysType;
   value: ReportValueTypes;
-  path?: string;
+  path?:
+    | "incidentInformation"
+    | "generalInformation"
+    | "acesInformation"
+    | "cameraInformation";
 }[];
+
+export type InputEditsType =
+  | EditsType
+  | { key: keyof Report, value: Report[keyof Report] };
 
 export type ReportValueKeysType =
   | keyof IncidentInformationType
@@ -127,7 +133,7 @@ export type ReportValueKeysType =
   | "type";
 export type ReportValueTypes = ReportImage | Dayjs | string | null | number;
 
-export class Report implements InformationType {
+export class Report {
   id = -1;
   type: reportType | undefined = undefined;
   incidentInformation: IncidentInformationType = {
@@ -142,48 +148,26 @@ export class Report implements InformationType {
     opsCenterAcknowledged: undefined,
   };
 
-  generalInformation: {
-    boundary?: string;
-    justification?: string;
-    weather?: string;
-  } = {};
+  generalInformation: generalInformationType = {};
 
-  acesInformation: {
-    timeDispatched?: Dayjs;
-    timeResponded?: Dayjs;
-    timeEnRoute?: Dayjs;
-    acesScreenshot?: ReportImage;
-  } = {};
+  acesInformation: acesInformationType = {};
 
-  cameraInformation: {
-    timeDispatched?: Dayjs;
-    timeResponded?: Dayjs;
-    timeMoveOff?: Dayjs;
-    timeArrived?: Dayjs;
-    allInPhoto?: ReportImage;
-    bufferingTime?: Dayjs | 0 | null;
-    bufferingLocation?: string;
-    moveOffPhoto?: ReportImage;
-    arrivedPhoto?: ReportImage;
-  } = {};
+  cameraInformation: cameraInformationType = {};
 
   constructor();
   constructor(
     id: number,
-    type: reportType,
     incidentInformation: IncidentInformationType,
     reportInformation: LAInformationType | LRInformationType
   );
 
   constructor(
     id?: number,
-    type?: reportType,
     incidentInformation?: IncidentInformationType,
     reportInformation?: LAInformationType | LRInformationType
   ) {
     if (id && reportInformation && incidentInformation) {
       this.id = id;
-      this.type = type;
       this.incidentInformation = incidentInformation;
 
       //TODO: Add type checking to ensure that the input information is correct (either LA or LR)
@@ -193,30 +177,25 @@ export class Report implements InformationType {
     }
   }
 
-  static updateNewReport(
-    edits: {
-      key: ReportValueKeysType;
-      value: ReportValueTypes;
-      path?:
-        | "incidentInformation"
-        | "generalInformation"
-        | "acesInformation"
-        | "cameraInformation";
-    }[],
-    report: Report
-  ): Report {
-    const newReport = { ...report };
+  static updateNewReport(report: Report, edits: InputEditsType): Report {
+    let newReport: Report;
 
-    for (const edit of edits) {
-      const { key, value } = edit;
-      if (key in ["id", "type"]) {
-        newReport[key] = value;
-      } else if (edit.path) {
-        newReport[edit.path][key] = edit.value;
-      } else
-        throw Error(
-          `New edit with key ${key} and value ${value as string} is not correctly formatted.\nIs the path ${edit.path ? edit.path : "undefined"} correct?`
-        );
+    if (Array.isArray(edits)) {
+      newReport = { ...report };
+
+      for (const edit of edits) {
+        const { key, value } = edit;
+        if (key === "id" || key === "type") {
+          newReport[key] = value;
+        } else if (edit.path) {
+          newReport[edit.path][key] = edit.value;
+        } else
+          throw Error(
+            `New edit with key ${key} and value ${value as string} is not correctly formatted.\nIs the path being "undefined" correct?`
+          );
+      }
+    } else {
+      newReport = { ...report, [edits.key]: edits.value };
     }
 
     return newReport;
