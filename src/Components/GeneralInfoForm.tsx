@@ -23,22 +23,27 @@ import {
   type reportType as typeOfReport,
   type IncidentInformationType,
   type EditsType,
+  InputEditsType,
 } from "../Classes/Report";
 
 import { gridFormatting } from "../Functions/functions";
 const { mainGridFormat, smallInput, largeInput } = gridFormatting;
 
-interface FirstPageFormProps {
+interface GeneralInfoFormProps {
   reportEntry: Report;
+  updateEntry: (edits: InputEditsType) => void;
   setActiveStep: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const GeneralInfoForm: FC<FirstPageFormProps> = (props) => {
+const GeneralInfoForm: FC<GeneralInfoFormProps> = (props) => {
+  const { reportEntry, updateEntry, setActiveStep } = props;
 
-  function testing(event) {
+  function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    console.log("TEST");
-    props.setActiveStep(1);
+
+    updateEntry({ key: "incidentInformation", value: information });
+
+    setActiveStep(1); // This form will always be the first one, i.e. index 0
   }
 
   const [information, setInformation] = useState<IncidentInformationType>({
@@ -52,8 +57,6 @@ const GeneralInfoForm: FC<FirstPageFormProps> = (props) => {
     reportType: null,
     opsCenterAcknowledged: null,
   });
-
-  const { reportEntry } = props;
 
   const updateInformation = (
     key: keyof IncidentInformationType,
@@ -77,15 +80,19 @@ const GeneralInfoForm: FC<FirstPageFormProps> = (props) => {
   };
 
   useEffect(() => {
-    if (reportEntry.id >= 0) {
-      setInformation(reportEntry.incidentInformation);
-    } else if (getItem("station")) {
+    setInformation(reportEntry.incidentInformation);
+
+    if (
+      getItem("station") &&
+      reportEntry.incidentInformation.opsCenterAcknowledged &&
+      !reportEntry.incidentInformation.station
+    ) {
       setInformation({ ...information, station: getItem("station") });
     }
   }, []);
 
   return (
-    <form id="test" onSubmit={testing}>
+    <form id="general-info-form" onSubmit={handleSubmit}>
       <Paper sx={{ p: 1 }}>
         <Divider sx={{ paddingBottom: 1 }}>General Information</Divider>
         <Grid {...mainGridFormat}>
@@ -94,7 +101,6 @@ const GeneralInfoForm: FC<FirstPageFormProps> = (props) => {
               label="Incident Number"
               variant="outlined"
               fullWidth
-              type="submit"
               value={information.incidentNumb}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 updateInformation("incidentNumb", event.target.value);
@@ -105,6 +111,7 @@ const GeneralInfoForm: FC<FirstPageFormProps> = (props) => {
             <Autocomplete
               options={Object.keys(firePosts)}
               inputValue={information.station}
+              value={information.station}
               onInputChange={(_, newValue: string) => {
                 updateInformation("station", newValue);
               }}
@@ -185,7 +192,7 @@ const GeneralInfoForm: FC<FirstPageFormProps> = (props) => {
               <RadioGroup
                 aria-labelledby="report-type"
                 row
-                value={information.reportType}
+                value={information.reportType ? information.reportType : null}
                 onChange={(event) => {
                   updateInformation("reportType", event.target.value);
                 }}
@@ -215,7 +222,11 @@ const GeneralInfoForm: FC<FirstPageFormProps> = (props) => {
               <RadioGroup
                 aria-labelledby="report-type"
                 row
-                value={JSON.stringify(information.opsCenterAcknowledged)}
+                value={
+                  information.opsCenterAcknowledged === undefined 
+                    ? null
+                    : JSON.stringify(information.opsCenterAcknowledged)
+                }
                 onChange={(event) => {
                   updateInformation(
                     "opsCenterAcknowledged",
@@ -228,14 +239,14 @@ const GeneralInfoForm: FC<FirstPageFormProps> = (props) => {
                     <FormControlLabel
                       value="true"
                       control={<Radio />}
-                      label="true"
+                      label="Yes"
                     />
                   </Grid>
                   <Grid size="auto">
                     <FormControlLabel
                       value="false"
                       control={<Radio />}
-                      label="false"
+                      label="No"
                     />
                   </Grid>
                 </Grid>

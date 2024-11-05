@@ -9,71 +9,143 @@ import {
   SelectChangeEvent,
   Grid2 as Grid,
 } from "@mui/material";
-import { FC, useState } from "react";
-import TimingInputs from "./TimingInputs";
+import { FC, useState, useEffect } from "react";
+import { TimingInputs, type TimingInputsType } from "./TimingInputs";
+import AddPhotosButton from "./AddPhotosButton";
+import {
+  Report,
+  ReportImage,
+  type acesInformationType,
+  type EditsType,
+  type generalInformationType,
+} from "../Classes/Report";
+import { gridFormatting, checkIfEmptyAndReturn } from "../Functions/functions";
+import { Dayjs } from "dayjs";
 
-/**
- * Defining constants for styling
- */
-const mainGridFormat = {
-  container: true,
-  spacing: { xs: 2, md: 3 },
-  columns: { xs: 4, sm: 8 },
-};
+const { mainGridFormat, smallInput } = gridFormatting;
 
-const smallInput = {
-  xs: 2,
-  sm: 4,
-  md: 4,
-};
-
-const largeInput = {
-  xs: 4,
-  sm: 8,
-  md: 8,
-};
+const generalInformationKeys = ["boundary", "incidentOutcome", "weather"];
 
 interface AcesFormProps {
-  isLA: boolean | null;
-  opsCenterAcknowledge: boolean | null;
   setText: React.Dispatch<React.SetStateAction<string>>;
+  reportEntry: Report;
+  updateEntry: (edits: EditsType) => void;
+  setActiveStep: React.Dispatch<React.SetStateAction<number>>;
+  isDarkMode: boolean;
 }
 
 export const AcesForm: FC<AcesFormProps> = (props) => {
-  const [responseZone, setResponseZone] = useState("");
+  const { setText, reportEntry, updateEntry, setActiveStep, isDarkMode } =
+    props;
+
+  const [acesInformation, setAcesInformation] = useState<acesInformationType>(
+    {}
+  );
+  const [generalInformation, setGeneralInformation] =
+    useState<generalInformationType>({});
+
+  const [timings, setTimings] = useState<TimingInputsType>(
+    reportEntry.incidentInformation.reportType == "LA"
+      ? {
+          timeDispatched: undefined,
+          timeResponded: undefined,
+        }
+      : {
+          timeDispatched: undefined,
+          timeEnRoute: undefined,
+          timeArrived: undefined,
+        }
+  );
+
+  const isLR =
+    reportEntry.incidentInformation.reportType === "LR" ? true : false;
+
+  const updateInformation = (
+    key: keyof generalInformationType | keyof acesInformationType,
+    value: string | Dayjs | ReportImage
+  ) => {
+    if (generalInformationKeys.includes(key)) {
+      setGeneralInformation({ ...generalInformation, [key]: value });
+    } else {
+      setAcesInformation({ ...acesInformation, [key]: value });
+    }
+  };
+
+  useEffect(() => {
+    if (Object.values(reportEntry.acesInformation).length > 0) {
+      setAcesInformation(reportEntry.acesInformation);
+    } else {
+      setAcesInformation({ acesScreenshot: new ReportImage() })
+    }
+
+    if (Object.values(reportEntry.generalInformation).length > 0) {
+      setGeneralInformation(reportEntry.generalInformation);
+    }
+  }, []);
 
   return (
-    <>
-      <Paper sx={{ p: 1, textAlign: "center" }}>
-        <Divider sx={{ paddingBottom: 1 }}>Incident Information</Divider>
-        <Grid {...mainGridFormat}>
-          <Grid size={smallInput}>
-            <TextField label="Weather" fullWidth sx={{ marginBottom: 2 }} />
-          </Grid>
-          <Grid size={smallInput}>
-            <FormControl fullWidth>
-              <InputLabel id="response-zone">Response Zone</InputLabel>
-              <Select
-                labelId="response-zone"
-                label="Response Zone"
-                value={responseZone}
-                onChange={(event: SelectChangeEvent) => {
-                  setResponseZone(event.target.value);
+    <form id="aces-form">
+      <AddPhotosButton
+        uploadPhotoText="Upload ACES Photo"
+        key="acesInformation"
+        image={acesInformation.acesScreenshot}
+        updateInformation={updateInformation}
+      />
+      {isLR && (
+        <Paper sx={{ p: 1, textAlign: "center", marginTop: 2 }}>
+          <Divider sx={{ paddingBottom: 1 }}>Incident Information</Divider>
+          <Grid {...mainGridFormat}>
+            <Grid size={smallInput}>
+              <TextField
+                label="Weather"
+                value={checkIfEmptyAndReturn(generalInformation.weather)}
+                onChange={(event) => {
+                  updateInformation("weather", event.target.value);
                 }}
-              >
-                <MenuItem value={"8"}>8 Minutes</MenuItem>
-                <MenuItem value={"11"}>11 Minutes</MenuItem>
-                <MenuItem value={"13"}>13 Minutes</MenuItem>
-                <MenuItem value={"15"}>15 Minutes</MenuItem>
-                <MenuItem value={">15"}>{">15 Minutes"}</MenuItem>
-              </Select>
-            </FormControl>
+                fullWidth
+                sx={{ marginBottom: 2 }}
+              />
+            </Grid>
+            <Grid size={smallInput}>
+              <FormControl fullWidth>
+                <InputLabel id="response-zone">Response Zone</InputLabel>
+                <Select
+                  labelId="response-zone"
+                  label="Response Zone"
+                  value={
+                    checkIfEmptyAndReturn(generalInformation.boundary) as string
+                  }
+                  onChange={(event: SelectChangeEvent) => {
+                    updateInformation("boundary", event.target.value);
+                  }}
+                >
+                  <MenuItem value={"8"}>8 Minutes</MenuItem>
+                  <MenuItem value={"11"}>11 Minutes</MenuItem>
+                  <MenuItem value={"13"}>13 Minutes</MenuItem>
+                  <MenuItem value={"15"}>15 Minutes</MenuItem>
+                  <MenuItem value={">15"}>{">15 Minutes"}</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
           </Grid>
-        </Grid>
-        <TextField label="Incident Outcome" multiline rows={3} fullWidth />
-      </Paper>
-      <TimingInputs headerText="Timings From Aces" />
-      <TimingInputs headerText="Timings From Footage" />
-    </>
+          <TextField
+            label="Incident Outcome"
+            value={checkIfEmptyAndReturn(generalInformation.incidentOutcome)}
+            onChange={(event) => {
+              updateInformation("incidentOutcome", event.target.value);
+            }}
+            multiline
+            rows={3}
+            fullWidth
+          />
+        </Paper>
+      )}
+      <TimingInputs
+        headerText="Timings From Aces"
+        isDarkMode={isDarkMode}
+        timingInputs={timings}
+        setTimingInputs={setTimings}
+      />
+    </form>
   );
 };
