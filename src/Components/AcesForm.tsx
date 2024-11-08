@@ -70,27 +70,33 @@ export const AcesForm: FC<AcesFormProps> = (props) => {
   };
 
   const handleSubmit = () => {
-    updateEntry({})
+    updateEntry({ key: "generalInformation", value: generalInformation });
+    updateEntry({
+      key: "acesInformation",
+      value: { ...acesInformation, ...timings },
+    });
+
     console.log(generalInformation);
     console.log(acesInformation);
     console.log(timings);
   };
 
   useEffect(() => {
+    let newTiming;
     if (Object.values(reportEntry.acesInformation).length > 0) {
       setAcesInformation(reportEntry.acesInformation);
+      newTiming = { ...timings, ...reportEntry.acesInformation };
     } else {
       setAcesInformation({ acesScreenshot: new ReportImage() });
+      newTiming = { ...timings, ...acesInformation };
     }
 
     if (Object.values(reportEntry.generalInformation).length > 0) {
       setGeneralInformation(reportEntry.generalInformation);
     }
 
-    const newTiming = { ...timings, ...acesInformation };
     delete newTiming.acesScreenshot;
     setTimings(newTiming);
-
   }, []);
 
   return (

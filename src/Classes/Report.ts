@@ -124,9 +124,9 @@ export type EditsType = {
     | "cameraInformation";
 }[];
 
-export type InputEditsType =
-  | EditsType
-  | { key: keyof Report, value: Report[keyof Report] };
+export type MultipleInputEditsType =
+  | { key: keyof Report; value: Report[keyof Report] }
+  | { key: keyof Report; value: Report[keyof Report] }[];
 
 export type ReportValueKeysType =
   | keyof IncidentInformationType
@@ -179,11 +179,21 @@ export class Report {
     }
   }
 
-  static updateNewReport(report: Report, edits: InputEditsType): Report {
-    let newReport: Report;
+  static updateNewReport(report: Report, edits: MultipleInputEditsType): Report {
+    if (!Array.isArray(edits)) {
+      return { ...report, [edits.key]: edits.value }
+    }
 
-    if (Array.isArray(edits)) {
-      newReport = { ...report };
+    const newReport = { ...report };
+    for (const edit of edits) {
+      newReport[edit.key] = edit.value;
+    }
+
+    return newReport;
+  }
+
+  static updateSingleEntrys(report: Report, edits: EditsType) {
+      const newReport = { ...report };
 
       for (const edit of edits) {
         const { key, value } = edit;
@@ -196,10 +206,5 @@ export class Report {
             `New edit with key ${key} and value ${value as string} is not correctly formatted.\nIs the path being "undefined" correct?`
           );
       }
-    } else {
-      newReport = { ...report, [edits.key]: edits.value };
-    }
-
-    return newReport;
   }
 }
