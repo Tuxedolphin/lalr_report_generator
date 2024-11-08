@@ -35,6 +35,7 @@ export function camelCaseToTitleCase(string: string): string {
   return result.charAt(0).toUpperCase() + result.slice(1);
 }
 
+// Default grid formatting based on material design
 export const gridFormatting = {
   mainGridFormat: {
     container: true,

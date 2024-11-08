@@ -1,10 +1,17 @@
 import { styled, Typography, IconButton, Box, Button } from "@mui/material";
-import { FC, useState } from "react";
-import ImageIcon from "@mui/icons-material/Image";
+import { Image as ImageIcon, Clear as ClearIcon } from "@mui/icons-material";
+import { FC, useState, useEffect } from "react";
 import EditPhotoModal from "./EditPhotoModal";
 import Canvas from "./Canvas";
-import { Report, type EditsType } from "../Classes/Report";
+import {
+  Report,
+  ReportImage,
+  type EditsType,
+  type generalInformationType,
+  type acesInformationType,
+} from "../Classes/Report";
 import { Crop } from "react-image-crop";
+import { type Dayjs } from "dayjs";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -20,14 +27,21 @@ const VisuallyHiddenInput = styled("input")({
 
 interface AddPhotosFormProps {
   uploadPhotoText: string;
-  reportEntry: Report;
-  updateEntry: (edits: EditsType) => void;
+  photoType: keyof generalInformationType | keyof acesInformationType;
+  image: ReportImage;
+  updateInformation: (
+    key: keyof generalInformationType | keyof acesInformationType,
+    value: string | Dayjs | ReportImage
+  ) => void;
 }
 
 const AddPhotosButton: FC<AddPhotosFormProps> = (props) => {
-  const [image, setImage] = useState<HTMLImageElement>();
-
-  const { uploadPhotoText, reportEntry, updateEntry } = props;
+  const {
+    uploadPhotoText,
+    photoType,
+    image: reportImage,
+    updateInformation,
+  } = props;
 
   const [crop, setCrop] = useState<Crop>({
     unit: "%",
@@ -39,11 +53,27 @@ const AddPhotosButton: FC<AddPhotosFormProps> = (props) => {
 
   const [changeButton, setChangeButton] = useState(false); // To set if we need to change the button to the image
 
+  useEffect(() => {
+    if (!reportImage) {
+      updateInformation(photoType, new ReportImage());
+    }
+  });
+
   return (
     <>
-      <Box sx={{ width: "100%", aspectRatio: 4 / 3 }}>
-        {changeButton && image ? (
-          <Canvas crop={crop} image={image} />
+      <Box sx={{ width: "100%", aspectRatio: 4 / 3, position: "relative" }}>
+        {changeButton && reportImage.image.src ? (
+          <>
+            <Canvas crop={crop} image={reportImage.image} />
+            <IconButton
+              sx={{ position: "absolute", top: 0, right: 0, zIndex: 100 }}
+              onClick={() => {
+                updateInformation(photoType, new ReportImage());
+              }}
+            >
+              <ClearIcon />
+            </IconButton>
+          </>
         ) : (
           <Button
             component="label"
@@ -73,9 +103,10 @@ const AddPhotosButton: FC<AddPhotosFormProps> = (props) => {
               type="file"
               onChange={(event) => {
                 if (event.target.files) {
-                  const image = new Image();
-                  image.src = URL.createObjectURL(event.target.files[0]);
-                  setImage(image);
+                  updateInformation(
+                    photoType,
+                    new ReportImage(event.target.files[0], crop)
+                  );
                 }
               }}
             />
@@ -83,8 +114,9 @@ const AddPhotosButton: FC<AddPhotosFormProps> = (props) => {
         )}
       </Box>
       <EditPhotoModal
-        image={image}
-        setImage={setImage}
+        image={reportImage.image}
+        updateInformation={updateInformation}
+        photoType={photoType}
         titleText={"Edit " + props.uploadPhotoText}
         crop={crop}
         setCrop={setCrop}

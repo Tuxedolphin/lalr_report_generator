@@ -1,5 +1,5 @@
 import { FC } from "react";
-import TimingInputs from "./TimingInputs";
+import {TimingInputs} from "./TimingInputs";
 import { Paper } from "@mui/material";
 
 const LRAcesForm: FC = () => {

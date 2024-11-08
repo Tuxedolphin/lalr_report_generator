@@ -7,58 +7,62 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
-import FirstPageForm from "../Components/FirstPageForm";
+import GeneralInfoForm from "../Components/GeneralInfoForm";
 import { AcesForm } from "../Components/AcesForm";
 import LRAcesForm from "../Components/LRAcesForm";
-import AddPhotosForm from "../Components/AddPhotosForm";
-
-const mainGridFormat = {
-  container: true,
-  spacing: { xs: 2, md: 3 },
-  columns: { xs: 4, sm: 8, md: 12 },
-};
-
-const smallInput = {
-  xs: 2,
-  sm: 4,
-  md: 4,
-};
-
-const largeInput = {
-  xs: 4,
-  sm: 8,
-  md: 8,
-};
+import AddPhotosButton from "../Components/AddPhotosButton";
+import {
+  Report,
+  type EditsType,
+  type InputEditsType,
+  type ReportValueTypes,
+  type ReportValueKeysType,
+  type IncidentInformationType,
+  type LRInformationKeyType,
+  type LAInformationKeyType,
+} from "../Classes/Report";
 
 interface AddEntryPageProps {
   setText: React.Dispatch<React.SetStateAction<string>>;
+  isDarkMode: boolean;
+  reportEntry: Report;
+  setReportEntry: React.Dispatch<React.SetStateAction<Report>>;
+  navBarHeight: number;
 }
 
 const AddEntryPage: FC<AddEntryPageProps> = (props) => {
   const [activeStep, setActiveStep] = useState(0);
   const [maxSteps, setMaxSteps] = useState(4);
-  const [isLA, setIsLA] = useState<boolean | null>(null);
-  const [opsCenterAcknowledge, setOpsCenterAcknowledge] = useState<
-    boolean | null
-  >(null);
 
-  props.setText("Add Incident");
+  const { setText, isDarkMode, reportEntry, setReportEntry, navBarHeight } =
+    props;
 
-  const stepsContent = [
-    <FirstPageForm key={0} />,
-    <AcesForm
-      isLA={isLA}
-      opsCenterAcknowledge={opsCenterAcknowledge}
-      setText={props.setText}
-      key={1}
-    />,
-    <LRAcesForm key={2} />,
-    <AddPhotosForm isLA={isLA} key={3} />,
-  ];
+  setText("Add Incident");
 
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  const updateEntry = (edits: InputEditsType) => {
+    console.log(edits);
+    setReportEntry(Report.updateNewReport(reportEntry, edits));
   };
+
+  const commonProps = {
+    reportEntry: reportEntry,
+    updateEntry: updateEntry,
+    setActiveStep: setActiveStep,
+  };
+
+  const stepsContent = {
+    "general-info-form": <GeneralInfoForm {...commonProps} key={0} />,
+    "aces-form": (
+      <AcesForm
+        {...commonProps}
+        isDarkMode={isDarkMode}
+        setText={setText}
+        updateEntry={updateEntry}
+        key={1}
+      />
+    ),
+    "lr-aces-form": <LRAcesForm key={2} />,
+  } as const;
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -69,11 +73,11 @@ const AddEntryPage: FC<AddEntryPageProps> = (props) => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        minHeight: "calc(100vh - 56px)",
+        minHeight: `calc(100vh - ${navBarHeight.toString()}px)`,
       }}
     >
       <Box sx={{ width: "100%", p: 1, flexGrow: 2 }}>
-        {stepsContent[activeStep]}
+        {Object.values(stepsContent)[activeStep]}
       </Box>
       <MobileStepper
         variant="progress"
@@ -83,7 +87,8 @@ const AddEntryPage: FC<AddEntryPageProps> = (props) => {
         nextButton={
           <Button
             size="small"
-            onClick={handleNext}
+            form={Object.keys(stepsContent)[activeStep]}
+            type="submit"
             disabled={activeStep === maxSteps - 1}
           >
             Next

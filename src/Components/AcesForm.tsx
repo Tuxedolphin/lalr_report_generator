@@ -47,19 +47,17 @@ export const AcesForm: FC<AcesFormProps> = (props) => {
   const [timings, setTimings] = useState<TimingInputsType>(
     reportEntry.incidentInformation.reportType == "LA"
       ? {
-          timeDispatched: undefined,
-          timeResponded: undefined,
+          timeDispatched: null,
+          timeResponded: null,
         }
       : {
-          timeDispatched: undefined,
-          timeEnRoute: undefined,
-          timeArrived: undefined,
+          timeDispatched: null,
+          timeEnRoute: null,
+          timeArrived: null,
         }
   );
 
-  const isLR =
-    reportEntry.incidentInformation.reportType === "LR" ? true : false;
-
+  const isLR = reportEntry.incidentInformation.reportType === "LR";
   const updateInformation = (
     key: keyof generalInformationType | keyof acesInformationType,
     value: string | Dayjs | ReportImage
@@ -71,24 +69,40 @@ export const AcesForm: FC<AcesFormProps> = (props) => {
     }
   };
 
+  const handleSubmit = () => {
+    updateEntry({})
+    console.log(generalInformation);
+    console.log(acesInformation);
+    console.log(timings);
+  };
+
   useEffect(() => {
     if (Object.values(reportEntry.acesInformation).length > 0) {
       setAcesInformation(reportEntry.acesInformation);
     } else {
-      setAcesInformation({ acesScreenshot: new ReportImage() })
+      setAcesInformation({ acesScreenshot: new ReportImage() });
     }
 
     if (Object.values(reportEntry.generalInformation).length > 0) {
       setGeneralInformation(reportEntry.generalInformation);
     }
+
+    const newTiming = { ...timings, ...acesInformation };
+    delete newTiming.acesScreenshot;
+    setTimings(newTiming);
+
   }, []);
 
   return (
-    <form id="aces-form">
+    <form id="aces-form" onSubmit={handleSubmit}>
       <AddPhotosButton
         uploadPhotoText="Upload ACES Photo"
-        key="acesInformation"
-        image={acesInformation.acesScreenshot}
+        photoType="acesScreenshot"
+        image={
+          acesInformation.acesScreenshot
+            ? acesInformation.acesScreenshot
+            : new ReportImage()
+        }
         updateInformation={updateInformation}
       />
       {isLR && (

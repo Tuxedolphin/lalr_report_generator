@@ -1,5 +1,6 @@
 import { Crop } from "react-image-crop";
 import { Dayjs } from "dayjs";
+import { DayCalendarSkeletonClasses } from "@mui/x-date-pickers";
 
 export type reportType = "LA" | "LR" | undefined | null;
 
@@ -90,12 +91,14 @@ export interface generalInformationType {
   boundary?: string;
   justification?: string;
   weather?: string;
+  incidentOutcome?: string;
 }
 
 export interface acesInformationType {
   timeDispatched?: Dayjs;
   timeResponded?: Dayjs;
   timeEnRoute?: Dayjs;
+  timeArrived?: Dayjs;
   acesScreenshot?: ReportImage;
 }
 
@@ -135,7 +138,6 @@ export type ReportValueTypes = ReportImage | Dayjs | string | null | number;
 
 export class Report {
   id = -1;
-  type: reportType | undefined = undefined;
   incidentInformation: IncidentInformationType = {
     incidentNumb: "",
     location: "",
@@ -185,8 +187,8 @@ export class Report {
 
       for (const edit of edits) {
         const { key, value } = edit;
-        if (key === "id" || key === "type") {
-          newReport[key] = value;
+        if (key === "id") {
+          newReport[key] = value as number;
         } else if (edit.path) {
           newReport[edit.path][key] = edit.value;
         } else
