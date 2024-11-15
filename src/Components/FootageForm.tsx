@@ -1,5 +1,6 @@
 import { FC, useState } from "react";
 import { TimingInputs, TimingInputsType } from "./TimingInputs";
+import AddPhotosButton from "./AddPhotosButton";
 import { Paper } from "@mui/material";
 import { type MultipleInputEditsType, Report } from "../Classes/Report";
 
@@ -28,16 +29,22 @@ const FootageForm: FC<FootageFormProps> = (props) => {
         }
   );
 
+  const isLA = reportEntry.incidentInformation.reportType == "LA";
+
   return (
     <>
-      <Paper></Paper>
+    <AddPhotosButton
+      uploadPhotoText={isLA ? }
+    />
 
-      <TimingInputs
-        headerText="Timings From Footage"
-        isDarkMode={isDarkMode}
-        timingInputs={timingInputs}
-        setTimingInputs={setTimingInputs}
-      />
+      <Paper>
+        <TimingInputs
+          headerText="Timings From Footage"
+          isDarkMode={isDarkMode}
+          timingInputs={timingInputs}
+          setTimingInputs={setTimingInputs}
+        />
+      </Paper>
     </>
   );
 };

@@ -192,7 +192,7 @@ export class Report {
     return newReport;
   }
 
-  static updateSingleEntrys(report: Report, edits: EditsType) {
+  static updateSingleEntries(report: Report, edits: EditsType) {
       const newReport = { ...report };
 
       for (const edit of edits) {

@@ -16,7 +16,7 @@ import {
   Report,
   ReportImage,
   type acesInformationType,
-  type EditsType,
+  type MultipleInputEditsType,
   type generalInformationType,
 } from "../Classes/Report";
 import { gridFormatting, checkIfEmptyAndReturn } from "../Functions/functions";
@@ -29,7 +29,7 @@ const generalInformationKeys = ["boundary", "incidentOutcome", "weather"];
 interface AcesFormProps {
   setText: React.Dispatch<React.SetStateAction<string>>;
   reportEntry: Report;
-  updateEntry: (edits: EditsType) => void;
+  updateEntry: (edits: MultipleInputEditsType) => void;
   setActiveStep: React.Dispatch<React.SetStateAction<number>>;
   isDarkMode: boolean;
 }
@@ -70,15 +70,11 @@ export const AcesForm: FC<AcesFormProps> = (props) => {
   };
 
   const handleSubmit = () => {
-    updateEntry({ key: "generalInformation", value: generalInformation });
-    updateEntry({
-      key: "acesInformation",
-      value: { ...acesInformation, ...timings },
-    });
-
-    console.log(generalInformation);
-    console.log(acesInformation);
-    console.log(timings);
+    updateEntry([
+      { key: "generalInformation", value: generalInformation },
+      { key: "acesInformation", value: { ...acesInformation, ...timings } },
+    ]);
+    setActiveStep(2);
   };
 
   useEffect(() => {

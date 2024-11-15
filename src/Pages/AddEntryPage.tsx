@@ -9,12 +9,12 @@ import "@fontsource/roboto/700.css";
 
 import GeneralInfoForm from "../Components/GeneralInfoForm";
 import { AcesForm } from "../Components/AcesForm";
-import LRAcesForm from "../Components/LRAcesForm";
+import FootageForm from "../Components/FootageForm";
 import AddPhotosButton from "../Components/AddPhotosButton";
 import {
   Report,
   type EditsType,
-  type InputEditsType,
+  type MultipleInputEditsType,
   type ReportValueTypes,
   type ReportValueKeysType,
   type IncidentInformationType,
@@ -39,7 +39,8 @@ const AddEntryPage: FC<AddEntryPageProps> = (props) => {
 
   setText("Add Incident");
 
-  const updateEntry = (edits: InputEditsType) => {
+  // TODO: Update function
+  const updateEntry = (edits: MultipleInputEditsType) => {
     console.log(edits);
     setReportEntry(Report.updateNewReport(reportEntry, edits));
   };
@@ -48,20 +49,13 @@ const AddEntryPage: FC<AddEntryPageProps> = (props) => {
     reportEntry: reportEntry,
     updateEntry: updateEntry,
     setActiveStep: setActiveStep,
+    isDarkMode: isDarkMode,
+    setText: setText,
   };
 
   const stepsContent = {
     "general-info-form": <GeneralInfoForm {...commonProps} key={0} />,
-    "aces-form": (
-      <AcesForm
-        {...commonProps}
-        isDarkMode={isDarkMode}
-        setText={setText}
-        updateEntry={updateEntry}
-        key={1}
-      />
-    ),
-    "lr-aces-form": <LRAcesForm key={2} />,
+    "aces-form": <AcesForm {...commonProps} key={1} />,
   } as const;
 
   const handleBack = () => {
