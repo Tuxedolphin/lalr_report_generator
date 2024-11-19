@@ -20,17 +20,16 @@ import {
 } from "../Classes/Report";
 import { Dayjs } from "dayjs";
 import { FC, useEffect, useState, type SyntheticEvent } from "react";
-import { string } from "prop-types";
 
 interface EditPhotoModalProps {
   image: HTMLImageElement;
-  updateInformation(
+  updateInformation: (
     key:
       | keyof GeneralInformationType
       | keyof AcesInformationType
       | keyof CameraInformationType,
     value: string | Dayjs | ReportImage
-  ): void;
+  ) => void;
   titleText: string;
   photoType:
     | keyof GeneralInformationType
@@ -51,8 +50,12 @@ const EditPhotoModal: FC<EditPhotoModalProps> = (props) => {
   } = props;
 
   const { crop, setCrop } = props;
-
   const [openModal, setOpenModal] = useState(false);
+
+  function handleSubmit(): void {
+    setChangeButton(true);
+    handleClose();
+  }
 
   function handleClose(): void {
     setOpenModal(false);
@@ -90,18 +93,7 @@ const EditPhotoModal: FC<EditPhotoModalProps> = (props) => {
   if (!image.src) return;
 
   return (
-    <Dialog
-      open={openModal}
-      onClose={handleClose}
-      PaperProps={{
-        component: "form",
-        onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-          event.preventDefault();
-          setChangeButton(true);
-          handleClose();
-        },
-      }}
-    >
+    <Dialog open={openModal} onClose={handleClose}>
       <DialogTitle>{titleCaseString(titleText)}</DialogTitle>
       <DialogContent>
         <ReactCrop
@@ -127,7 +119,9 @@ const EditPhotoModal: FC<EditPhotoModalProps> = (props) => {
         >
           Cancel
         </Button>
-        <Button type="submit">Submit</Button>
+        <Button type="button" onClick={handleSubmit}>
+          Submit
+        </Button>
       </DialogActions>
     </Dialog>
   );
