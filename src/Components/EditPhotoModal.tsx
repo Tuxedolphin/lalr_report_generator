@@ -19,16 +19,12 @@ import {
   CameraInformationType,
 } from "../Classes/Report";
 import { Dayjs } from "dayjs";
-import { FC, useEffect, useState, type SyntheticEvent } from "react";
+import { FC, type SyntheticEvent } from "react";
 
 interface EditPhotoModalProps {
   image: HTMLImageElement;
-  updateInformation: (
-    key:
-      | keyof GeneralInformationType
-      | keyof AcesInformationType
-      | keyof CameraInformationType,
-    value: string | Dayjs | ReportImage
+  updateImage: (
+    crop: Crop | null
   ) => void;
   titleText: string;
   photoType:
@@ -37,23 +33,24 @@ interface EditPhotoModalProps {
     | keyof CameraInformationType;
   crop: Crop;
   setCrop: React.Dispatch<React.SetStateAction<Crop>>;
-  setChangeButton: React.Dispatch<React.SetStateAction<boolean>>;
+  openModal: boolean;
+  setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const EditPhotoModal: FC<EditPhotoModalProps> = (props) => {
   const {
     image,
-    updateInformation,
-    photoType: key,
+    updateImage,
+    photoType,
     titleText,
-    setChangeButton,
+    crop,
+    setCrop,
+    openModal,
+    setOpenModal,
   } = props;
 
-  const { crop, setCrop } = props;
-  const [openModal, setOpenModal] = useState(false);
-
   function handleSubmit(): void {
-    setChangeButton(true);
+    updateImage(crop);
     handleClose();
   }
 
@@ -81,17 +78,6 @@ const EditPhotoModal: FC<EditPhotoModalProps> = (props) => {
     setCrop(crop);
   }
 
-  useEffect(() => {
-    if (!image.src) {
-      setOpenModal(false);
-      return;
-    }
-
-    setOpenModal(true);
-  }, [image, setOpenModal]);
-
-  if (!image.src) return;
-
   return (
     <Dialog open={openModal} onClose={handleClose}>
       <DialogTitle>{titleCaseString(titleText)}</DialogTitle>
@@ -113,7 +99,7 @@ const EditPhotoModal: FC<EditPhotoModalProps> = (props) => {
       <DialogActions>
         <Button
           onClick={() => {
-            updateInformation(key, new ReportImage());
+            updateImage(null);
             handleClose();
           }}
         >

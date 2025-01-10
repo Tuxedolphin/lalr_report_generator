@@ -15,16 +15,17 @@ import AddPhotosButton from "./AddPhotosButton";
 import {
   Report,
   ReportImage,
-  type acesInformationType,
+  type AcesInformationType,
   type MultipleInputEditsType,
-  type generalInformationType,
+  type GeneralInformationType,
+  CameraInformationType,
 } from "../Classes/Report";
 import { gridFormatting, checkIfEmptyAndReturn } from "../Functions/functions";
 import { Dayjs } from "dayjs";
 
 const { mainGridFormat, smallInput } = gridFormatting;
 
-const generalInformationKeys = ["boundary", "incidentOutcome", "weather"];
+const generalInformationKeys = ["boundary", "incidentOutcome", "weather"] as const;
 
 interface AcesFormProps {
   setText: React.Dispatch<React.SetStateAction<string>>;
@@ -38,11 +39,11 @@ export const AcesForm: FC<AcesFormProps> = (props) => {
   const { setText, reportEntry, updateEntry, setActiveStep, isDarkMode } =
     props;
 
-  const [acesInformation, setAcesInformation] = useState<acesInformationType>(
+  const [acesInformation, setAcesInformation] = useState<AcesInformationType>(
     {}
   );
   const [generalInformation, setGeneralInformation] =
-    useState<generalInformationType>({});
+    useState<GeneralInformationType>({});
 
   const [timings, setTimings] = useState<TimingInputsType>(
     reportEntry.incidentInformation.reportType == "LA"
@@ -58,10 +59,15 @@ export const AcesForm: FC<AcesFormProps> = (props) => {
   );
 
   const isLR = reportEntry.incidentInformation.reportType === "LR";
+
   const updateInformation = (
-    key: keyof generalInformationType | keyof acesInformationType,
+    key:
+      | keyof GeneralInformationType
+      | keyof AcesInformationType
+      | keyof CameraInformationType,
     value: string | Dayjs | ReportImage
   ) => {
+    debugger;
     if (generalInformationKeys.includes(key)) {
       setGeneralInformation({ ...generalInformation, [key]: value });
     } else {
@@ -97,16 +103,18 @@ export const AcesForm: FC<AcesFormProps> = (props) => {
 
   return (
     <form id="aces-form" onSubmit={handleSubmit}>
-      <AddPhotosButton
-        uploadPhotoText="Upload ACES Photo"
-        photoType="acesScreenshot"
-        image={
-          acesInformation.acesScreenshot
-            ? acesInformation.acesScreenshot
-            : new ReportImage()
-        }
-        updateInformation={updateInformation}
-      />
+      <>
+        <AddPhotosButton
+          uploadPhotoText="Upload ACES Photo"
+          photoType="acesScreenshot"
+          image={
+            acesInformation.acesScreenshot
+              ? acesInformation.acesScreenshot
+              : new ReportImage()
+          }
+          updateInformation={updateInformation}
+        />
+      </>
       {isLR && (
         <Paper sx={{ p: 1, textAlign: "center", marginTop: 2 }}>
           <Divider sx={{ paddingBottom: 1 }}>Incident Information</Divider>
@@ -156,12 +164,14 @@ export const AcesForm: FC<AcesFormProps> = (props) => {
           />
         </Paper>
       )}
-      <TimingInputs
-        headerText="Timings From Aces"
-        isDarkMode={isDarkMode}
-        timingInputs={timings}
-        setTimingInputs={setTimings}
-      />
+      <Paper sx={{ marginTop: 1, padding: 1 }}>
+        <TimingInputs
+          headerText="Timings From Aces"
+          isDarkMode={isDarkMode}
+          timingInputs={timings}
+          updateInformation={updateInformation}
+        />
+      </Paper>
     </form>
   );
 };

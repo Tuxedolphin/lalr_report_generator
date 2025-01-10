@@ -1,6 +1,5 @@
 import { Crop } from "react-image-crop";
 import { Dayjs } from "dayjs";
-import { DayCalendarSkeletonClasses } from "@mui/x-date-pickers";
 
 export type reportType = "LA" | "LR" | undefined | null;
 
@@ -35,66 +34,14 @@ export interface IncidentInformationType {
   opsCenterAcknowledged: boolean | undefined | null;
 }
 
-export type LAInformationKeyType =
-  | keyof LAInformationType["generalInformation"]
-  | keyof LAInformationType["acesInformation"]
-  | keyof LAInformationType["cameraInformation"];
-
-export interface LAInformationType {
-  generalInformation: {
-    justification: string;
-  };
-
-  acesInformation: {
-    timeDispatched?: Dayjs;
-    timeResponded?: Dayjs;
-    acesScreenshot?: ReportImage;
-  };
-
-  cameraInformation: {
-    timeDispatched?: Dayjs;
-    timeResponded?: Dayjs;
-    allInPhoto?: ReportImage;
-    moveOffPhoto?: ReportImage;
-  };
-}
-
-export type LRInformationKeyType =
-  | keyof LRInformationType["generalInformation"]
-  | keyof LRInformationType["acesInformation"]
-  | keyof LRInformationType["cameraInformation"];
-
-export interface LRInformationType {
-  generalInformation: {
-    boundary?: string;
-    justification?: string;
-    weather?: string;
-  };
-
-  acesInformation: {
-    timeDispatched?: Dayjs;
-    timeEnRoute?: Dayjs;
-    acesScreenshot?: ReportImage;
-  };
-
-  cameraInformation: {
-    timeMoveOff?: Dayjs;
-    timeArrived?: Dayjs;
-    bufferingTime?: Dayjs | 0 | null;
-    bufferingLocation?: string;
-    moveOffPhoto?: ReportImage;
-    arrivedPhoto?: ReportImage;
-  };
-}
-
-export interface generalInformationType {
+export interface GeneralInformationType {
   boundary?: string;
   justification?: string;
   weather?: string;
   incidentOutcome?: string;
 }
 
-export interface acesInformationType {
+export interface AcesInformationType {
   timeDispatched?: Dayjs;
   timeResponded?: Dayjs;
   timeEnRoute?: Dayjs;
@@ -102,14 +49,16 @@ export interface acesInformationType {
   acesScreenshot?: ReportImage;
 }
 
-export interface cameraInformationType {
-  timeDispatched?: Dayjs;
-  timeResponded?: Dayjs;
-  timeMoveOff?: Dayjs;
-  timeArrived?: Dayjs;
-  allInPhoto?: ReportImage;
+export interface CameraInformationType {
+  timeDispatched?: Dayjs | null;
+  timeResponded?: Dayjs | null;
+  timeAllIn?: Dayjs | null;
+  timeMoveOff?: Dayjs | null;
+  timeArrived?: Dayjs | null;
   bufferingTime?: Dayjs | 0 | null;
   bufferingLocation?: string;
+  dispatchPhoto?: ReportImage;
+  allInPhoto?: ReportImage;
   moveOffPhoto?: ReportImage;
   arrivedPhoto?: ReportImage;
 }
@@ -130,8 +79,9 @@ export type MultipleInputEditsType =
 
 export type ReportValueKeysType =
   | keyof IncidentInformationType
-  | LAInformationKeyType
-  | LRInformationKeyType
+  | keyof GeneralInformationType
+  | keyof AcesInformationType
+  | keyof CameraInformationType
   | "id"
   | "type";
 export type ReportValueTypes = ReportImage | Dayjs | string | null | number;
@@ -150,38 +100,41 @@ export class Report {
     opsCenterAcknowledged: undefined,
   };
 
-  generalInformation: generalInformationType = {};
-
-  acesInformation: acesInformationType = {};
-
-  cameraInformation: cameraInformationType = {};
+  generalInformation: GeneralInformationType;
+  acesInformation: AcesInformationType;
+  cameraInformation: CameraInformationType;
 
   constructor();
   constructor(
     id: number,
     incidentInformation: IncidentInformationType,
-    reportInformation: LAInformationType | LRInformationType
+    generalInformation?: GeneralInformationType,
+    acesInformation?: AcesInformationType,
+    cameraInformation?: CameraInformationType
   );
-
   constructor(
     id?: number,
     incidentInformation?: IncidentInformationType,
-    reportInformation?: LAInformationType | LRInformationType
+    generalInformation?: GeneralInformationType,
+    acesInformation?: AcesInformationType,
+    cameraInformation?: CameraInformationType
   ) {
-    if (id && reportInformation && incidentInformation) {
+    if (id && incidentInformation) {
       this.id = id;
       this.incidentInformation = incidentInformation;
-
-      //TODO: Add type checking to ensure that the input information is correct (either LA or LR)
-      this.generalInformation = reportInformation.generalInformation;
-      this.acesInformation = reportInformation.acesInformation;
-      this.cameraInformation = reportInformation.cameraInformation;
     }
+
+    this.generalInformation = generalInformation ? generalInformation : {};
+    this.acesInformation = acesInformation ? acesInformation : {};
+    this.cameraInformation = cameraInformation ? cameraInformation : {};
   }
 
-  static updateNewReport(report: Report, edits: MultipleInputEditsType): Report {
+  static updateNewReport(
+    report: Report,
+    edits: MultipleInputEditsType
+  ): Report {
     if (!Array.isArray(edits)) {
-      return { ...report, [edits.key]: edits.value }
+      return { ...report, [edits.key]: edits.value };
     }
 
     const newReport = { ...report };
@@ -193,18 +146,18 @@ export class Report {
   }
 
   static updateSingleEntries(report: Report, edits: EditsType) {
-      const newReport = { ...report };
+    const newReport = { ...report };
 
-      for (const edit of edits) {
-        const { key, value } = edit;
-        if (key === "id") {
-          newReport[key] = value as number;
-        } else if (edit.path) {
-          newReport[edit.path][key] = edit.value;
-        } else
-          throw Error(
-            `New edit with key ${key} and value ${value as string} is not correctly formatted.\nIs the path being "undefined" correct?`
-          );
-      }
+    for (const edit of edits) {
+      const { key, value } = edit;
+      if (key === "id") {
+        newReport[key] = value as number;
+      } else if (edit.path) {
+        newReport[edit.path][key] = edit.value;
+      } else
+        throw Error(
+          `New edit with key ${key} and value ${value as string} is not correctly formatted.\nIs the path being "undefined" correct?`
+        );
+    }
   }
 }

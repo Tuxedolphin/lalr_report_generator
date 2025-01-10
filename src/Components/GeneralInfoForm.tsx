@@ -23,7 +23,7 @@ import {
   type reportType as typeOfReport,
   type IncidentInformationType,
   type EditsType,
-  InputEditsType,
+  type MultipleInputEditsType,
 } from "../Classes/Report";
 
 import { gridFormatting } from "../Functions/functions";
@@ -31,7 +31,7 @@ const { mainGridFormat, smallInput, largeInput } = gridFormatting;
 
 interface GeneralInfoFormProps {
   reportEntry: Report;
-  updateEntry: (edits: InputEditsType) => void;
+  updateEntry: (edits: MultipleInputEditsType) => void;
   setActiveStep: React.Dispatch<React.SetStateAction<number>>;
 }
 
@@ -40,7 +40,6 @@ const GeneralInfoForm: FC<GeneralInfoFormProps> = (props) => {
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-
     updateEntry({ key: "incidentInformation", value: information });
 
     setActiveStep(1); // This form will always be the first one, i.e. index 0

@@ -18,8 +18,6 @@ import {
   type ReportValueTypes,
   type ReportValueKeysType,
   type IncidentInformationType,
-  type LRInformationKeyType,
-  type LAInformationKeyType,
 } from "../Classes/Report";
 
 interface AddEntryPageProps {
@@ -51,11 +49,12 @@ const AddEntryPage: FC<AddEntryPageProps> = (props) => {
     setActiveStep: setActiveStep,
     isDarkMode: isDarkMode,
     setText: setText,
-  };
+  } as const;
 
   const stepsContent = {
     "general-info-form": <GeneralInfoForm {...commonProps} key={0} />,
     "aces-form": <AcesForm {...commonProps} key={1} />,
+    "footage-form": <FootageForm {...commonProps} key={2} />
   } as const;
 
   const handleBack = () => {

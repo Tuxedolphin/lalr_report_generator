@@ -37,7 +37,7 @@ const TimingAndPhotoInput: FC<TimingAndPhotoInputProps> = (props) => {
 
   if (Object.keys(timingInput).length > 1)
     console.error(
-      "Object argument of timingInput has more than 1 key, expected 1"
+      "Object argument of timingInput has more than 1 key, expected 1."
     );
 
   const photoType =
@@ -47,20 +47,22 @@ const TimingAndPhotoInput: FC<TimingAndPhotoInputProps> = (props) => {
   const uploadPhotoText = "upload " + camelCaseToTitleCase(photoType);
 
   return (
-    <Paper>
+    <>
       <AddPhotosButton
         uploadPhotoText={uploadPhotoText}
         photoType={photoType}
         image={image}
         updateInformation={updateInformation}
       />
-      <TimingInputs
-        headerText=""
-        updateInformation={updateInformation}
-        timingInputs={timingInput}
-        isDarkMode={isDarkMode}
-      />
-    </Paper>
+      <Paper sx={{ paddingBottom: 1, paddingTop: 1, marginTop: 1 }}>
+        <TimingInputs
+          headerText=""
+          updateInformation={updateInformation}
+          timingInputs={timingInput}
+          isDarkMode={isDarkMode}
+        />
+      </Paper>
+    </>
   );
 };
 

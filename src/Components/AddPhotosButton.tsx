@@ -1,17 +1,16 @@
 import { styled, Typography, IconButton, Box, Button } from "@mui/material";
 import { Image as ImageIcon, Clear as ClearIcon } from "@mui/icons-material";
-import { FC, useState, useEffect } from "react";
+import { FC, useState } from "react";
 import EditPhotoModal from "./EditPhotoModal";
 import Canvas from "./Canvas";
 import {
-  Report,
   ReportImage,
-  type EditsType,
-  type generalInformationType,
-  type acesInformationType,
+  type GeneralInformationType,
+  type AcesInformationType,
+  type CameraInformationType,
 } from "../Classes/Report";
 import { Crop } from "react-image-crop";
-import { type Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -27,10 +26,16 @@ const VisuallyHiddenInput = styled("input")({
 
 interface AddPhotosFormProps {
   uploadPhotoText: string;
-  photoType: keyof generalInformationType | keyof acesInformationType;
+  photoType:
+    | keyof GeneralInformationType
+    | keyof AcesInformationType
+    | keyof CameraInformationType;
   image: ReportImage;
   updateInformation: (
-    key: keyof generalInformationType | keyof acesInformationType,
+    key:
+      | keyof GeneralInformationType
+      | keyof AcesInformationType
+      | keyof CameraInformationType,
     value: string | Dayjs | ReportImage
   ) => void;
 }
@@ -43,26 +48,37 @@ const AddPhotosButton: FC<AddPhotosFormProps> = (props) => {
     updateInformation,
   } = props;
 
-  const [crop, setCrop] = useState<Crop>({
-    unit: "%",
-    x: 0,
-    y: 0,
-    width: 80,
-    height: 60,
-  });
-
-  const [changeButton, setChangeButton] = useState(false); // To set if we need to change the button to the image
-
-  useEffect(() => {
-    if (!reportImage) {
-      updateInformation(photoType, new ReportImage());
+  const [crop, setCrop] = useState<Crop>(
+    reportImage.crop ?? {
+      unit: "%",
+      x: 0,
+      y: 0,
+      width: 80,
+      height: 60,
     }
-  });
+  );
+
+  const [openModal, setOpenModal] = useState(false); // To set if we need to change the button to the image
+
+  /**
+   *  Updates the image of the report object passed in
+   * @param crop The crop object, or null if the photo is to be deleted
+   */
+  const updateImage = (crop: Crop | null) => {
+    if (!crop) updateInformation(photoType, new ReportImage());
+    else
+      updateInformation(photoType, {
+        ...reportImage,
+        crop: crop,
+      } as ReportImage);
+  };
+
+  console.log(crop);
 
   return (
     <>
       <Box sx={{ width: "100%", aspectRatio: 4 / 3, position: "relative" }}>
-        {changeButton && reportImage.image.src ? (
+        {!openModal && reportImage.image.src ? (
           <>
             <Canvas crop={crop} image={reportImage.image} />
             <IconButton
@@ -77,7 +93,6 @@ const AddPhotosButton: FC<AddPhotosFormProps> = (props) => {
         ) : (
           <Button
             component="label"
-            role={undefined}
             variant="outlined"
             tabIndex={-1}
             sx={{
@@ -107,6 +122,7 @@ const AddPhotosButton: FC<AddPhotosFormProps> = (props) => {
                     photoType,
                     new ReportImage(event.target.files[0], crop)
                   );
+                  setOpenModal(true);
                 }
               }}
             />
@@ -115,12 +131,13 @@ const AddPhotosButton: FC<AddPhotosFormProps> = (props) => {
       </Box>
       <EditPhotoModal
         image={reportImage.image}
-        updateInformation={updateInformation}
+        updateImage={updateImage}
         photoType={photoType}
         titleText={"Edit " + props.uploadPhotoText}
         crop={crop}
         setCrop={setCrop}
-        setChangeButton={setChangeButton}
+        openModal={openModal}
+        setOpenModal={setOpenModal}
       />
     </>
   );

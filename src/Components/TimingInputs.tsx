@@ -1,7 +1,15 @@
 /// <reference types="vite-plugin-svgr/client" />
 
 import { camelCaseToTitleCase } from "../Functions/functions";
-import { FC, useState, useEffect, useMemo } from "react";
+import {
+  type GeneralInformationType,
+  type AcesInformationType,
+  type CameraInformationType,
+  type ReportImage,
+} from "../Classes/Report";
+import AlarmSiren from "../assets/alarm-siren.svg?react";
+import { TimePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import {
   Divider,
   Paper,
@@ -10,18 +18,17 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { FireTruck, WhereToVote } from "@mui/icons-material";
-import AlarmSiren from "../assets/alarm-siren.svg?react";
-import { TimePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Dayjs } from "dayjs";
+import { FC, useState, useEffect, useMemo } from "react";
 
 export interface TimingInputsType {
-  timeDispatched: Dayjs | null;
+  timeDispatched?: Dayjs | null;
+  timeAllIn?: Dayjs | null;
   timeResponded?: Dayjs | null;
   timeEnRoute?: Dayjs | null;
   timeMoveOff?: Dayjs | null;
   timeArrived?: Dayjs | null;
-};
+}
 /**
  * Defining constants for styling
  */
@@ -35,11 +42,17 @@ interface TimingInputsProps {
   headerText: string;
   isDarkMode: boolean;
   timingInputs: TimingInputsType;
-  setTimingInputs: React.Dispatch<React.SetStateAction<TimingInputsType>>;
+  updateInformation: (
+    key:
+      | keyof GeneralInformationType
+      | keyof AcesInformationType
+      | keyof CameraInformationType,
+    value: string | Dayjs | ReportImage
+  ) => void;
 }
 
 export const TimingInputs: FC<TimingInputsProps> = (props) => {
-  const { headerText, isDarkMode, timingInputs, setTimingInputs } = props;
+  const { headerText, isDarkMode, timingInputs, updateInformation } = props;
 
   const [entryDisplayWords, setEntryDisplayWords] = useState({
     first: "",
@@ -88,10 +101,10 @@ export const TimingInputs: FC<TimingInputsProps> = (props) => {
   }, []);
 
   return (
-    <Paper sx={{ p: 1, marginTop: 2 }}>
-      <Divider>{headerText}</Divider>
+    <>
+      {headerText && <Divider sx={{ paddingBottom: 1 }}>{headerText}</Divider>}
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <Grid {...mainGridFormat} sx={{ paddingTop: 1 }}>
+        <Grid {...mainGridFormat}>
           <Grid
             container
             spacing={2}
@@ -122,7 +135,7 @@ export const TimingInputs: FC<TimingInputsProps> = (props) => {
                     sx={{ width: "100%" }}
                     value={timingInputs.timeDispatched}
                     onChange={(time: Dayjs | null) => {
-                      setTimingInputs({
+                      updateInformation({
                         ...timingInputs,
                         timeDispatched: time,
                       });
@@ -151,7 +164,7 @@ export const TimingInputs: FC<TimingInputsProps> = (props) => {
                       secondEntryType ? timingInputs[secondEntryType] : null
                     }
                     onChange={(time: Dayjs | null) => {
-                      setTimingInputs({
+                      updateInformation({
                         ...timingInputs,
                         [secondEntryType as string]: time,
                       });
@@ -178,7 +191,7 @@ export const TimingInputs: FC<TimingInputsProps> = (props) => {
                     sx={{ width: "100%" }}
                     value={timingInputs.timeArrived}
                     onChange={(time: Dayjs | null) => {
-                      setTimingInputs({
+                      updateInformation({
                         ...timingInputs,
                         timeArrived: time,
                       });
@@ -191,6 +204,6 @@ export const TimingInputs: FC<TimingInputsProps> = (props) => {
           </Grid>
         </Grid>
       </LocalizationProvider>
-    </Paper>
+    </>
   );
 };
