@@ -17,16 +17,16 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
-import { getItem } from "../Functions/functions";
+import { getItem } from "../utils/functions";
 import {
   Report,
   type reportType as typeOfReport,
   type IncidentInformationType,
   type EditsType,
   type MultipleInputEditsType,
-} from "../Classes/Report";
+} from "../classes/Report";
 
-import { gridFormatting } from "../Functions/functions";
+import { gridFormatting } from "../utils/functions";
 const { mainGridFormat, smallInput, largeInput } = gridFormatting;
 
 interface GeneralInfoFormProps {
@@ -222,7 +222,7 @@ const GeneralInfoForm: FC<GeneralInfoFormProps> = (props) => {
                 aria-labelledby="report-type"
                 row
                 value={
-                  information.opsCenterAcknowledged === undefined 
+                  information.opsCenterAcknowledged === undefined
                     ? null
                     : JSON.stringify(information.opsCenterAcknowledged)
                 }

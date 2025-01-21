@@ -19,13 +19,17 @@ import {
   type MultipleInputEditsType,
   type GeneralInformationType,
   CameraInformationType,
-} from "../Classes/Report";
-import { gridFormatting, checkIfEmptyAndReturn } from "../Functions/functions";
+} from "../classes/Report";
+import { gridFormatting, checkIfEmptyAndReturn } from "../utils/functions";
 import { Dayjs } from "dayjs";
 
 const { mainGridFormat, smallInput } = gridFormatting;
 
-const generalInformationKeys = ["boundary", "incidentOutcome", "weather"] as const;
+const generalInformationKeys = [
+  "boundary",
+  "incidentOutcome",
+  "weather",
+] as const;
 
 interface AcesFormProps {
   setText: React.Dispatch<React.SetStateAction<string>>;

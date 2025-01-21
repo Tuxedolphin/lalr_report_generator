@@ -1,12 +1,12 @@
 import AddPhotosButton from "./AddPhotosButton";
 import { TimingInputs, type TimingInputsType } from "./TimingInputs";
-import { camelCaseToTitleCase } from "../Functions/functions";
+import { camelCaseToTitleCase } from "../utils/functions";
 import {
   ReportImage,
   type GeneralInformationType,
   type AcesInformationType,
   type CameraInformationType,
-} from "../Classes/Report";
+} from "../classes/Report";
 import { Paper } from "@mui/material";
 import { Dayjs } from "dayjs";
 import { FC } from "react";

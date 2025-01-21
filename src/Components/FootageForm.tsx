@@ -10,7 +10,7 @@ import {
   type CameraInformationType,
   Report,
   ReportImage,
-} from "../Classes/Report";
+} from "../classes/Report";
 
 interface FootageFormProps {
   setText: React.Dispatch<React.SetStateAction<string>>;
@@ -52,7 +52,6 @@ const FootageForm: FC<FootageFormProps> = (props) => {
   };
 
   useEffect(() => {
-
     if (isLA) {
       setCameraInformation({
         ...cameraInformation,

@@ -1,12 +1,12 @@
 /// <reference types="vite-plugin-svgr/client" />
 
-import { camelCaseToTitleCase } from "../Functions/functions";
+import { camelCaseToTitleCase } from "../utils/functions";
 import {
   type GeneralInformationType,
   type AcesInformationType,
   type CameraInformationType,
   type ReportImage,
-} from "../Classes/Report";
+} from "../classes/Report";
 import AlarmSiren from "../assets/alarm-siren.svg?react";
 import { TimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";

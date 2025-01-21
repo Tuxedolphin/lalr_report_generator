@@ -1,4 +1,4 @@
-import { titleCaseString } from "../Functions/functions";
+import { titleCaseString } from "../utils/functions";
 import {
   Button,
   Dialog,
@@ -17,15 +17,13 @@ import {
   type AcesInformationType,
   ReportImage,
   CameraInformationType,
-} from "../Classes/Report";
+} from "../classes/Report";
 import { Dayjs } from "dayjs";
 import { FC, type SyntheticEvent } from "react";
 
 interface EditPhotoModalProps {
   image: HTMLImageElement;
-  updateImage: (
-    crop: Crop | null
-  ) => void;
+  updateImage: (crop: Crop | null) => void;
   titleText: string;
   photoType:
     | keyof GeneralInformationType

@@ -8,7 +8,7 @@ import {
   type GeneralInformationType,
   type AcesInformationType,
   type CameraInformationType,
-} from "../Classes/Report";
+} from "../classes/Report";
 import { Crop } from "react-image-crop";
 import { Dayjs } from "dayjs";
 
