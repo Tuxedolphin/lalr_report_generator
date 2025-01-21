@@ -65,4 +65,5 @@ export type ReportValueKeysType =
   | keyof CameraInformationType
   | "id"
   | "type";
+  
 export type ReportValueTypes = ReportImage | Dayjs | string | null | number;

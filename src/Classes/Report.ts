@@ -6,7 +6,7 @@ import {
   type AcesInformationType,
   type CameraInformationType,
   type MultipleInputEditsType,
-  type EditsType
+  type EditsType,
 } from "../types/types";
 
 export class ReportImage {
