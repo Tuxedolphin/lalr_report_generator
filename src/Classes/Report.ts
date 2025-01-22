@@ -5,8 +5,8 @@ import {
   type GeneralInformationType,
   type AcesInformationType,
   type CameraInformationType,
-  type MultipleInputEditsType,
-  type EditsType,
+  type ReportValueKeysType,
+  type ReportValueTypes,
 } from "../types/types";
 
 export class ReportImage {
@@ -29,6 +29,7 @@ export class ReportImage {
 }
 
 export class Report {
+  // Setting default values
   id = -1;
   incidentInformation: IncidentInformationType = {
     incidentNumb: "",
@@ -38,21 +39,56 @@ export class Report {
     SC: "",
     turnoutFrom: "",
     typeOfCall: "",
-    reportType: undefined,
-    opsCenterAcknowledged: undefined,
+    reportType: null,
   };
 
-  generalInformation: GeneralInformationType;
-  acesInformation: AcesInformationType;
-  cameraInformation: CameraInformationType;
+  generalInformation: GeneralInformationType = {
+    opsCenterAcknowledged: null,
+    boundary: null,
+    justification: null,
+    weather: null,
+    incidentOutcome: null,
+  };
+
+  // Manually setting the values to undefined as it is updated to null for some values manually.
+  // Those keys whose values are not undefined will be displayed
+  acesInformation: AcesInformationType = {
+    timeDispatched: undefined,
+    timeResponded: undefined,
+    timeEnRoute: undefined,
+    timeArrived: undefined,
+    acesScreenshot: undefined,
+  };
+
+  cameraInformation: CameraInformationType = {
+    timeDispatched: undefined,
+    timeResponded: undefined,
+    timeAllIn: undefined,
+    timeMoveOff: undefined,
+    timeArrived: undefined,
+    bufferingTime: undefined,
+    bufferingLocation: undefined,
+    dispatchPhoto: undefined,
+    allInPhoto: undefined,
+    moveOffPhoto: undefined,
+    arrivedPhoto: undefined,
+  };
+
+  // There is no id as we do not check for it in the loop
+  private keyToInfoKey = {
+    incidentInformation: Object.keys(this.incidentInformation),
+    generalInformation: Object.keys(this.generalInformation),
+    acesInformation: Object.keys(this.acesInformation),
+    cameraInformation: Object.keys(this.cameraInformation),
+  } as const;
 
   constructor();
   constructor(
     id: number,
     incidentInformation: IncidentInformationType,
-    generalInformation?: GeneralInformationType,
-    acesInformation?: AcesInformationType,
-    cameraInformation?: CameraInformationType
+    generalInformation: GeneralInformationType,
+    acesInformation: AcesInformationType,
+    cameraInformation: CameraInformationType
   );
   constructor(
     id?: number,
@@ -61,45 +97,61 @@ export class Report {
     acesInformation?: AcesInformationType,
     cameraInformation?: CameraInformationType
   ) {
-    if (id && incidentInformation) {
-      this.id = id;
-      this.incidentInformation = incidentInformation;
+    if (
+      !id ||
+      !incidentInformation ||
+      !generalInformation ||
+      !acesInformation ||
+      !cameraInformation
+    ) {
+      console.warn(
+        "Default constructor was called. Is this the correct behaviour?"
+      );
+      return;
     }
 
-    this.generalInformation = generalInformation ? generalInformation : {};
-    this.acesInformation = acesInformation ? acesInformation : {};
-    this.cameraInformation = cameraInformation ? cameraInformation : {};
+    this.id = id;
+    this.incidentInformation = incidentInformation;
+    this.generalInformation = generalInformation;
+    this.acesInformation = acesInformation;
+    this.cameraInformation = cameraInformation;
   }
 
-  static updateNewReport(
+  /**
+   * Updates the value of the key in the current report class
+   * @param key The key of the value to be changed
+   * @param value The new value to be updated to
+   */
+  updateReport(key: ReportValueKeysType, value: ReportValueTypes) {
+
+    if (key == "id") {
+      this.id = value as number;
+      return;
+    }
+
+    for (const [infoType, objKeyArray] of Object.entries(this.keyToInfoKey)) {
+      for (const objKey of objKeyArray) {
+        if (objKey == key) {
+          this[infoType][key] = value;
+          return;
+        }
+      }
+    }
+
+    console.error(`Report was not updated. Key ${key} was not found.`);
+  }
+  /**
+   * Returns a new report class with the updated value
+   * @param key The key of the value to be changed
+   * @param value The new value to be updated to
+   */
+  static updateReport(
     report: Report,
-    edits: MultipleInputEditsType
-  ): Report {
-    if (!Array.isArray(edits)) {
-      return { ...report, [edits.key]: edits.value };
-    }
-
-    const newReport = { ...report };
-    for (const edit of edits) {
-      newReport[edit.key] = edit.value;
-    }
-
-    return newReport;
-  }
-
-  static updateSingleEntries(report: Report, edits: EditsType) {
-    const newReport = { ...report };
-
-    for (const edit of edits) {
-      const { key, value } = edit;
-      if (key === "id") {
-        newReport[key] = value as number;
-      } else if (edit.path) {
-        newReport[edit.path][key] = edit.value;
-      } else
-        throw Error(
-          `New edit with key ${key} and value ${value as string} is not correctly formatted.\nIs the path being "undefined" correct?`
-        );
-    }
+    key: ReportValueKeysType,
+    value: ReportValueTypes
+  ) {
+    const updatedReport = Object.create(report) as Report;
+    updatedReport.updateReport(key, value);
+    return updatedReport;
   }
 }

@@ -1,7 +1,7 @@
 import { Dayjs } from "dayjs";
-import { ReportImage } from "../classes/Report";
+import { Report, ReportImage } from "../classes/Report";
 
-export type reportType = "LA" | "LR" | undefined | null;
+export type reportType = "LA" | "LR" | null;
 
 export interface IncidentInformationType {
   incidentNumb: string;
@@ -12,58 +12,47 @@ export interface IncidentInformationType {
   turnoutFrom: string;
   typeOfCall: string;
   reportType: reportType;
-  opsCenterAcknowledged: boolean | undefined | null;
 }
 
 export interface GeneralInformationType {
-  boundary?: string;
-  justification?: string;
-  weather?: string;
-  incidentOutcome?: string;
+  opsCenterAcknowledged: boolean | null;
+  boundary: string | null;
+  justification: string | null;
+  weather: string | null;
+  incidentOutcome: string | null;
 }
 
 export interface AcesInformationType {
-  timeDispatched?: Dayjs;
-  timeResponded?: Dayjs;
-  timeEnRoute?: Dayjs;
-  timeArrived?: Dayjs;
-  acesScreenshot?: ReportImage;
+  timeDispatched: Dayjs | undefined;
+  timeResponded: Dayjs | undefined;
+  timeEnRoute: Dayjs | undefined;
+  timeArrived: Dayjs | undefined;
+  acesScreenshot: ReportImage | undefined;
 }
 
 export interface CameraInformationType {
-  timeDispatched?: Dayjs | null;
-  timeResponded?: Dayjs | null;
-  timeAllIn?: Dayjs | null;
-  timeMoveOff?: Dayjs | null;
-  timeArrived?: Dayjs | null;
-  bufferingTime?: Dayjs | 0 | null;
-  bufferingLocation?: string;
-  dispatchPhoto?: ReportImage;
-  allInPhoto?: ReportImage;
-  moveOffPhoto?: ReportImage;
-  arrivedPhoto?: ReportImage;
+  timeDispatched: Dayjs | null | undefined;
+  timeResponded: Dayjs | null | undefined;
+  timeAllIn: Dayjs | null | undefined;
+  timeMoveOff: Dayjs | null | undefined;
+  timeArrived: Dayjs | null | undefined;
+  bufferingTime: Dayjs | 0 | null | undefined;
+  bufferingLocation: string | undefined;
+  dispatchPhoto: ReportImage | undefined;
+  allInPhoto: ReportImage | undefined;
+  moveOffPhoto: ReportImage | undefined;
+  arrivedPhoto: ReportImage | undefined;
 }
 
-export type EditsType = {
-  key: ReportValueKeysType;
-  value: ReportValueTypes;
-  path?:
-    | "incidentInformation"
-    | "generalInformation"
-    | "acesInformation"
-    | "cameraInformation";
-}[];
-
-export type MultipleInputEditsType =
-  | { key: keyof Report; value: Report[keyof Report] }
-  | { key: keyof Report; value: Report[keyof Report] }[];
-
 export type ReportValueKeysType =
-  | keyof IncidentInformationType
   | keyof GeneralInformationType
   | keyof AcesInformationType
   | keyof CameraInformationType
-  | "id"
-  | "type";
-  
+  | "id";
+
 export type ReportValueTypes = ReportImage | Dayjs | string | null | number;
+
+export interface EditType {
+  key: ReportValueKeysType;
+  value: ReportValueTypes;
+}

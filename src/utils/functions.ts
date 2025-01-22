@@ -1,4 +1,5 @@
-import { ReportValueTypes } from "../classes/Report";
+import { ReportValueTypes } from "../types/types.tsx";
+import { useContext } from "react";
 
 const capitalisedWords = ["ACES"];
 
@@ -54,3 +55,15 @@ export const gridFormatting = {
     md: 8,
   },
 } as const;
+
+export const useReportContext = function () {
+  const report = useContext(reportContext);
+
+  if (report === undefined) {
+    throw new Error(
+      "Report context was accessed without using Report Provider - report was undefined."
+    );
+  }
+
+  return report;
+};
