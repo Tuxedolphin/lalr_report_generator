@@ -1,18 +1,19 @@
 import { ReportValueTypes } from "../types/types.tsx";
-import { useContext } from "react";
-
-const capitalisedWords = ["ACES"];
 
 export function getItem(key: string): string {
-  return !localStorage.getItem(key) ? "" : localStorage.getItem(key)!;
+  const result = localStorage.getItem(key);
+
+  return result ? result : "";
 }
+
+const capitalisedWords = ["ACES"] as const;
 
 export function titleCaseString(text: string): string {
   const words = text.split(" ");
 
   return words
     .map((word) => {
-      if (capitalisedWords.includes(word.toUpperCase())) {
+      if (word.toUpperCase() in capitalisedWords) {
         return word.toUpperCase();
       }
       return word[0].toUpperCase() + word.substring(1);
@@ -55,15 +56,3 @@ export const gridFormatting = {
     md: 8,
   },
 } as const;
-
-export const useReportContext = function () {
-  const report = useContext(reportContext);
-
-  if (report === undefined) {
-    throw new Error(
-      "Report context was accessed without using Report Provider - report was undefined."
-    );
-  }
-
-  return report;
-};

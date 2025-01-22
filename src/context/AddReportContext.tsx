@@ -2,42 +2,22 @@
  * Context to hold information of current report and function to update it
  */
 
-import {
-  createContext,
-  Dispatch,
-  FC,
-  ReactNode,
-  SetStateAction,
-  useContext,
-  useState,
-} from "react";
+import { FC, ReactNode, useState } from "react";
 import { Report } from "../classes/Report";
+import { ReportContext, IsDarkModeContext } from "../utils/contextFunctions";
 import {
   type ReportValueKeysType,
   type ReportValueTypes,
 } from "../types/types";
 
-export interface ReportContextType {
-  report: Report | null;
-  updateReport: (key: ReportValueKeysType, value: ReportValueTypes) => void;
-}
-
-const reportContext = createContext<
-  | [
-      Report | undefined,
-      (key: ReportValueKeysType, value: ReportValueTypes) => void,
-    ]
-  | undefined
->(undefined);
-
-interface ReportProviderType {
+interface ContextProviderType {
   children: ReactNode;
 }
 
-export const ReportProvider: FC<ReportProviderType> = function ({ children }) {
+export const ReportProvider: FC<ContextProviderType> = function({ children }) {
   const [report, setReport] = useState<Report | undefined>(undefined);
 
-  const updateReport = function (
+  const updateReport = function(
     key: ReportValueKeysType,
     value: ReportValueTypes
   ) {
@@ -45,8 +25,23 @@ export const ReportProvider: FC<ReportProviderType> = function ({ children }) {
   };
 
   return (
-    <reportContext.Provider value={[report, updateReport]}>
-      {children}
-    </reportContext.Provider>
+    <ReportContext.Provider value={[report, updateReport]}>
+      { children }
+    </ReportContext.Provider>
   );
 };
+
+export const IsDarkModeProvider: FC<ContextProviderType> = function({ children }) {
+  const [isDarkMode, setIsDarkMode] = useState(true); // Default mode is dark mode
+
+  const updateIsDarkMode = function() {
+    setIsDarkMode(!isDarkMode)
+  }
+
+  return (
+    <IsDarkModeContext.Provider value={[isDarkMode, updateIsDarkMode]}>
+      { children }
+    </IsDarkModeContext.Provider>
+  )
+
+}
