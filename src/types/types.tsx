@@ -1,5 +1,5 @@
 import { Dayjs } from "dayjs";
-import { Report, ReportImage } from "../classes/Report";
+import { ReportImage } from "../classes/Report";
 
 export type reportType = "LA" | "LR" | null;
 

@@ -29,9 +29,11 @@ export class ReportImage {
 }
 
 export class Report {
+  // TODO: Update all to private and add setters and getters?
+
   // Setting default values
   id = -1;
-  incidentInformation: IncidentInformationType = {
+  protected incidentInformation: IncidentInformationType = {
     incidentNumb: "",
     location: "",
     station: "",
@@ -42,7 +44,7 @@ export class Report {
     reportType: null,
   };
 
-  generalInformation: GeneralInformationType = {
+  protected generalInformation: GeneralInformationType = {
     opsCenterAcknowledged: null,
     boundary: null,
     justification: null,
@@ -52,7 +54,7 @@ export class Report {
 
   // Manually setting the values to undefined as it is updated to null for some values manually.
   // Those keys whose values are not undefined will be displayed
-  acesInformation: AcesInformationType = {
+  protected acesInformation: AcesInformationType = {
     timeDispatched: undefined,
     timeResponded: undefined,
     timeEnRoute: undefined,
@@ -60,7 +62,7 @@ export class Report {
     acesScreenshot: undefined,
   };
 
-  cameraInformation: CameraInformationType = {
+  protected cameraInformation: CameraInformationType = {
     timeDispatched: undefined,
     timeResponded: undefined,
     timeAllIn: undefined,
@@ -75,7 +77,7 @@ export class Report {
   };
 
   // There is no id as we do not check for it in the loop
-  private keyToInfoKey = {
+  protected keyToInfoKey = {
     incidentInformation: Object.keys(this.incidentInformation),
     generalInformation: Object.keys(this.generalInformation),
     acesInformation: Object.keys(this.acesInformation),

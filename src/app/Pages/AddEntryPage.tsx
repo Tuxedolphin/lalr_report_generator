@@ -11,14 +11,12 @@ import GeneralInfoForm from "../../components/GeneralInfoForm";
 import { AcesForm } from "../../components/AcesForm";
 import FootageForm from "../../components/FootageForm";
 import AddPhotosButton from "../../components/AddPhotosButton";
+import { Report } from "../../classes/Report";
 import {
-  Report,
-  type EditsType,
-  type MultipleInputEditsType,
   type ReportValueTypes,
   type ReportValueKeysType,
   type IncidentInformationType,
-} from "../../classes/Report";
+} from "../../types/types.tsx";
 
 interface AddEntryPageProps {
   setText: React.Dispatch<React.SetStateAction<string>>;

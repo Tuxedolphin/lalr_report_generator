@@ -1,4 +1,4 @@
-import NavBar from "../../../Components/NavBar";
+import NavBar from "../../components/NavBar";
 import { Outlet } from "react-router-dom";
 import { FC } from "react";
 
@@ -11,12 +11,10 @@ interface LayoutProps {
 
 const Layout: FC<LayoutProps> = (props) => {
   return (
-    <>
+    <main>
       <NavBar {...props} />
-      <main>
-        <Outlet />
-      </main>
-    </>
+      <Outlet />
+    </main>
   );
 };
 

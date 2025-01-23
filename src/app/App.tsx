@@ -1,21 +1,24 @@
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import { createTheme, ThemeProvider, CssBaseline } from "@mui/material";
 import { useState, FC, useEffect } from "react";
+import { Report } from "../classes/Report";
+import { useIsDarkModeContext } from "../utils/contextFunctions";
+import { ReportProvider } from "../context/AddReportContext";
 
-import Home from "./Home";
-import History from "./History";
-import AddEntryPage from "./AddEntryPage";
-import Layout from "./Layout";
-
-import { Report } from "../../../Classes/Report";
+import Home from "./Pages/Home";
+import History from "./Pages/History";
+import AddEntryPage from "./Pages/AddEntryPage";
+import Layout from "./Pages//Layout";
 
 const App: FC = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [text, setText] = useState("");
   const [height, setHeight] = useState(56);
 
   //TODO: For testing only, to be removed
   const [newEntry, setNewEntry] = useState(new Report());
+
+  const isDarkMode = useIsDarkModeContext() as boolean;
+
   const theme = createTheme({
     palette: {
       mode: isDarkMode ? "dark" : "light",
@@ -31,28 +34,15 @@ const App: FC = () => {
       <CssBaseline enableColorScheme />
       <Router>
         <Routes>
-          <Route
-            element={
-              <Layout
-                isDarkMode={isDarkMode}
-                setIsDarkMode={setIsDarkMode}
-                text={text}
-                setHeight={setHeight}
-              />
-            }
-          >
+          <Route element={<Layout text={text} setHeight={setHeight} />}>
             <Route path="/" element={<Home />} />
             <Route path="/history" element={<History setText={setText} />} />
             <Route
               path="/add_entry"
               element={
-                <AddEntryPage
-                  setText={setText}
-                  reportEntry={newEntry}
-                  setReportEntry={setNewEntry}
-                  isDarkMode={isDarkMode}
-                  navBarHeight={height}
-                />
+                <ReportProvider>
+                  <AddEntryPage setText={setText} navBarHeight={height} />
+                </ReportProvider>
               }
             />
           </Route>

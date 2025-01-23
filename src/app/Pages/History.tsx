@@ -5,7 +5,7 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
-import ActionButton from "../../../Components/ActionButton.tsx";
+import ActionButton from "../../components/ActionButton";
 import "./History.css";
 
 interface HistoryProps {
