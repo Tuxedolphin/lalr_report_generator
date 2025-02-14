@@ -1,5 +1,6 @@
 import { Dayjs } from "dayjs";
 import { ReportImage } from "../classes/Report";
+import { ReactNode } from "react";
 
 export type reportType = "LA" | "LR" | null;
 
@@ -12,10 +13,10 @@ export interface IncidentInformationType {
   turnoutFrom: string;
   typeOfCall: string;
   reportType: reportType;
+  opsCenterAcknowledged: boolean | null;
 }
 
 export interface GeneralInformationType {
-  opsCenterAcknowledged: boolean | null;
   boundary: string | null;
   justification: string | null;
   weather: string | null;
@@ -55,4 +56,8 @@ export type ReportValueTypes = ReportImage | Dayjs | string | null | number;
 export interface EditType {
   key: ReportValueKeysType;
   value: ReportValueTypes;
+}
+
+export interface ChildrenOnly {
+  children: ReactNode
 }

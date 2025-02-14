@@ -1,32 +1,32 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Toolbar, Typography } from "@mui/material";
 import { KeyboardArrowRight, History } from "@mui/icons-material";
-import { FC } from "react";
-import { useIsDarkModeContext } from "../../utils/contextFunctions";
+import { FC, useEffect, useState } from "react";
+import {
+  useIsDarkModeContext,
+  useNavBarHeightContext,
+} from "../../utils/contextFunctions";
 import DarkBackground from "../../assets/dark-background.jpg";
 import LightBackground from "../../assets/light-background.jpg";
+import updateBackground from "../../features/updateBackground";
 import { Link } from "react-router-dom";
 
-interface HomeProps {}
 
-const Home: FC<HomeProps> = (props) => {
-  const Background = useIsDarkModeContext() ? DarkBackground : LightBackground;
+const Home: FC = function () {
+  updateBackground(useIsDarkModeContext() ? DarkBackground : LightBackground);
+
+  const NavHeight = useNavBarHeightContext() as number;
 
   return (
     <>
       <Box
         sx={{
-          backgroundImage: `url(${Background})`,
-          height: "100vh",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover",
-
           display: "flex",
           alignItems: "center",
           justifyContent: "space-evenly",
           flexDirection: "column",
-
           padding: "5%",
+
+          minHeight: `calc(100vh - ${NavHeight}px)`,
         }}
       >
         <Box>
@@ -38,7 +38,7 @@ const Home: FC<HomeProps> = (props) => {
               lineHeight: "1em",
             }}
           >
-            LALR Report Generator
+            LALR Generator
           </Typography>
         </Box>
         <Box
@@ -47,7 +47,7 @@ const Home: FC<HomeProps> = (props) => {
             display: "flex",
             flexDirection: "column",
             alignItems: "space-evenly",
-            gap: "25px"
+            gap: "25px",
           }}
         >
           <Link style={{ textAlign: "center", width: "100%" }} to="/add_entry">

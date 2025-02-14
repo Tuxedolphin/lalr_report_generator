@@ -18,32 +18,30 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
 import { getItem } from "../utils/functions";
-import {
-  Report,
-  type reportType as typeOfReport,
-  type IncidentInformationType,
-  type EditsType,
-  type MultipleInputEditsType,
-} from "../classes/Report";
+
+import { type IncidentInformationType } from "../types/types";
 
 import { gridFormatting } from "../utils/functions";
+import { useReportContext } from "../utils/contextFunctions";
 const { mainGridFormat, smallInput, largeInput } = gridFormatting;
 
 interface GeneralInfoFormProps {
-  reportEntry: Report;
-  updateEntry: (edits: MultipleInputEditsType) => void;
   setActiveStep: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const GeneralInfoForm: FC<GeneralInfoFormProps> = (props) => {
-  const { reportEntry, updateEntry, setActiveStep } = props;
+const GeneralInfoForm: FC<GeneralInfoFormProps> = function (props) {
+  const { setActiveStep } = props;
+
+  /**
+  Defining useful functions used
+  */
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    updateEntry({ key: "incidentInformation", value: information });
-
     setActiveStep(1); // This form will always be the first one, i.e. index 0
   }
+
+  useReportContext()
 
   const [information, setInformation] = useState<IncidentInformationType>({
     incidentNumb: "",
@@ -57,10 +55,15 @@ const GeneralInfoForm: FC<GeneralInfoFormProps> = (props) => {
     opsCenterAcknowledged: null,
   });
 
-  const updateInformation = (
+  /**
+   * Updates the report class instance with the updated data keyed in by the user
+   * @param key The key of the data that has been entered
+   * @param value The value of the data
+   */
+  const updateInformation = function (
     key: keyof IncidentInformationType,
     value: string | undefined | boolean
-  ) => {
+  ) {
     setInformation({ ...information, [key]: value });
     if (key === "station") {
       localStorage.setItem("station", value as string);

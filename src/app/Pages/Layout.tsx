@@ -1,7 +1,7 @@
 import NavBar from "../../components/NavBar";
 import { Outlet } from "react-router-dom";
 import { FC } from "react";
-import UpdateBackgroundProvider from "../../context/UpdateBackgroundProvider";
+import NavBarHeightProvider from "../../context/NavBarHeightProvider";
 
 interface LayoutProps {
   text: string;
@@ -9,12 +9,12 @@ interface LayoutProps {
 
 const Layout: FC<LayoutProps> = (props) => {
   return (
-    <UpdateBackgroundProvider>
+    <NavBarHeightProvider>
       <NavBar {...props}></NavBar>
       <main>
         <Outlet />
       </main>
-    </UpdateBackgroundProvider>
+    </NavBarHeightProvider>
   );
 };
 

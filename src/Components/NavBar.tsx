@@ -2,59 +2,67 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Button,
   useScrollTrigger,
+  styled,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import React, { FC, useEffect, useRef } from "react";
+import { FC, useEffect, useRef, RefObject } from "react";
 import { DarkModeSwitch } from "animated-toggle-button";
-import { useIsDarkModeContext } from "../utils/contextFunctions";
+import {
+  useIsDarkModeContext,
+  useNavBarHeightContext,
+} from "../utils/contextFunctions";
 
-interface ElevationType {
-  children: React.ReactElement<{ elevation?: number; sx?: object }>;
-}
+// interface ElevationType {
+//   children: React.ReactElement<{ elevation?: number; sx?: object }>;
+// }
 
-const ElevationScroll: FC<ElevationType> = function ({ children }) {
-  const trigger = useScrollTrigger({
-    disableHysteresis: true,
+// const ElevationScroll: FC<ElevationType> = function ({ children }) {
+//   const trigger = useScrollTrigger({
+//     disableHysteresis: true,
+//   });
 
-  });
+//   const format = trigger
+//     ? ([4, "primary"] as const)
+//     : ([0, "transparent"] as const); // format[0] is the height, format[1] is the background colour
 
-  const format = trigger ? [4, "primary"] as const : [0, "transparent"] as const; // format[0] is the height, format[1] is the background colour
-
-  return React.cloneElement(children, {
-    elevation: format[0],
-    sx: { background: format[1], boxShadow: "none" },
-  });
-};
+//   return React.cloneElement(children, {
+//     elevation: format[0],
+//     sx: { background: format[1], boxShadow: "none" },
+//   });
+// };
 
 interface NavProps {
   text: string;
-  setHeight: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const NavBar: FC<NavProps> = function (props) {
-  const { text, setHeight } = props;
-
+const NavBar: FC<NavProps> = function ({ text }) {
   const [isDarkMode, toggleDarkMode] = useIsDarkModeContext(true) as [
     boolean,
     () => void,
   ];
 
-  // TODO: Check if this part is still needed with sticky app bar gone
-  const ref = useRef<HTMLElement>(null);
+  const setHeight = useNavBarHeightContext(true) as React.Dispatch<
+    React.SetStateAction<number>
+  >;
+  const ref = useRef() as RefObject<HTMLDivElement>;
+
   useEffect(() => {
-    if (ref.current) {
-      setHeight(ref.current.clientHeight);
-    } else {
-      throw Error("Current Ref has no target on page load");
-    }
+    if (!ref.current) return;
+
+    setHeight(ref.current.clientHeight);
   });
 
   return (
-    <ElevationScroll>
-      <AppBar ref={ref}>
-        <Toolbar>
+    <>
+      <AppBar
+        sx={{
+          background: "transparent",
+          boxShadow: "none",
+          position: "sticky",
+        }}
+      >
+        <Toolbar ref={ref}>
           <Grid container width={"100%"} spacing={2}>
             <Grid size="grow"></Grid>
             <Grid
@@ -87,7 +95,7 @@ const NavBar: FC<NavProps> = function (props) {
           </Grid>
         </Toolbar>
       </AppBar>
-    </ElevationScroll>
+    </>
   );
 };
 

@@ -10,49 +10,30 @@ import "@fontsource/roboto/700.css";
 import GeneralInfoForm from "../../components/GeneralInfoForm";
 import { AcesForm } from "../../components/AcesForm";
 import FootageForm from "../../components/FootageForm";
-import AddPhotosButton from "../../components/AddPhotosButton";
 import { Report } from "../../classes/Report";
-import {
-  type ReportValueTypes,
-  type ReportValueKeysType,
-  type IncidentInformationType,
-} from "../../types/types.tsx";
+import updateBackground from "../../features/updateBackground";
 
 interface AddEntryPageProps {
   setText: React.Dispatch<React.SetStateAction<string>>;
-  isDarkMode: boolean;
-  reportEntry: Report;
-  setReportEntry: React.Dispatch<React.SetStateAction<Report>>;
-  navBarHeight: number;
 }
 
 const AddEntryPage: FC<AddEntryPageProps> = (props) => {
   const [activeStep, setActiveStep] = useState(0);
   const [maxSteps, setMaxSteps] = useState(4);
 
-  const { setText, isDarkMode, reportEntry, setReportEntry, navBarHeight } =
-    props;
+  const { setText } = props;
 
+  updateBackground();
   setText("Add Incident");
 
-  // TODO: Update function
-  const updateEntry = (edits: MultipleInputEditsType) => {
-    console.log(edits);
-    setReportEntry(Report.updateNewReport(reportEntry, edits));
+  const commonProps = {
+    setActiveStep: setActiveStep,
   };
 
-  const commonProps = {
-    reportEntry: reportEntry,
-    updateEntry: updateEntry,
-    setActiveStep: setActiveStep,
-    isDarkMode: isDarkMode,
-    setText: setText,
-  } as const;
-
   const stepsContent = {
-    "general-info-form": <GeneralInfoForm {...commonProps} key={0} />,
-    "aces-form": <AcesForm {...commonProps} key={1} />,
-    "footage-form": <FootageForm {...commonProps} key={2} />,
+    generalInfoForm: <GeneralInfoForm {...commonProps} key={0} />,
+    acesForm: <AcesForm {...commonProps} key={1} />,
+    footageForm: <FootageForm {...commonProps} key={2} />,
   } as const;
 
   const handleBack = () => {
@@ -64,7 +45,7 @@ const AddEntryPage: FC<AddEntryPageProps> = (props) => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        minHeight: `calc(100vh - ${navBarHeight.toString()}px)`,
+        // minHeight: `calc(100vh - ${navBarHeight.toString()}px)`,
       }}
     >
       <Box sx={{ width: "100%", p: 1, flexGrow: 2 }}>

@@ -42,10 +42,10 @@ export class Report {
     turnoutFrom: "",
     typeOfCall: "",
     reportType: null,
+    opsCenterAcknowledged: null,
   };
 
   protected generalInformation: GeneralInformationType = {
-    opsCenterAcknowledged: null,
     boundary: null,
     justification: null,
     weather: null,
@@ -125,7 +125,6 @@ export class Report {
    * @param value The new value to be updated to
    */
   updateReport(key: ReportValueKeysType, value: ReportValueTypes) {
-
     if (key == "id") {
       this.id = value as number;
       return;
