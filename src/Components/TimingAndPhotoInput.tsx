@@ -49,7 +49,7 @@ const TimingAndPhotoInput: FC<TimingAndPhotoInputProps> = (props) => {
   return (
     <>
       <AddPhotosButton
-        uploadPhotoText={uploadPhotoText}
+        photoType={uploadPhotoText}
         photoType={photoType}
         image={image}
         updateInformation={updateInformation}

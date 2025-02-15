@@ -33,7 +33,7 @@ export class Report {
 
   // Setting default values
   id = -1;
-  protected incidentInformation: IncidentInformationType = {
+  protected _incidentInformation: IncidentInformationType = {
     incidentNumb: "",
     location: "",
     station: "",
@@ -45,7 +45,7 @@ export class Report {
     opsCenterAcknowledged: null,
   };
 
-  protected generalInformation: GeneralInformationType = {
+  protected _generalInformation: GeneralInformationType = {
     boundary: null,
     justification: null,
     weather: null,
@@ -54,7 +54,7 @@ export class Report {
 
   // Manually setting the values to undefined as it is updated to null for some values manually.
   // Those keys whose values are not undefined will be displayed
-  protected acesInformation: AcesInformationType = {
+  protected _acesInformation: AcesInformationType = {
     timeDispatched: undefined,
     timeResponded: undefined,
     timeEnRoute: undefined,
@@ -62,7 +62,7 @@ export class Report {
     acesScreenshot: undefined,
   };
 
-  protected cameraInformation: CameraInformationType = {
+  protected _cameraInformation: CameraInformationType = {
     timeDispatched: undefined,
     timeResponded: undefined,
     timeAllIn: undefined,
@@ -77,11 +77,11 @@ export class Report {
   };
 
   // There is no id as we do not check for it in the loop
-  protected keyToInfoKey = {
-    incidentInformation: Object.keys(this.incidentInformation),
-    generalInformation: Object.keys(this.generalInformation),
-    acesInformation: Object.keys(this.acesInformation),
-    cameraInformation: Object.keys(this.cameraInformation),
+  protected _keyToInfoKey = {
+    incidentInformation: Object.keys(this._incidentInformation),
+    generalInformation: Object.keys(this._generalInformation),
+    acesInformation: Object.keys(this._acesInformation),
+    cameraInformation: Object.keys(this._cameraInformation),
   } as const;
 
   constructor();
@@ -106,17 +106,32 @@ export class Report {
       !acesInformation ||
       !cameraInformation
     ) {
-      console.warn(
-        "Default constructor was called. Is this the correct behaviour?"
-      );
       return;
     }
 
     this.id = id;
-    this.incidentInformation = incidentInformation;
-    this.generalInformation = generalInformation;
-    this.acesInformation = acesInformation;
-    this.cameraInformation = cameraInformation;
+    this._incidentInformation = incidentInformation;
+    this._generalInformation = generalInformation;
+    this._acesInformation = acesInformation;
+    this._cameraInformation = cameraInformation;
+  }
+
+  // Defining Getters, kinda useless rn haha
+
+  get incidentInformation() {
+    return this._incidentInformation;
+  }
+
+  get generalInformation() {
+    return this._generalInformation;
+  }
+
+  get acesInformation() {
+    return this._acesInformation;
+  }
+
+  get cameraInformation() {
+    return this._cameraInformation;
   }
 
   /**
@@ -130,10 +145,10 @@ export class Report {
       return;
     }
 
-    for (const [infoType, objKeyArray] of Object.entries(this.keyToInfoKey)) {
+    for (const [infoType, objKeyArray] of Object.entries(this._keyToInfoKey)) {
       for (const objKey of objKeyArray) {
         if (objKey == key) {
-          this[infoType][key] = value;
+          this[infoType][key] = value; // I can't be bothered to fix this type error
           return;
         }
       }

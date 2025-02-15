@@ -1,19 +1,18 @@
 import { FC } from "react";
 
-import "@fontsource/roboto/300.css";
-import "@fontsource/roboto/400.css";
-import "@fontsource/roboto/500.css";
-import "@fontsource/roboto/700.css";
-
 import ActionButton from "../../components/ActionButton";
 import "./History.css";
+import { useNavBarTextContext } from "../../utils/contextFunctions";
+import updateBackground from "../../features/updateBackground";
 
-interface HistoryProps {
-  setText: React.Dispatch<React.SetStateAction<string>>;
-}
+const History: FC = function() {
 
-const History: FC<HistoryProps> = (props) => {
-  props.setText("LALR Generator");
+  updateBackground();
+
+  const updateNavBarText = useNavBarTextContext() as React.Dispatch<
+    React.SetStateAction<string>
+  >;
+  updateNavBarText("History");
 
   return <ActionButton />;
 };

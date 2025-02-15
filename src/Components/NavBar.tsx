@@ -1,46 +1,37 @@
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  useScrollTrigger,
-  styled,
-} from "@mui/material";
+import { AppBar, Toolbar, Typography, useScrollTrigger } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { FC, useEffect, useRef, RefObject } from "react";
+import { FC, useEffect, useRef, RefObject, cloneElement } from "react";
 import { DarkModeSwitch } from "animated-toggle-button";
 import {
   useIsDarkModeContext,
   useNavBarHeightContext,
+  useNavBarTextContext,
 } from "../utils/contextFunctions";
 
-// interface ElevationType {
-//   children: React.ReactElement<{ elevation?: number; sx?: object }>;
-// }
-
-// const ElevationScroll: FC<ElevationType> = function ({ children }) {
-//   const trigger = useScrollTrigger({
-//     disableHysteresis: true,
-//   });
-
-//   const format = trigger
-//     ? ([4, "primary"] as const)
-//     : ([0, "transparent"] as const); // format[0] is the height, format[1] is the background colour
-
-//   return React.cloneElement(children, {
-//     elevation: format[0],
-//     sx: { background: format[1], boxShadow: "none" },
-//   });
-// };
-
-interface NavProps {
-  text: string;
+interface ElevationType {
+  children: React.ReactElement<{ elevation?: number; sx?: object }>;
 }
 
-const NavBar: FC<NavProps> = function ({ text }) {
+const ElevationScroll: FC<ElevationType> = function ({ children }) {
+  const trigger = useScrollTrigger({
+    disableHysteresis: true,
+    threshold: 10,
+  });
+
+  const elevation = trigger ? 4 : 0;
+
+  return cloneElement(children, {
+    elevation: elevation,
+  });
+};
+
+const NavBar: FC = function () {
   const [isDarkMode, toggleDarkMode] = useIsDarkModeContext(true) as [
     boolean,
     () => void,
   ];
+
+  const text = useNavBarTextContext(true) as string;
 
   const setHeight = useNavBarHeightContext(true) as React.Dispatch<
     React.SetStateAction<number>
@@ -54,11 +45,9 @@ const NavBar: FC<NavProps> = function ({ text }) {
   });
 
   return (
-    <>
+    <ElevationScroll>
       <AppBar
         sx={{
-          background: "transparent",
-          boxShadow: "none",
           position: "sticky",
         }}
       >
@@ -95,7 +84,7 @@ const NavBar: FC<NavProps> = function ({ text }) {
           </Grid>
         </Toolbar>
       </AppBar>
-    </>
+    </ElevationScroll>
   );
 };
 

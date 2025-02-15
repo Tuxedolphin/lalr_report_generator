@@ -12,23 +12,12 @@ import ReactCrop, {
   type Crop,
 } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import {
-  type GeneralInformationType,
-  type AcesInformationType,
-  ReportImage,
-  CameraInformationType,
-} from "../classes/Report";
-import { Dayjs } from "dayjs";
 import { FC, type SyntheticEvent } from "react";
 
 interface EditPhotoModalProps {
   image: HTMLImageElement;
   updateImage: (crop: Crop | null) => void;
   titleText: string;
-  photoType:
-    | keyof GeneralInformationType
-    | keyof AcesInformationType
-    | keyof CameraInformationType;
   crop: Crop;
   setCrop: React.Dispatch<React.SetStateAction<Crop>>;
   openModal: boolean;
@@ -39,7 +28,6 @@ const EditPhotoModal: FC<EditPhotoModalProps> = (props) => {
   const {
     image,
     updateImage,
-    photoType,
     titleText,
     crop,
     setCrop,

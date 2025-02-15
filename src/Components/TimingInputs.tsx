@@ -1,25 +1,15 @@
 /// <reference types="vite-plugin-svgr/client" />
 
 import { camelCaseToTitleCase } from "../utils/functions";
-import {
-  type GeneralInformationType,
-  type AcesInformationType,
-  type CameraInformationType,
-  type ReportImage,
-} from "../classes/Report";
-import AlarmSiren from "../assets/alarm-siren.svg?react";
 import { TimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import {
-  Divider,
-  Paper,
-  Grid2 as Grid,
-  SvgIcon,
-  useMediaQuery,
-} from "@mui/material";
-import { FireTruck, WhereToVote } from "@mui/icons-material";
+import { Divider, Grid2 as Grid } from "@mui/material";
 import { Dayjs } from "dayjs";
 import { FC, useState, useEffect, useMemo } from "react";
+import {
+  useIsDarkModeContext,
+  useReportContext,
+} from "../utils/contextFunctions";
 
 export interface TimingInputsType {
   timeDispatched?: Dayjs | null;
@@ -35,25 +25,18 @@ export interface TimingInputsType {
 const mainGridFormat = {
   container: true,
   spacing: { xs: 2, md: 3 },
-  columns: { xs: 4, sm: 8 },
+  columns: { xs: 1, sm: 3 },
 };
 
 interface TimingInputsProps {
   headerText: string;
-  isDarkMode: boolean;
   timingInputs: TimingInputsType;
-  updateInformation: (
-    key:
-      | keyof GeneralInformationType
-      | keyof AcesInformationType
-      | keyof CameraInformationType,
-    value: string | Dayjs | ReportImage
-  ) => void;
 }
 
-export const TimingInputs: FC<TimingInputsProps> = (props) => {
-  const { headerText, isDarkMode, timingInputs, updateInformation } = props;
-
+export const TimingInputs: FC<TimingInputsProps> = function ({
+  headerText,
+  timingInputs,
+}) {
   const [entryDisplayWords, setEntryDisplayWords] = useState({
     first: "",
     second: "",
@@ -73,6 +56,7 @@ export const TimingInputs: FC<TimingInputsProps> = (props) => {
       }
     }
     return type;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Setting which rows are necessary to show and their corresponding texts
@@ -98,110 +82,60 @@ export const TimingInputs: FC<TimingInputsProps> = (props) => {
     }
 
     setEntryDisplayWords(newEntryDisplayWords);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const isDarkMode = useIsDarkModeContext() as boolean;
+  const [_, updateReport] = useReportContext();
 
   return (
     <>
       {headerText && <Divider sx={{ paddingBottom: 1 }}>{headerText}</Divider>}
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Grid {...mainGridFormat}>
-          <Grid
-            container
-            spacing={2}
-            columns={5}
-            sx={{ paddingLeft: 2, paddingRight: 2, width: "100%" }}
-          >
-            {entryDisplayWords.first && (
-              <>
-                <Grid
-                  size={1}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
+          {entryDisplayWords.first && (
+            <>
+              <Grid size={1}>
+                <TimePicker
+                  label="Time Dispatched"
+                  sx={{ width: "100%" }}
+                  value={timingInputs.timeDispatched}
+                  onChange={(time: Dayjs | null) => {
+                    updateReport("timeDispatched", time);
                   }}
-                >
-                  <SvgIcon sx={{ width: 45, height: 45 }}>
-                    <AlarmSiren
-                      width={"100%"}
-                      height={"100%"}
-                      style={{ fill: isDarkMode ? "#fff" : "#262626" }}
-                    />
-                  </SvgIcon>
-                </Grid>
-                <Grid size={4}>
-                  <TimePicker
-                    label="Time Dispatched"
-                    sx={{ width: "100%" }}
-                    value={timingInputs.timeDispatched}
-                    onChange={(time: Dayjs | null) => {
-                      updateInformation({
-                        ...timingInputs,
-                        timeDispatched: time,
-                      });
-                    }}
-                  />
-                </Grid>
-              </>
-            )}{" "}
-            {entryDisplayWords.second && (
-              <>
-                <Grid
-                  size={1}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
+                />
+              </Grid>
+            </>
+          )}{" "}
+          {entryDisplayWords.second && (
+            <>
+              <Grid size={1}>
+                <TimePicker
+                  label="Time En Route"
+                  sx={{ width: "100%" }}
+                  value={secondEntryType ? timingInputs[secondEntryType] : null}
+                  onChange={(time: Dayjs | null) => {
+                    if (!secondEntryType) return;
+                    updateReport(secondEntryType, time);
                   }}
-                >
-                  <FireTruck sx={{ width: 45, height: 45 }} />
-                </Grid>
-                <Grid size={4}>
-                  <TimePicker
-                    label="Time En Route"
-                    sx={{ width: "100%" }}
-                    value={
-                      secondEntryType ? timingInputs[secondEntryType] : null
-                    }
-                    onChange={(time: Dayjs | null) => {
-                      updateInformation({
-                        ...timingInputs,
-                        [secondEntryType as string]: time,
-                      });
-                    }}
-                  />
-                </Grid>
-              </>
-            )}{" "}
-            {entryDisplayWords.third && (
-              <>
-                <Grid
-                  size={1}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
+                />
+              </Grid>
+            </>
+          )}{" "}
+          {entryDisplayWords.third && (
+            <>
+              <Grid size={1}>
+                <TimePicker
+                  label="Time Arrived"
+                  sx={{ width: "100%" }}
+                  value={timingInputs.timeArrived}
+                  onChange={(time: Dayjs | null) => {
+                    updateReport("timeArrived", time);
                   }}
-                >
-                  <WhereToVote sx={{ width: 45, height: 45 }} />
-                </Grid>
-                <Grid size={4}>
-                  <TimePicker
-                    label="Time Arrived"
-                    sx={{ width: "100%" }}
-                    value={timingInputs.timeArrived}
-                    onChange={(time: Dayjs | null) => {
-                      updateInformation({
-                        ...timingInputs,
-                        timeArrived: time,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid size={1} />
-              </>
-            )}
-          </Grid>
+                />
+              </Grid>
+            </>
+          )}
         </Grid>
       </LocalizationProvider>
     </>

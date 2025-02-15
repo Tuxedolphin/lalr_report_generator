@@ -7,32 +7,34 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
-import GeneralInfoForm from "../../components/GeneralInfoForm";
-import { AcesForm } from "../../components/AcesForm";
-import FootageForm from "../../components/FootageForm";
-import { Report } from "../../classes/Report";
+import GeneralInfoForm from "../../components/Forms/GeneralInfoForm";
+import { AcesForm } from "../../components/Forms/AcesInfoForm";
+import FootageForm from "../../components/Forms/FootageForm";
 import updateBackground from "../../features/updateBackground";
+import {
+  useNavBarHeightContext,
+  useNavBarTextContext,
+} from "../../utils/contextFunctions";
 
-interface AddEntryPageProps {
-  setText: React.Dispatch<React.SetStateAction<string>>;
-}
-
-const AddEntryPage: FC<AddEntryPageProps> = (props) => {
+const AddEntryPage: FC = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [maxSteps, setMaxSteps] = useState(4);
 
-  const { setText } = props;
-
   updateBackground();
-  setText("Add Incident");
+
+  const setNavBarText = useNavBarTextContext() as React.Dispatch<
+    React.SetStateAction<string>
+  >;
+  setNavBarText("Add Report");
+  const navBarHeight = useNavBarHeightContext() as number;
 
   const commonProps = {
     setActiveStep: setActiveStep,
-  };
+  } as const;
 
   const stepsContent = {
     generalInfoForm: <GeneralInfoForm {...commonProps} key={0} />,
-    acesForm: <AcesForm {...commonProps} key={1} />,
+    acesInfoForm: <AcesForm {...commonProps} key={1} />,
     footageForm: <FootageForm {...commonProps} key={2} />,
   } as const;
 
@@ -45,7 +47,7 @@ const AddEntryPage: FC<AddEntryPageProps> = (props) => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        // minHeight: `calc(100vh - ${navBarHeight.toString()}px)`,
+        minHeight: `calc(100vh - ${navBarHeight.toString()}px)`,
       }}
     >
       <Box sx={{ width: "100%", p: 1, flexGrow: 2 }}>

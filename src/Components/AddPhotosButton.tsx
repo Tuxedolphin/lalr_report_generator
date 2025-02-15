@@ -3,14 +3,11 @@ import { Image as ImageIcon, Clear as ClearIcon } from "@mui/icons-material";
 import { FC, useState } from "react";
 import EditPhotoModal from "./EditPhotoModal";
 import Canvas from "./Canvas";
-import {
-  ReportImage,
-  type GeneralInformationType,
-  type AcesInformationType,
-  type CameraInformationType,
-} from "../classes/Report";
+import { ReportImage } from "../classes/Report";
 import { Crop } from "react-image-crop";
-import { Dayjs } from "dayjs";
+import { useReportContext } from "../utils/contextFunctions";
+import { camelCaseToTitleCase } from "../utils/functions";
+import { PhotosType } from "../types/types";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -25,28 +22,17 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 interface AddPhotosFormProps {
-  uploadPhotoText: string;
-  photoType:
-    | keyof GeneralInformationType
-    | keyof AcesInformationType
-    | keyof CameraInformationType;
-  image: ReportImage;
-  updateInformation: (
-    key:
-      | keyof GeneralInformationType
-      | keyof AcesInformationType
-      | keyof CameraInformationType,
-    value: string | Dayjs | ReportImage
-  ) => void;
+  photoType: PhotosType
 }
 
-const AddPhotosButton: FC<AddPhotosFormProps> = (props) => {
-  const {
-    uploadPhotoText,
-    photoType,
-    image: reportImage,
-    updateInformation,
-  } = props;
+const AddPhotosButton: FC<AddPhotosFormProps> = function({ photoType }) {
+  const [report, updateReport] = useReportContext();
+  let reportImage =
+    photoType === "acesScreenshot"
+      ? report.acesInformation.acesScreenshot
+      : report.cameraInformation[photoType];
+
+  if (reportImage === undefined) reportImage = new ReportImage();
 
   const [crop, setCrop] = useState<Crop>(
     reportImage.crop ?? {
@@ -58,22 +44,20 @@ const AddPhotosButton: FC<AddPhotosFormProps> = (props) => {
     }
   );
 
-  const [openModal, setOpenModal] = useState(false); // To set if we need to change the button to the image
+  const [openModal, setOpenModal] = useState(false); // To be set to true if we need to change the button to the image
 
   /**
-   *  Updates the image of the report object passed in
+   * Updates the image of the report object passed in
    * @param crop The crop object, or null if the photo is to be deleted
    */
   const updateImage = (crop: Crop | null) => {
-    if (!crop) updateInformation(photoType, new ReportImage());
+    if (!crop) updateReport(photoType, new ReportImage());
     else
-      updateInformation(photoType, {
+      updateReport(photoType, {
         ...reportImage,
         crop: crop,
       } as ReportImage);
   };
-
-  console.log(crop);
 
   return (
     <>
@@ -84,7 +68,7 @@ const AddPhotosButton: FC<AddPhotosFormProps> = (props) => {
             <IconButton
               sx={{ position: "absolute", top: 0, right: 0, zIndex: 100 }}
               onClick={() => {
-                updateInformation(photoType, new ReportImage());
+                updateReport(photoType, new ReportImage());
               }}
             >
               <ClearIcon />
@@ -111,14 +95,14 @@ const AddPhotosButton: FC<AddPhotosFormProps> = (props) => {
             >
               <ImageIcon sx={{ width: 50, height: 50 }} />
               <Typography fontSize={18}>
-                {uploadPhotoText.toUpperCase()}
+                {`Upload ${camelCaseToTitleCase(photoType)}`.toUpperCase()}
               </Typography>
             </Box>
             <VisuallyHiddenInput
               type="file"
               onChange={(event) => {
                 if (event.target.files) {
-                  updateInformation(
+                  updateReport(
                     photoType,
                     new ReportImage(event.target.files[0], crop)
                   );
@@ -132,8 +116,7 @@ const AddPhotosButton: FC<AddPhotosFormProps> = (props) => {
       <EditPhotoModal
         image={reportImage.image}
         updateImage={updateImage}
-        photoType={photoType}
-        titleText={"Edit " + props.uploadPhotoText}
+        titleText={"Edit " + camelCaseToTitleCase(photoType)}
         crop={crop}
         setCrop={setCrop}
         openModal={openModal}

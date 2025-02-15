@@ -15,8 +15,6 @@ import AddEntryPage from "./Pages/AddEntryPage";
 import Layout from "./Pages//Layout";
 
 const App: FC = () => {
-  const [text, setText] = useState("");
-
   const isDarkMode = useIsDarkModeContext() as boolean;
 
   const theme = createTheme({
@@ -25,23 +23,20 @@ const App: FC = () => {
     },
   });
 
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline enableColorScheme />
       <Router>
         <Routes>
-          <Route element={<Layout text={text} />}>
+          <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
-            <Route path="/history" element={<History setText={setText} />} />
+            <Route path="/history" element={<History />} />
             <Route
               path="/add_entry"
               element={
-                <>
-                  <ReportProvider>
-                    <AddEntryPage setText={setText} />
-                  </ReportProvider>
-                </>
+                <ReportProvider>
+                  <AddEntryPage />
+                </ReportProvider>
               }
             />
           </Route>

@@ -4,17 +4,22 @@ import { FC, useEffect, useState } from "react";
 import {
   useIsDarkModeContext,
   useNavBarHeightContext,
+  useNavBarTextContext,
 } from "../../utils/contextFunctions";
 import DarkBackground from "../../assets/dark-background.jpg";
 import LightBackground from "../../assets/light-background.jpg";
 import updateBackground from "../../features/updateBackground";
 import { Link } from "react-router-dom";
 
-
 const Home: FC = function () {
+  
   updateBackground(useIsDarkModeContext() ? DarkBackground : LightBackground);
 
   const NavHeight = useNavBarHeightContext() as number;
+  const updateNavBarText = useNavBarTextContext() as React.Dispatch<
+    React.SetStateAction<string>
+  >;
+  updateNavBarText("");
 
   return (
     <>
@@ -26,7 +31,7 @@ const Home: FC = function () {
           flexDirection: "column",
           padding: "5%",
 
-          minHeight: `calc(100vh - ${NavHeight}px)`,
+          minHeight: `calc(100vh - ${NavHeight.toString()}px)`,
         }}
       >
         <Box>

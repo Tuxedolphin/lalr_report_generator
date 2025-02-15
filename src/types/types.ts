@@ -46,12 +46,19 @@ export interface CameraInformationType {
 }
 
 export type ReportValueKeysType =
+  | keyof IncidentInformationType
   | keyof GeneralInformationType
   | keyof AcesInformationType
   | keyof CameraInformationType
   | "id";
 
-export type ReportValueTypes = ReportImage | Dayjs | string | null | number;
+export type ReportValueTypes =
+  | ReportImage
+  | Dayjs
+  | string
+  | null
+  | number
+  | boolean;
 
 export interface EditType {
   key: ReportValueKeysType;
@@ -59,5 +66,13 @@ export interface EditType {
 }
 
 export interface ChildrenOnly {
-  children: ReactNode
+  children: ReactNode;
 }
+
+// The key of type Report corresponding to each photo type
+export type PhotosType =
+  | "acesScreenshot"
+  | "dispatchPhoto"
+  | "allInPhoto"
+  | "moveOffPhoto"
+  | "arrivedPhoto";

@@ -2,18 +2,17 @@ import NavBar from "../../components/NavBar";
 import { Outlet } from "react-router-dom";
 import { FC } from "react";
 import NavBarHeightProvider from "../../context/NavBarHeightProvider";
+import NavBarTextProvider from "../../context/NavBarTextProvider";
 
-interface LayoutProps {
-  text: string;
-}
-
-const Layout: FC<LayoutProps> = (props) => {
+const Layout: FC = () => {
   return (
     <NavBarHeightProvider>
-      <NavBar {...props}></NavBar>
-      <main>
-        <Outlet />
-      </main>
+      <NavBarTextProvider>
+        <NavBar></NavBar>
+        <main>
+          <Outlet />
+        </main>
+      </NavBarTextProvider>
     </NavBarHeightProvider>
   );
 };

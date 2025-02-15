@@ -62,10 +62,14 @@ export const useIsDarkModeContext = function (requireSetter = false) {
   return requireSetter ? result : result[0];
 };
 
+export const NavBarHeightContext = createContext<
+  [number, React.Dispatch<React.SetStateAction<number>>] | undefined
+>(undefined);
 /**
  * A getter function which returns either the height of the nav bar or its setter
- * 
- * @param setter Boolean of if we require the setter or the value of the height
+ *
+ * @param setter Boolean of if we require the setter or the value of the height, true if we
+ * want the setter and not the value
  * @returns The setter for useState if setter = true, else the height of the nav bar
  */
 export const useNavBarHeightContext = function (setter = false) {
@@ -80,6 +84,28 @@ export const useNavBarHeightContext = function (setter = false) {
   return setter ? result[1] : result[0];
 };
 
-export const NavBarHeightContext = createContext<
-  [number, React.Dispatch<React.SetStateAction<number>>] | undefined
+/**
+ * A getter function which returns either the text for the nav bar or its setter
+ *
+ * @param value Boolean of if we require the value or the setter of the height, true for if we
+ * want the value instead of the setter
+ * @returns The value for useState if value = true, else the setter for the text
+ */
+export const useNavBarTextContext = function (value = false) {
+  // The reason for using value = false instead of setter = false as above is that the setter is just
+  // used much more commonly as compared to the value, which is the opposite of above
+
+  const result = useContext(NavBarTextContext);
+
+  if (result === undefined) {
+    throw new Error(
+      "navBarText context was accessed without using the NavBarText Provider - navBarText was undefined."
+    );
+  }
+
+  return value ? result[0] : result[1];
+};
+
+export const NavBarTextContext = createContext<
+  [string, React.Dispatch<React.SetStateAction<string>>] | undefined
 >(undefined);
