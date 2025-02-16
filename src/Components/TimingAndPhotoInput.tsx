@@ -1,14 +1,7 @@
 import AddPhotosButton from "./AddPhotosButton";
 import { TimingInputs, type TimingInputsType } from "./TimingInputs";
-import { camelCaseToTitleCase } from "../utils/functions";
-import {
-  ReportImage,
-  type GeneralInformationType,
-  type AcesInformationType,
-  type CameraInformationType,
-} from "../classes/Report";
+import { camelCaseToTitleCase } from "../utils/generalFunctions";
 import { Paper } from "@mui/material";
-import { Dayjs } from "dayjs";
 import { FC } from "react";
 
 const timingInputToPhoto = {
@@ -21,22 +14,13 @@ const timingInputToPhoto = {
 
 interface TimingAndPhotoInputProps {
   timingInput: TimingInputsType;
-  image: ReportImage;
-  updateInformation: (
-    key:
-      | keyof GeneralInformationType
-      | keyof AcesInformationType
-      | keyof CameraInformationType,
-    value: string | Dayjs | ReportImage
-  ) => void;
-  isDarkMode: boolean;
 }
 
-const TimingAndPhotoInput: FC<TimingAndPhotoInputProps> = (props) => {
-  const { timingInput, image, updateInformation, isDarkMode } = props;
-
+const TimingAndPhotoInput: FC<TimingAndPhotoInputProps> = function ({
+  timingInput,
+}) {
   if (Object.keys(timingInput).length > 1)
-    console.error(
+    throw new Error(
       "Object argument of timingInput has more than 1 key, expected 1."
     );
 
@@ -44,23 +28,12 @@ const TimingAndPhotoInput: FC<TimingAndPhotoInputProps> = (props) => {
     timingInputToPhoto[
       Object.keys(timingInput)[0] as keyof typeof timingInputToPhoto
     ];
-  const uploadPhotoText = "upload " + camelCaseToTitleCase(photoType);
 
   return (
     <>
-      <AddPhotosButton
-        photoType={uploadPhotoText}
-        photoType={photoType}
-        image={image}
-        updateInformation={updateInformation}
-      />
+      <AddPhotosButton photoType={photoType} />
       <Paper sx={{ paddingBottom: 1, paddingTop: 1, marginTop: 1 }}>
-        <TimingInputs
-          headerText=""
-          updateInformation={updateInformation}
-          timingInputs={timingInput}
-          isDarkMode={isDarkMode}
-        />
+        <TimingInputs headerText="" timingInputs={timingInput} />
       </Paper>
     </>
   );

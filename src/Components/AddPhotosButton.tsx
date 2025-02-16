@@ -6,7 +6,7 @@ import Canvas from "./Canvas";
 import { ReportImage } from "../classes/Report";
 import { Crop } from "react-image-crop";
 import { useReportContext } from "../utils/contextFunctions";
-import { camelCaseToTitleCase } from "../utils/functions";
+import { camelCaseToTitleCase } from "../utils/generalFunctions";
 import { PhotosType } from "../types/types";
 
 const VisuallyHiddenInput = styled("input")({
@@ -22,10 +22,10 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 interface AddPhotosFormProps {
-  photoType: PhotosType
+  photoType: PhotosType;
 }
 
-const AddPhotosButton: FC<AddPhotosFormProps> = function({ photoType }) {
+const AddPhotosButton: FC<AddPhotosFormProps> = function ({ photoType }) {
   const [report, updateReport] = useReportContext();
   let reportImage =
     photoType === "acesScreenshot"

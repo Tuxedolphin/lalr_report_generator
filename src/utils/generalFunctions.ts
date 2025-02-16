@@ -1,4 +1,4 @@
-import { ReportValueTypes } from "../types/types.tsx";
+import { ReportValueTypes } from "../types/types.ts";
 
 export function getItem(key: string): string {
   const result = localStorage.getItem(key);
@@ -37,22 +37,3 @@ export function camelCaseToTitleCase(string: string): string {
   const result = string.replace(/([A-Z])/g, " $1");
   return result.charAt(0).toUpperCase() + result.slice(1);
 }
-
-// Default grid formatting based on material design
-export const gridFormatting = {
-  mainGridFormat: {
-    container: true,
-    spacing: { xs: 2, md: 3 },
-    columns: { xs: 4, sm: 8, md: 12 },
-  },
-  smallInput: {
-    xs: 2,
-    sm: 4,
-    md: 4,
-  },
-  largeInput: {
-    xs: 4,
-    sm: 8,
-    md: 8,
-  },
-} as const;

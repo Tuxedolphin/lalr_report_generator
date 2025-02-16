@@ -12,7 +12,9 @@ import {
 import { FC, useState, useEffect } from "react";
 import { TimingInputs, type TimingInputsType } from "../TimingInputs";
 import AddPhotosButton from "../AddPhotosButton";
-import { gridFormatting, checkIfEmptyAndReturn } from "../../utils/functions";
+import { checkIfEmptyAndReturn } from "../../utils/generalFunctions";
+import { gridFormatting } from "../../utils/constants";
+
 import { useReportContext } from "../../utils/contextFunctions";
 
 const { mainGridFormat, smallInput } = gridFormatting;
@@ -67,9 +69,7 @@ export const AcesForm: FC<AcesFormProps> = function ({ setActiveStep }) {
 
   return (
     <form id="acesInfoForm" onSubmit={handleSubmit}>
-      <>
-        <AddPhotosButton photoType="acesScreenshot" />
-      </>
+      <AddPhotosButton photoType="acesScreenshot" />
       {isLR && (
         <Paper sx={{ p: 1, textAlign: "center", marginTop: 2 }}>
           <Divider sx={{ paddingBottom: 1 }}>Incident Information</Divider>

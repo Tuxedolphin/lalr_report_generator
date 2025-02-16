@@ -8,7 +8,7 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
 import ButtonGroupInput from "../ButtonGroupInput";
-import { gridFormatting } from "../../utils/functions";
+import { gridFormatting } from "../../utils/constants";
 import { useReportContext } from "../../utils/contextFunctions";
 const { mainGridFormat, smallInput, largeInput } = gridFormatting;
 

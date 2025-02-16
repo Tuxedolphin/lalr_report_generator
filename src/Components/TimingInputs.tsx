@@ -1,6 +1,6 @@
 /// <reference types="vite-plugin-svgr/client" />
 
-import { camelCaseToTitleCase } from "../utils/functions";
+import { camelCaseToTitleCase } from "../utils/generalFunctions";
 import { TimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Divider, Grid2 as Grid } from "@mui/material";
@@ -37,55 +37,49 @@ export const TimingInputs: FC<TimingInputsProps> = function ({
   headerText,
   timingInputs,
 }) {
-  const [entryDisplayWords, setEntryDisplayWords] = useState({
-    first: "",
-    second: "",
-    third: "",
+  const [display, setDisplay] = useState({
+    first: false,
+    second: false,
+    third: false,
   });
 
   const secondEntryType:
     | "timeResponded"
     | "timeEnRoute"
     | "timeMoveOff"
+    | "timeAllIn"
     | null = useMemo(() => {
     let type = null;
 
     for (const key of Object.keys(timingInputs)) {
-      if (["timeResponded", "timeEnRoute", "timeMoveOff"].includes(key)) {
-        type = key as "timeResponded" | "timeEnRoute" | "timeMoveOff";
+      if (
+        ["timeResponded", "timeEnRoute", "timeMoveOff", "timeAllIn"].includes(
+          key
+        )
+      ) {
+        type = key as
+          | "timeResponded"
+          | "timeEnRoute"
+          | "timeMoveOff"
+          | "timeAllIn";
       }
     }
+
     return type;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [timingInputs]);
 
-  // Setting which rows are necessary to show and their corresponding texts
   useEffect(() => {
-    const newEntryDisplayWords = { ...entryDisplayWords };
+    const newDisplay = { first: false, second: false, third: false };
 
-    for (const entry of Object.keys(timingInputs)) {
-      switch (entry) {
-        case "timeDispatched":
-          newEntryDisplayWords.first = camelCaseToTitleCase(entry);
-          break;
+    const inputs = Object.keys(timingInputs);
 
-        case "timeResponded":
-        case "timeEnRoute":
-        case "timeMoveOff":
-          newEntryDisplayWords.second = camelCaseToTitleCase(entry);
-          break;
+    if (inputs.includes("timeDispatched")) newDisplay.first = true;
+    if (secondEntryType) newDisplay.second = true;
+    if (inputs.includes("timeArrived")) newDisplay.third = true;
 
-        case "timeArrived":
-          newEntryDisplayWords.third = camelCaseToTitleCase(entry);
-          break;
-      }
-    }
+    setDisplay(newDisplay);
+  }, [secondEntryType, timingInputs]);
 
-    setEntryDisplayWords(newEntryDisplayWords);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const isDarkMode = useIsDarkModeContext() as boolean;
   const [_, updateReport] = useReportContext();
 
   return (
@@ -93,7 +87,7 @@ export const TimingInputs: FC<TimingInputsProps> = function ({
       {headerText && <Divider sx={{ paddingBottom: 1 }}>{headerText}</Divider>}
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Grid {...mainGridFormat}>
-          {entryDisplayWords.first && (
+          {display.first && (
             <>
               <Grid size={1}>
                 <TimePicker
@@ -107,11 +101,11 @@ export const TimingInputs: FC<TimingInputsProps> = function ({
               </Grid>
             </>
           )}{" "}
-          {entryDisplayWords.second && (
+          {display.second && (
             <>
               <Grid size={1}>
                 <TimePicker
-                  label="Time En Route"
+                  label={camelCaseToTitleCase(secondEntryType ?? "")}
                   sx={{ width: "100%" }}
                   value={secondEntryType ? timingInputs[secondEntryType] : null}
                   onChange={(time: Dayjs | null) => {
@@ -122,7 +116,7 @@ export const TimingInputs: FC<TimingInputsProps> = function ({
               </Grid>
             </>
           )}{" "}
-          {entryDisplayWords.third && (
+          {display.third && (
             <>
               <Grid size={1}>
                 <TimePicker
