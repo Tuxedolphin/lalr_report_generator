@@ -1,14 +1,17 @@
 import { FC, useEffect, useState } from "react";
 import TimingAndPhotoInput from "../TimingAndPhotoInput";
-import { ReportImage } from "../../classes/Report";
-import { CameraInformationType } from "../../types/types";
 import { useReportContext } from "../../utils/contextFunctions";
 
-interface FootageFormProps {
+
+/**
+ * The form is broken up into two as on mobile, one form would be a bit too long
+ */
+
+interface FirstFootageFormProps {
   setActiveStep: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const FootageForm: FC<FootageFormProps> = function ({ setActiveStep }) {
+const FirstFootageForm: FC<FirstFootageFormProps> = function ({ setActiveStep }) {
   const [report, updateReport] = useReportContext();
   const cameraInformation = report.cameraInformation;
   const isLA = report.incidentInformation.reportType === "LA";
@@ -39,4 +42,4 @@ const FootageForm: FC<FootageFormProps> = function ({ setActiveStep }) {
   return <>{timingAndPhotoInputs}</>;
 };
 
-export default FootageForm;
+export default FirstFootageForm;

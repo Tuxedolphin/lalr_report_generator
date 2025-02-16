@@ -9,7 +9,7 @@ import "@fontsource/roboto/700.css";
 
 import GeneralInfoForm from "../../components/Forms/GeneralInfoForm";
 import { AcesForm } from "../../components/Forms/AcesInfoForm";
-import FootageForm from "../../components/Forms/FootageForm";
+import FirstFootageForm from "../../components/Forms/FirstFootageForm";
 import updateBackground from "../../features/updateBackground";
 import {
   useNavBarHeightContext,
@@ -35,7 +35,7 @@ const AddEntryPage: FC = () => {
   const stepsContent = {
     generalInfoForm: <GeneralInfoForm {...commonProps} key={0} />,
     acesInfoForm: <AcesForm {...commonProps} key={1} />,
-    footageForm: <FootageForm {...commonProps} key={2} />,
+    footageForm: <FirstFootageForm {...commonProps} key={2} />,
   } as const;
 
   const handleBack = () => {
