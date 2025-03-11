@@ -37,8 +37,9 @@ export interface CameraInformationType {
   timeAllIn: Dayjs | null | undefined;
   timeMoveOff: Dayjs | null | undefined;
   timeArrived: Dayjs | null | undefined;
-  bufferingTime: Dayjs | 0 | null | undefined;
-  bufferingLocation: string | undefined;
+  hasBufferTime: boolean | null;
+  bufferingTime: Dayjs | null;
+  bufferingLocation: string;
   dispatchPhoto: ReportImage | undefined;
   allInPhoto: ReportImage | undefined;
   moveOffPhoto: ReportImage | undefined;

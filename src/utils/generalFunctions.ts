@@ -21,19 +21,11 @@ export function titleCaseString(text: string): string {
     .join(" ");
 }
 
-/**
- * A function for taking care of the value of inputs.
- * If the value does not exist, we return an empty string "".
- * @param value The value to be checked
- * @returns value is the value exists, else "".
- */
-export function checkIfEmptyAndReturn(
-  value: ReportValueTypes | undefined
-): Exclude<ReportValueTypes, null> {
-  return value ? value : "";
-}
-
 export function camelCaseToTitleCase(string: string): string {
   const result = string.replace(/([A-Z])/g, " $1");
   return result.charAt(0).toUpperCase() + result.slice(1);
+}
+
+export function timeToSeconds(minute: number, second: number) {
+  return minute * 60 + second
 }

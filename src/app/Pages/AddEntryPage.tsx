@@ -2,11 +2,6 @@ import React, { useState, useEffect, FC } from "react";
 import { MobileStepper, Box, Button } from "@mui/material";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 
-import "@fontsource/roboto/300.css";
-import "@fontsource/roboto/400.css";
-import "@fontsource/roboto/500.css";
-import "@fontsource/roboto/700.css";
-
 import GeneralInfoForm from "../../components/Forms/GeneralInfoForm";
 import { AcesForm } from "../../components/Forms/AcesInfoForm";
 import FirstFootageForm from "../../components/Forms/FirstFootageForm";
@@ -15,6 +10,7 @@ import {
   useNavBarHeightContext,
   useNavBarTextContext,
 } from "../../utils/contextFunctions";
+import SecondFootageForm from "../../components/Forms/SecondFootageForm";
 
 const AddEntryPage: FC = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -28,19 +24,30 @@ const AddEntryPage: FC = () => {
   setNavBarText("Add Report");
   const navBarHeight = useNavBarHeightContext() as number;
 
+  const handleBack = function () {
+    setActiveStep(activeStep - 1);
+  };
+
+  const handleNext = function (newActiveStep?: number, newMaxSteps?: number) {
+    
+    if (activeStep === maxSteps) {
+      console.error("Submit function not defined yet")
+    }
+    
+    setActiveStep(newActiveStep ?? activeStep + 1);
+    if (newMaxSteps) setMaxSteps(newMaxSteps);
+  };
+
   const commonProps = {
-    setActiveStep: setActiveStep,
+    handleNext: handleNext,
   } as const;
 
   const stepsContent = {
     generalInfoForm: <GeneralInfoForm {...commonProps} key={0} />,
     acesInfoForm: <AcesForm {...commonProps} key={1} />,
-    footageForm: <FirstFootageForm {...commonProps} key={2} />,
+    firstFootageForm: <FirstFootageForm {...commonProps} key={2} />,
+    secondFootageForm: <SecondFootageForm{...commonProps} key={3} />,
   } as const;
-
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
 
   return (
     <Box

@@ -32,7 +32,7 @@ const TimingAndPhotoInput: FC<TimingAndPhotoInputProps> = function ({
   return (
     <>
       <AddPhotosButton photoType={photoType} />
-      <Paper sx={{ paddingBottom: 1, paddingTop: 1, marginTop: 1 }}>
+      <Paper sx={{ padding: 1, marginY: 1 }}>
         <TimingInputs headerText="" timingInputs={timingInput} />
       </Paper>
     </>

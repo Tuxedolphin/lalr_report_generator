@@ -3,13 +3,14 @@
 import { camelCaseToTitleCase } from "../utils/generalFunctions";
 import { TimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { Divider, Grid2 as Grid } from "@mui/material";
+import { Divider, Grid2 as Grid, Box } from "@mui/material";
 import { Dayjs } from "dayjs";
 import { FC, useState, useEffect, useMemo } from "react";
 import {
   useIsDarkModeContext,
   useReportContext,
 } from "../utils/contextFunctions";
+import { alternateGridFormatting } from "../utils/constants";
 
 export interface TimingInputsType {
   timeDispatched?: Dayjs | null;
@@ -19,14 +20,14 @@ export interface TimingInputsType {
   timeMoveOff?: Dayjs | null;
   timeArrived?: Dayjs | null;
 }
-/**
- * Defining constants for styling
- */
-const mainGridFormat = {
-  container: true,
-  spacing: { xs: 2, md: 3 },
-  columns: { xs: 1, sm: 3 },
-};
+
+const mainGridFormat = alternateGridFormatting.mainGridFormat
+
+type secondEntryKeys =
+  | "timeResponded"
+  | "timeEnRoute"
+  | "timeMoveOff"
+  | "timeAllIn"
 
 interface TimingInputsProps {
   headerText: string;
@@ -37,31 +38,27 @@ export const TimingInputs: FC<TimingInputsProps> = function ({
   headerText,
   timingInputs,
 }) {
+
   const [display, setDisplay] = useState({
     first: false,
     second: false,
     third: false,
+    total: 0,
   });
 
-  const secondEntryType:
-    | "timeResponded"
-    | "timeEnRoute"
-    | "timeMoveOff"
-    | "timeAllIn"
-    | null = useMemo(() => {
+  const secondEntryType: secondEntryKeys | null = useMemo(() => {
     let type = null;
 
     for (const key of Object.keys(timingInputs)) {
       if (
-        ["timeResponded", "timeEnRoute", "timeMoveOff", "timeAllIn"].includes(
-          key
-        )
+        [
+          "timeResponded",
+          "timeEnRoute",
+          "timeMoveOff",
+          "timeAllIn",
+        ].includes(key)
       ) {
-        type = key as
-          | "timeResponded"
-          | "timeEnRoute"
-          | "timeMoveOff"
-          | "timeAllIn";
+        type = key as secondEntryKeys;
       }
     }
 
@@ -70,14 +67,24 @@ export const TimingInputs: FC<TimingInputsProps> = function ({
 
   useEffect(() => {
     const newDisplay = { first: false, second: false, third: false };
+    let counter = 0;
 
     const inputs = Object.keys(timingInputs);
 
-    if (inputs.includes("timeDispatched")) newDisplay.first = true;
-    if (secondEntryType) newDisplay.second = true;
-    if (inputs.includes("timeArrived")) newDisplay.third = true;
+    if (inputs.includes("timeDispatched")) {
+      newDisplay.first = true;
+      counter++;
+    }
+    if (secondEntryType) {
+      newDisplay.second = true;
+      counter++;
+    }
+    if (inputs.includes("timeArrived")) {
+      newDisplay.third = true;
+      counter++;
+    }
 
-    setDisplay(newDisplay);
+    setDisplay({ ...newDisplay, total: counter });
   }, [secondEntryType, timingInputs]);
 
   const [_, updateReport] = useReportContext();
@@ -89,11 +96,12 @@ export const TimingInputs: FC<TimingInputsProps> = function ({
         <Grid {...mainGridFormat}>
           {display.first && (
             <>
-              <Grid size={1}>
+              <Grid size={6 / display.total}>
                 <TimePicker
                   label="Time Dispatched"
                   sx={{ width: "100%" }}
                   value={timingInputs.timeDispatched}
+                  views={["hours", "minutes", "seconds"]}
                   onChange={(time: Dayjs | null) => {
                     updateReport("timeDispatched", time);
                   }}
@@ -103,11 +111,12 @@ export const TimingInputs: FC<TimingInputsProps> = function ({
           )}{" "}
           {display.second && (
             <>
-              <Grid size={1}>
+              <Grid size={6 / display.total}>
                 <TimePicker
                   label={camelCaseToTitleCase(secondEntryType ?? "")}
                   sx={{ width: "100%" }}
                   value={secondEntryType ? timingInputs[secondEntryType] : null}
+                  views={["hours", "minutes", "seconds"]}
                   onChange={(time: Dayjs | null) => {
                     if (!secondEntryType) return;
                     updateReport(secondEntryType, time);
@@ -118,11 +127,12 @@ export const TimingInputs: FC<TimingInputsProps> = function ({
           )}{" "}
           {display.third && (
             <>
-              <Grid size={1}>
+              <Grid size={6 / display.total}>
                 <TimePicker
                   label="Time Arrived"
                   sx={{ width: "100%" }}
                   value={timingInputs.timeArrived}
+                  views={["hours", "minutes", "seconds"]}
                   onChange={(time: Dayjs | null) => {
                     updateReport("timeArrived", time);
                   }}

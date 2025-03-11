@@ -25,13 +25,13 @@ const firePosts = {
 } as const;
 
 interface GeneralInfoFormProps {
-  setActiveStep: React.Dispatch<React.SetStateAction<number>>;
+  handleNext: (newActiveStep?: number, newMaxSteps?: number) => void
 }
 
-const GeneralInfoForm: FC<GeneralInfoFormProps> = function ({ setActiveStep }) {
+const GeneralInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    setActiveStep(1); // This form will always be the first one, i.e. index 0
+    handleNext();
   }
 
   const [report, updateReport] = useReportContext();

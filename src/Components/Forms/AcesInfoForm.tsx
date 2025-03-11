@@ -12,7 +12,6 @@ import {
 import { FC, useState, useEffect } from "react";
 import { TimingInputs, type TimingInputsType } from "../TimingInputs";
 import AddPhotosButton from "../AddPhotosButton";
-import { checkIfEmptyAndReturn } from "../../utils/generalFunctions";
 import { gridFormatting } from "../../utils/constants";
 
 import { useReportContext } from "../../utils/contextFunctions";
@@ -26,13 +25,13 @@ type TimingsKey =
   | "timeArrived";
 
 interface AcesFormProps {
-  setActiveStep: React.Dispatch<React.SetStateAction<number>>;
+  handleNext: (newActiveStep?: number, newMaxSteps?: number) => void
 }
 
-export const AcesForm: FC<AcesFormProps> = function ({ setActiveStep }) {
+export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    setActiveStep(2);
+    handleNext();
   };
 
   const [report, updateReport] = useReportContext();
@@ -77,7 +76,7 @@ export const AcesForm: FC<AcesFormProps> = function ({ setActiveStep }) {
             <Grid size={smallInput}>
               <TextField
                 label="Weather"
-                value={checkIfEmptyAndReturn(generalInformation.weather)}
+                value={generalInformation.weather ?? ""}
                 onChange={(event) => {
                   updateReport("weather", event.target.value);
                 }}
@@ -92,7 +91,7 @@ export const AcesForm: FC<AcesFormProps> = function ({ setActiveStep }) {
                   labelId="response-zone"
                   label="Response Zone"
                   value={
-                    checkIfEmptyAndReturn(generalInformation.boundary) as string
+                    generalInformation.boundary ?? ""
                   }
                   onChange={(event: SelectChangeEvent) => {
                     updateReport("boundary", event.target.value);
@@ -109,7 +108,7 @@ export const AcesForm: FC<AcesFormProps> = function ({ setActiveStep }) {
           </Grid>
           <TextField
             label="Incident Outcome"
-            value={checkIfEmptyAndReturn(generalInformation.incidentOutcome)}
+            value={generalInformation.incidentOutcome ?? ""}
             onChange={(event) => {
               updateReport("incidentOutcome", event.target.value);
             }}

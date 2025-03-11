@@ -8,6 +8,7 @@ import {
   type ReportValueKeysType,
   type ReportValueTypes,
 } from "../types/types";
+import dayjs from "dayjs";
 
 export class ReportImage {
   image: HTMLImageElement = new Image();
@@ -29,8 +30,6 @@ export class ReportImage {
 }
 
 export class Report {
-  // TODO: Update all to private and add setters and getters?
-
   // Setting default values
   id = -1;
   protected _incidentInformation: IncidentInformationType = {
@@ -68,8 +67,9 @@ export class Report {
     timeAllIn: undefined,
     timeMoveOff: undefined,
     timeArrived: undefined,
-    bufferingTime: undefined,
-    bufferingLocation: undefined,
+    hasBufferTime: null,
+    bufferingTime: null,
+    bufferingLocation: "",
     dispatchPhoto: undefined,
     allInPhoto: undefined,
     moveOffPhoto: undefined,
@@ -116,7 +116,9 @@ export class Report {
     this._cameraInformation = cameraInformation;
   }
 
-  // Defining Getters, kinda useless rn haha
+  /**
+   * Getters
+   */
 
   get incidentInformation() {
     return this._incidentInformation;
@@ -134,20 +136,69 @@ export class Report {
     return this._cameraInformation;
   }
 
+  get acesActivationTime() {
+    const respondTime =
+      this.incidentInformation.reportType == "LA"
+        ? this.acesInformation.timeResponded
+        : this.acesInformation.timeEnRoute;
+
+    const timeDispatched = this.acesInformation.timeDispatched;
+
+    if (!timeDispatched || !respondTime) {
+      throw new Error(
+        "Either aces dispatch timing or aces respond timing is not defined"
+      );
+    }
+
+    return respondTime.diff(timeDispatched) / 100;
+  }
+
+  get cameraActivationTime() {
+    const timeMoveOff = this.cameraInformation.timeMoveOff;
+    const timeDispatched = this.cameraInformation.timeDispatched;
+
+    if (!timeMoveOff || !timeDispatched) {
+      throw new Error(
+        "Either camera dispatch timing or camera move off timing is not defined."
+      );
+    }
+
+    return timeMoveOff.diff(timeDispatched) / 100;
+  }
+
+  /**
+   * A getter function to get the value of a specific key, no matter where it is grouped in
+   * @param key The key of the value to be obtained
+   * @returns The required value
+   */
+  getValue(key: ReportValueKeysType): ReportValueTypes {
+    if (key === "id") return this.id;
+
+    for (const [infoType, objKeyArray] of Object.entries(this._keyToInfoKey)) {
+      for (const objKey of objKeyArray) {
+        if (objKey === key) {
+          return this[infoType][key]; // Same as below, I can't be bothered :D
+        }
+      }
+    }
+
+    throw new Error(`Key ${key} as not found in Object Report.`);
+  }
+
   /**
    * Updates the value of the key in the current report class
    * @param key The key of the value to be changed
    * @param value The new value to be updated to
    */
   updateReport(key: ReportValueKeysType, value: ReportValueTypes) {
-    if (key == "id") {
+    if (key === "id") {
       this.id = value as number;
       return;
     }
 
     for (const [infoType, objKeyArray] of Object.entries(this._keyToInfoKey)) {
       for (const objKey of objKeyArray) {
-        if (objKey == key) {
+        if (objKey === key) {
           this[infoType][key] = value; // I can't be bothered to fix this type error
           return;
         }
