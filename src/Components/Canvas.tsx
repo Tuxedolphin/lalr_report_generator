@@ -1,15 +1,14 @@
 import { FC, useEffect, useRef } from "react";
-import { type Crop } from "react-image-crop";
+import ReportImage from "../classes/ReportImage";
 
 interface CanvasProps {
-  image: HTMLImageElement;
-  crop: Crop;
+  reportImage: ReportImage;
 }
 
-const Canvas: FC<CanvasProps> = (props) => {
-  const { image, crop } = props;
-
+const Canvas: FC<CanvasProps> = ({ reportImage }) => {
   const ref = useRef<HTMLCanvasElement>(null);
+  const image = reportImage.image;
+  const crop = reportImage.crop;
 
   useEffect(() => {
     const canvas = ref.current;

@@ -64,7 +64,7 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
     }
 
     setTimings(newTimings);
-  }, []);
+  }, [acesInformation]);
 
   return (
     <form id="acesInfoForm" onSubmit={handleSubmit}>

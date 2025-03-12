@@ -2,7 +2,7 @@
  * File for holding the contexts and getter functions for them
  */
 
-import { Report } from "../classes/Report";
+import Report from "../classes/Report";
 import { useContext, createContext } from "react";
 import { ReportValueKeysType, ReportValueTypes } from "../types/types";
 

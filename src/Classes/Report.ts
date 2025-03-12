@@ -1,5 +1,3 @@
-import { Crop } from "react-image-crop";
-
 import {
   type IncidentInformationType,
   type GeneralInformationType,
@@ -8,28 +6,8 @@ import {
   type ReportValueKeysType,
   type ReportValueTypes,
 } from "../types/types";
-import dayjs from "dayjs";
 
-export class ReportImage {
-  image: HTMLImageElement = new Image();
-  crop: Crop | undefined;
-  blob: Blob | undefined;
-
-  constructor();
-  constructor(image: File | Blob, crop: Crop);
-  constructor(image?: File | Blob, crop?: Crop) {
-    if (image) {
-      this.image.src = URL.createObjectURL(image);
-      this.crop = crop;
-    }
-  }
-
-  updateImage(image: File | Blob): void {
-    this.image.src = URL.createObjectURL(image);
-  }
-}
-
-export class Report {
+class Report {
   // Setting default values
   id = -1;
   protected _incidentInformation: IncidentInformationType = {
@@ -222,3 +200,5 @@ export class Report {
     return updatedReport;
   }
 }
+
+export default Report

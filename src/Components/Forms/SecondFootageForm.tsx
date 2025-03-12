@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import { useReportContext } from "../../utils/contextFunctions";
 import {
   ReportValueTypes,
@@ -6,7 +6,6 @@ import {
   CameraInformationType,
 } from "../../types/types";
 import TimingAndPhotoInput from "../TimingAndPhotoInput";
-import { getTotalTime } from "../../utils/generateReport";
 import {
   Paper,
   Divider,
@@ -17,7 +16,6 @@ import {
   Grid2 as Grid,
   Typography,
   InputAdornment,
-  inputBaseClasses,
 } from "@mui/material";
 import dayjs from "dayjs";
 
@@ -44,6 +42,8 @@ const LAForm: FC<CommonFormProps> = function ({
     />
   );
 };
+
+// TODO: Maybe have to add justification text input?
 
 const LRForm: FC<CommonFormProps> = function ({
   cameraInformation,

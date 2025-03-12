@@ -1,6 +1,5 @@
 import AddPhotosButton from "./AddPhotosButton";
 import { TimingInputs, type TimingInputsType } from "./TimingInputs";
-import { camelCaseToTitleCase } from "../utils/generalFunctions";
 import { Paper } from "@mui/material";
 import { FC } from "react";
 

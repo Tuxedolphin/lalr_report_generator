@@ -3,7 +3,7 @@
  */
 
 import { FC, useState } from "react";
-import { Report } from "../classes/Report";
+import Report from "../classes/Report";
 import { ReportContext } from "../utils/contextFunctions";
 import {
   type ChildrenOnly,

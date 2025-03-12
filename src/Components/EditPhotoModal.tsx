@@ -12,28 +12,26 @@ import ReactCrop, {
   type Crop,
 } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { FC, type SyntheticEvent } from "react";
+import { FC, useState, type SyntheticEvent } from "react";
+import ReportImage from "../classes/ReportImage";
 
 interface EditPhotoModalProps {
-  image: HTMLImageElement;
+  reportImage: ReportImage;
   updateImage: (crop: Crop | null) => void;
   titleText: string;
-  crop: Crop;
-  setCrop: React.Dispatch<React.SetStateAction<Crop>>;
   openModal: boolean;
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const EditPhotoModal: FC<EditPhotoModalProps> = (props) => {
-  const {
-    image,
-    updateImage,
-    titleText,
-    crop,
-    setCrop,
-    openModal,
-    setOpenModal,
-  } = props;
+const EditPhotoModal: FC<EditPhotoModalProps> = function ({
+  reportImage,
+  updateImage,
+  titleText,
+  openModal,
+  setOpenModal,
+}) {
+  // Setting arbitrary crop before image loads
+  const [crop, setCrop] = useState<Crop>(reportImage.crop);
 
   function handleSubmit(): void {
     updateImage(crop);
@@ -62,6 +60,7 @@ const EditPhotoModal: FC<EditPhotoModalProps> = (props) => {
     );
 
     setCrop(crop);
+    updateImage(crop);
   }
 
   return (
@@ -74,9 +73,10 @@ const EditPhotoModal: FC<EditPhotoModalProps> = (props) => {
           onChange={(_, percentCrop) => {
             setCrop(percentCrop);
           }}
+          style={{display: "flex", alignItems: "center", justifyContent: "center"}}
         >
           <img
-            src={image.src}
+            src={reportImage.image.src}
             onLoad={onImageLoad}
             alt="ACES Photo Screenshot"
           />

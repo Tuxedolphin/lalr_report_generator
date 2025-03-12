@@ -3,7 +3,7 @@ import { Image as ImageIcon, Clear as ClearIcon } from "@mui/icons-material";
 import { FC, useState } from "react";
 import EditPhotoModal from "./EditPhotoModal";
 import Canvas from "./Canvas";
-import { ReportImage } from "../classes/Report";
+import ReportImage from "../classes/ReportImage";
 import { Crop } from "react-image-crop";
 import { useReportContext } from "../utils/contextFunctions";
 import { camelCaseToTitleCase } from "../utils/generalFunctions";
@@ -34,16 +34,6 @@ const AddPhotosButton: FC<AddPhotosFormProps> = function ({ photoType }) {
 
   if (reportImage === undefined) reportImage = new ReportImage();
 
-  const [crop, setCrop] = useState<Crop>(
-    reportImage.crop ?? {
-      unit: "%",
-      x: 0,
-      y: 0,
-      width: 80,
-      height: 60,
-    }
-  );
-
   const [openModal, setOpenModal] = useState(false); // To be set to true if we need to change the button to the image
 
   /**
@@ -64,7 +54,7 @@ const AddPhotosButton: FC<AddPhotosFormProps> = function ({ photoType }) {
       <Box sx={{ width: "100%", aspectRatio: 4 / 3, position: "relative" }}>
         {!openModal && reportImage.image.src ? (
           <>
-            <Canvas crop={crop} image={reportImage.image} />
+            <Canvas reportImage={reportImage} />
             <IconButton
               sx={{ position: "absolute", top: 0, right: 0, zIndex: 100 }}
               onClick={() => {
@@ -104,7 +94,7 @@ const AddPhotosButton: FC<AddPhotosFormProps> = function ({ photoType }) {
                 if (event.target.files) {
                   updateReport(
                     photoType,
-                    new ReportImage(event.target.files[0], crop)
+                    new ReportImage(event.target.files[0])
                   );
                   setOpenModal(true);
                 }
@@ -114,11 +104,9 @@ const AddPhotosButton: FC<AddPhotosFormProps> = function ({ photoType }) {
         )}
       </Box>
       <EditPhotoModal
-        image={reportImage.image}
+        reportImage={reportImage}
         updateImage={updateImage}
         titleText={"Edit " + camelCaseToTitleCase(photoType)}
-        crop={crop}
-        setCrop={setCrop}
         openModal={openModal}
         setOpenModal={setOpenModal}
       />

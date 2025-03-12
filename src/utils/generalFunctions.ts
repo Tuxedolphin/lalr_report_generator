@@ -1,5 +1,3 @@
-import { ReportValueTypes } from "../types/types.ts";
-
 export function getItem(key: string): string {
   const result = localStorage.getItem(key);
 
@@ -27,5 +25,5 @@ export function camelCaseToTitleCase(string: string): string {
 }
 
 export function timeToSeconds(minute: number, second: number) {
-  return minute * 60 + second
+  return minute * 60 + second;
 }
