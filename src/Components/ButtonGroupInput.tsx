@@ -6,7 +6,7 @@ import {
   ToggleButtonGroup,
   ToggleButton,
 } from "@mui/material";
-import { useReportContext } from "../utils/contextFunctions";
+import { useReportContext } from "../context/contextFunctions";
 
 interface ButtonGroupInputType {
   title: string;

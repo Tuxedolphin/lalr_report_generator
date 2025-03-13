@@ -14,7 +14,7 @@ import { TimingInputs, type TimingInputsType } from "../TimingInputs";
 import AddPhotosButton from "../AddPhotosButton";
 import { gridFormatting } from "../../utils/constants";
 
-import { useReportContext } from "../../utils/contextFunctions";
+import { useReportContext } from "../../context/contextFunctions";
 
 const { mainGridFormat, smallInput } = gridFormatting;
 
@@ -25,7 +25,7 @@ type TimingsKey =
   | "timeArrived";
 
 interface AcesFormProps {
-  handleNext: (newActiveStep?: number, newMaxSteps?: number) => void
+  handleNext: (newMaxSteps?: number, newActiveStep?: number) => void;
 }
 
 export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
@@ -90,9 +90,7 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
                 <Select
                   labelId="response-zone"
                   label="Response Zone"
-                  value={
-                    generalInformation.boundary ?? ""
-                  }
+                  value={generalInformation.boundary ?? ""}
                   onChange={(event: SelectChangeEvent) => {
                     updateReport("boundary", event.target.value);
                   }}

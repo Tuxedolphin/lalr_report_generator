@@ -5,14 +5,13 @@ import {
   useIsDarkModeContext,
   useNavBarHeightContext,
   useNavBarTextContext,
-} from "../../utils/contextFunctions";
+} from "../../context/contextFunctions";
 import DarkBackground from "../../assets/dark-background.jpg";
 import LightBackground from "../../assets/light-background.jpg";
 import updateBackground from "../../features/updateBackground";
 import { Link } from "react-router-dom";
 
 const Home: FC = function () {
-  
   updateBackground(useIsDarkModeContext() ? DarkBackground : LightBackground);
 
   const NavHeight = useNavBarHeightContext() as number;

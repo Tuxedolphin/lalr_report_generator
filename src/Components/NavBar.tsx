@@ -6,7 +6,7 @@ import {
   useIsDarkModeContext,
   useNavBarHeightContext,
   useNavBarTextContext,
-} from "../utils/contextFunctions";
+} from "../context/contextFunctions";
 
 interface ElevationType {
   children: React.ReactElement<{ elevation?: number; sx?: object }>;

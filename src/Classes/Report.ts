@@ -37,6 +37,7 @@ class Report {
     timeEnRoute: undefined,
     timeArrived: undefined,
     acesScreenshot: undefined,
+    drawnScreenshot: undefined,
   };
 
   protected _cameraInformation: CameraInformationType = {
@@ -155,7 +156,7 @@ class Report {
     for (const [infoType, objKeyArray] of Object.entries(this._keyToInfoKey)) {
       for (const objKey of objKeyArray) {
         if (objKey === key) {
-          return this[infoType][key]; // Same as below, I can't be bothered :D
+          return (this[infoType as keyof Report] as any)[key]; // Same as below, I can't be bothered :D
         }
       }
     }
@@ -177,7 +178,7 @@ class Report {
     for (const [infoType, objKeyArray] of Object.entries(this._keyToInfoKey)) {
       for (const objKey of objKeyArray) {
         if (objKey === key) {
-          this[infoType][key] = value; // I can't be bothered to fix this type error
+          (this[infoType as keyof Report] as any)[key] = value; // Can't be bothered to fix the type error
           return;
         }
       }

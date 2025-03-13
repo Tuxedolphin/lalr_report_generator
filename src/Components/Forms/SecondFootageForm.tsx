@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { useReportContext } from "../../utils/contextFunctions";
+import { useReportContext } from "../../context/contextFunctions";
 import {
   ReportValueTypes,
   ReportValueKeysType,
@@ -126,7 +126,7 @@ const LRForm: FC<CommonFormProps> = function ({
 };
 
 interface SecondFootageFormType {
-  handleNext: (newActiveStep?: number, newMaxSteps?: number) => void;
+  handleNext: (newMaxSteps?: number, newActiveStep?: number) => void;
 }
 
 const SecondFootageForm: FC<SecondFootageFormType> = function () {

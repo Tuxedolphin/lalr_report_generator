@@ -1,6 +1,7 @@
 import { Dayjs } from "dayjs";
-import ReportImage from "../classes/ReportImage";
+import CroppedPicture from "../classes/CroppedPicture";
 import { ReactNode } from "react";
+import DrawnOnPicture from "../classes/DrawnOnPicture";
 
 export type reportType = "LA" | "LR" | null;
 
@@ -28,7 +29,8 @@ export interface AcesInformationType {
   timeResponded: Dayjs | undefined;
   timeEnRoute: Dayjs | undefined;
   timeArrived: Dayjs | undefined;
-  acesScreenshot: ReportImage | undefined;
+  acesScreenshot: CroppedPicture | undefined;
+  drawnScreenshot: DrawnOnPicture | undefined;
 }
 
 export interface CameraInformationType {
@@ -40,10 +42,10 @@ export interface CameraInformationType {
   hasBufferTime: boolean | null;
   bufferingTime: Dayjs | null;
   bufferingLocation: string;
-  dispatchPhoto: ReportImage | undefined;
-  allInPhoto: ReportImage | undefined;
-  moveOffPhoto: ReportImage | undefined;
-  arrivedPhoto: ReportImage | undefined;
+  dispatchPhoto: CroppedPicture | undefined;
+  allInPhoto: CroppedPicture | undefined;
+  moveOffPhoto: CroppedPicture | undefined;
+  arrivedPhoto: CroppedPicture | undefined;
 }
 
 export type ReportValueKeysType =
@@ -54,7 +56,7 @@ export type ReportValueKeysType =
   | "id";
 
 export type ReportValueTypes =
-  | ReportImage
+  | CroppedPicture
   | Dayjs
   | string
   | null

@@ -3,7 +3,7 @@
  */
 
 import { FC, useState } from "react";
-import { NavBarTextContext } from "../utils/contextFunctions";
+import { NavBarTextContext } from "./contextFunctions";
 import { type ChildrenOnly } from "../types/types";
 
 const NavBarTextProvider: FC<ChildrenOnly> = function ({ children }) {

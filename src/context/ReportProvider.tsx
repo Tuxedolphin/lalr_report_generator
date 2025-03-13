@@ -4,17 +4,17 @@
 
 import { FC, useState } from "react";
 import Report from "../classes/Report";
-import { ReportContext } from "../utils/contextFunctions";
+import { ReportContext } from "./contextFunctions";
 import {
   type ChildrenOnly,
   type ReportValueKeysType,
   type ReportValueTypes,
 } from "../types/types";
 
-const ReportProvider: FC<ChildrenOnly> = function({ children }) {
+const ReportProvider: FC<ChildrenOnly> = function ({ children }) {
   const [report, setReport] = useState<Report>(new Report());
 
-  const updateReport = function(
+  const updateReport = function (
     key: ReportValueKeysType,
     value: ReportValueTypes
   ) {
@@ -23,9 +23,9 @@ const ReportProvider: FC<ChildrenOnly> = function({ children }) {
 
   return (
     <ReportContext.Provider value={[report, updateReport, setReport]}>
-      { children }
+      {children}
     </ReportContext.Provider>
   );
 };
 
-export default ReportProvider
+export default ReportProvider;

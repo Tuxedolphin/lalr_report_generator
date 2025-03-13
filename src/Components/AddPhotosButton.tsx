@@ -2,12 +2,12 @@ import { styled, Typography, IconButton, Box, Button } from "@mui/material";
 import { Image as ImageIcon, Clear as ClearIcon } from "@mui/icons-material";
 import { FC, useState } from "react";
 import EditPhotoModal from "./EditPhotoModal";
-import Canvas from "./Canvas";
-import ReportImage from "../classes/ReportImage";
+import CroppedPicture from "../classes/CroppedPicture";
 import { Crop } from "react-image-crop";
-import { useReportContext } from "../utils/contextFunctions";
+import { useReportContext } from "../context/contextFunctions";
 import { camelCaseToTitleCase } from "../utils/generalFunctions";
 import { PhotosType } from "../types/types";
+import Canvas from "./Canvas";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -27,27 +27,27 @@ interface AddPhotosFormProps {
 
 const AddPhotosButton: FC<AddPhotosFormProps> = function ({ photoType }) {
   const [report, updateReport] = useReportContext();
-  let reportImage =
-    photoType === "acesScreenshot"
-      ? report.acesInformation.acesScreenshot
-      : report.cameraInformation[photoType];
-
-  if (reportImage === undefined) reportImage = new ReportImage();
-
-  const [openModal, setOpenModal] = useState(false); // To be set to true if we need to change the button to the image
 
   /**
    * Updates the image of the report object passed in
    * @param crop The crop object, or null if the photo is to be deleted
    */
   const updateImage = (crop: Crop | null) => {
-    if (!crop) updateReport(photoType, new ReportImage());
-    else
-      updateReport(photoType, {
-        ...reportImage,
-        crop: crop,
-      } as ReportImage);
+    if (crop === null) updateReport(photoType, new CroppedPicture());
+    else updateReport(photoType, reportImage?.updateAndReturnCrop(crop)!);
   };
+
+  let reportImage =
+    photoType === "acesScreenshot"
+      ? report.acesInformation.acesScreenshot
+      : report.cameraInformation[photoType];
+
+  if (reportImage === undefined) {
+    reportImage = new CroppedPicture();
+    updateReport(photoType, reportImage);
+  }
+
+  const [openModal, setOpenModal] = useState(false); // To be set to true if we need to change the button to the image
 
   return (
     <>
@@ -58,7 +58,7 @@ const AddPhotosButton: FC<AddPhotosFormProps> = function ({ photoType }) {
             <IconButton
               sx={{ position: "absolute", top: 0, right: 0, zIndex: 100 }}
               onClick={() => {
-                updateReport(photoType, new ReportImage());
+                updateReport(photoType, new CroppedPicture());
               }}
             >
               <ClearIcon />
@@ -94,7 +94,7 @@ const AddPhotosButton: FC<AddPhotosFormProps> = function ({ photoType }) {
                 if (event.target.files) {
                   updateReport(
                     photoType,
-                    new ReportImage(event.target.files[0])
+                    new CroppedPicture(event.target.files[0])
                   );
                   setOpenModal(true);
                 }

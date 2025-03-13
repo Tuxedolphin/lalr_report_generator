@@ -1,14 +1,18 @@
-import { FC, useEffect, useRef } from "react";
-import ReportImage from "../classes/ReportImage";
+import CroppedPicture from "../classes/CroppedPicture";
+import { useRef, useEffect, FC } from "react";
+
+import "../styles/style.css";
+import DrawnOnPicture from "../classes/DrawnOnPicture";
 
 interface CanvasProps {
-  reportImage: ReportImage;
+  reportImage: CroppedPicture;
 }
 
-const Canvas: FC<CanvasProps> = ({ reportImage }) => {
-  const ref = useRef<HTMLCanvasElement>(null);
+const Canvas: FC<CanvasProps> = function ({ reportImage }) {
   const image = reportImage.image;
   const crop = reportImage.crop;
+
+  const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = ref.current;
@@ -36,13 +40,9 @@ const Canvas: FC<CanvasProps> = ({ reportImage }) => {
       image.naturalWidth,
       image.naturalHeight
     );
-  }, [image, crop]);
+  });
 
-  return (
-    <>
-      <canvas ref={ref} style={{ width: "100%" }} />
-    </>
-  );
+  return <canvas ref={ref} className="full-width" />;
 };
 
 export default Canvas;

@@ -9,7 +9,7 @@ import { FC, useState, useEffect, useMemo } from "react";
 import {
   useIsDarkModeContext,
   useReportContext,
-} from "../utils/contextFunctions";
+} from "../context/contextFunctions";
 import { alternateGridFormatting } from "../utils/constants";
 
 export interface TimingInputsType {
@@ -21,13 +21,13 @@ export interface TimingInputsType {
   timeArrived?: Dayjs | null;
 }
 
-const mainGridFormat = alternateGridFormatting.mainGridFormat
+const mainGridFormat = alternateGridFormatting.mainGridFormat;
 
 type secondEntryKeys =
   | "timeResponded"
   | "timeEnRoute"
   | "timeMoveOff"
-  | "timeAllIn"
+  | "timeAllIn";
 
 interface TimingInputsProps {
   headerText: string;
@@ -38,7 +38,6 @@ export const TimingInputs: FC<TimingInputsProps> = function ({
   headerText,
   timingInputs,
 }) {
-
   const [display, setDisplay] = useState({
     first: false,
     second: false,
@@ -51,12 +50,9 @@ export const TimingInputs: FC<TimingInputsProps> = function ({
 
     for (const key of Object.keys(timingInputs)) {
       if (
-        [
-          "timeResponded",
-          "timeEnRoute",
-          "timeMoveOff",
-          "timeAllIn",
-        ].includes(key)
+        ["timeResponded", "timeEnRoute", "timeMoveOff", "timeAllIn"].includes(
+          key
+        )
       ) {
         type = key as secondEntryKeys;
       }

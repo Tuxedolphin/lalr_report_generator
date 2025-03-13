@@ -6,13 +6,13 @@ import {
   Toolbar,
 } from "@mui/material";
 import { useState, FC, useEffect } from "react";
-import { useIsDarkModeContext } from "../utils/contextFunctions";
+import { useIsDarkModeContext } from "../context/contextFunctions";
 import ReportProvider from "../context/ReportProvider";
 
-import Home from "./Pages/Home";
-import History from "./Pages/History";
-import AddEntryPage from "./Pages/AddEntryPage";
-import Layout from "./Pages//Layout";
+import Home from "./pages/Home";
+import History from "./pages/History";
+import AddEntryPage from "./pages/AddEntryPage";
+import Layout from "./pages/Layout";
 
 const App: FC = () => {
   const isDarkMode = useIsDarkModeContext() as boolean;

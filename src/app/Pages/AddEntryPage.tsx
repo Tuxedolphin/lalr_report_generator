@@ -1,18 +1,18 @@
-import React, { useState, useEffect, FC } from "react";
+import React, { useState, FC } from "react";
 import { MobileStepper, Box, Button } from "@mui/material";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 
-import GeneralInfoForm from "../../components/Forms/GeneralInfoForm";
-import { AcesForm } from "../../components/Forms/AcesInfoForm";
-import FirstFootageForm from "../../components/Forms/FirstFootageForm";
+import GeneralInfoForm from "../../components/forms/GeneralInfoForm";
+import { AcesForm } from "../../components/forms/AcesInfoForm";
+import FirstFootageForm from "../../components/forms/FirstFootageForm";
 import updateBackground from "../../features/updateBackground";
 import {
   useNavBarHeightContext,
   useNavBarTextContext,
-} from "../../utils/contextFunctions";
-import SecondFootageForm from "../../components/Forms/SecondFootageForm";
+} from "../../context/contextFunctions";
+import SecondFootageForm from "../../components/forms/SecondFootageForm";
 
-const AddEntryPage: FC = () => {
+const AddEntryPage: FC = function () {
   const [activeStep, setActiveStep] = useState(0);
   const [maxSteps, setMaxSteps] = useState(4);
 
@@ -28,12 +28,11 @@ const AddEntryPage: FC = () => {
     setActiveStep(activeStep - 1);
   };
 
-  const handleNext = function (newActiveStep?: number, newMaxSteps?: number) {
-    
-    if (activeStep === maxSteps) {
-      console.error("Submit function not defined yet")
+  const handleNext = function (newMaxSteps?: number, newActiveStep?: number) {
+    if (activeStep === maxSteps - 1) {
+      console.error("Submit function not defined yet");
     }
-    
+
     setActiveStep(newActiveStep ?? activeStep + 1);
     if (newMaxSteps) setMaxSteps(newMaxSteps);
   };
@@ -45,8 +44,8 @@ const AddEntryPage: FC = () => {
   const stepsContent = {
     generalInfoForm: <GeneralInfoForm {...commonProps} key={0} />,
     acesInfoForm: <AcesForm {...commonProps} key={1} />,
-    firstFootageForm: <FirstFootageForm {...commonProps} key={2} />,
-    secondFootageForm: <SecondFootageForm{...commonProps} key={3} />,
+    firstFootageForm: <FirstFootageForm {...commonProps} key={3} />,
+    secondFootageForm: <SecondFootageForm {...commonProps} key={4} />,
   } as const;
 
   return (
@@ -70,6 +69,7 @@ const AddEntryPage: FC = () => {
             size="small"
             form={Object.keys(stepsContent)[activeStep]}
             type="submit"
+            sx={{ paddingX: 1 }}
             disabled={activeStep === maxSteps - 1}
           >
             Next

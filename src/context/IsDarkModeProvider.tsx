@@ -3,7 +3,7 @@
  */
 
 import { FC, useState } from "react";
-import { IsDarkModeContext } from "../utils/contextFunctions";
+import { IsDarkModeContext } from "./contextFunctions";
 import { type ChildrenOnly } from "../types/types";
 
 const IsDarkModeProvider: FC<ChildrenOnly> = function ({ children }) {
@@ -20,4 +20,4 @@ const IsDarkModeProvider: FC<ChildrenOnly> = function ({ children }) {
   );
 };
 
-export default IsDarkModeProvider
+export default IsDarkModeProvider;

@@ -6,17 +6,13 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
-import ReactCrop, {
-  centerCrop,
-  makeAspectCrop,
-  type Crop,
-} from "react-image-crop";
+import ReactCrop, { type Crop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { FC, useState, type SyntheticEvent } from "react";
-import ReportImage from "../classes/ReportImage";
+import { FC, useEffect, useState } from "react";
+import CroppedPicture from "../classes/CroppedPicture";
 
 interface EditPhotoModalProps {
-  reportImage: ReportImage;
+  reportImage: CroppedPicture;
   updateImage: (crop: Crop | null) => void;
   titleText: string;
   openModal: boolean;
@@ -30,37 +26,18 @@ const EditPhotoModal: FC<EditPhotoModalProps> = function ({
   openModal,
   setOpenModal,
 }) {
-  // Setting arbitrary crop before image loads
   const [crop, setCrop] = useState<Crop>(reportImage.crop);
 
   function handleSubmit(): void {
     updateImage(crop);
+    reportImage.saveCroppedBlob().catch((error: unknown) => {
+      console.error(error);
+    });
     handleClose();
   }
 
   function handleClose(): void {
     setOpenModal(false);
-  }
-
-  function onImageLoad(e: SyntheticEvent<HTMLImageElement>) {
-    const { width, height } = e.currentTarget;
-
-    const crop = centerCrop(
-      makeAspectCrop(
-        {
-          unit: "%",
-          width: 90,
-        },
-        4 / 3,
-        width,
-        height
-      ),
-      width,
-      height
-    );
-
-    setCrop(crop);
-    updateImage(crop);
   }
 
   return (
@@ -70,14 +47,19 @@ const EditPhotoModal: FC<EditPhotoModalProps> = function ({
         <ReactCrop
           crop={crop}
           aspect={4 / 3}
+          keepSelection
           onChange={(_, percentCrop) => {
             setCrop(percentCrop);
           }}
-          style={{display: "flex", alignItems: "center", justifyContent: "center"}}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           <img
             src={reportImage.image.src}
-            onLoad={onImageLoad}
+            onLoad={() => reportImage.getUpdatedCrop(setCrop)}
             alt="ACES Photo Screenshot"
           />
         </ReactCrop>

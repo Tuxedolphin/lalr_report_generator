@@ -9,7 +9,7 @@ import "@fontsource/roboto/700.css";
 
 import ButtonGroupInput from "../ButtonGroupInput";
 import { gridFormatting } from "../../utils/constants";
-import { useReportContext } from "../../utils/contextFunctions";
+import { useReportContext } from "../../context/contextFunctions";
 const { mainGridFormat, smallInput, largeInput } = gridFormatting;
 
 // The different fire posts/ fire stations corresponding to each fire station
@@ -25,13 +25,13 @@ const firePosts = {
 } as const;
 
 interface GeneralInfoFormProps {
-  handleNext: (newActiveStep?: number, newMaxSteps?: number) => void
+  handleNext: (newMaxSteps?: number, newActiveStep?: number) => void;
 }
 
 const GeneralInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    handleNext();
+    handleNext(report.incidentInformation.opsCenterAcknowledged ? 3 : 4);
   }
 
   const [report, updateReport] = useReportContext();

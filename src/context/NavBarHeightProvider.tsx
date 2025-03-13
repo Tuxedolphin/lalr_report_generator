@@ -3,7 +3,7 @@
  */
 
 import { FC, useState } from "react";
-import { NavBarHeightContext } from "../utils/contextFunctions";
+import { NavBarHeightContext } from "./contextFunctions";
 import { type ChildrenOnly } from "../types/types";
 
 const NavBarHeightProvider: FC<ChildrenOnly> = function ({ children }) {
