@@ -57,6 +57,7 @@ export type ReportValueKeysType =
 
 export type ReportValueTypes =
   | CroppedPicture
+  | DrawnOnPicture
   | Dayjs
   | string
   | null

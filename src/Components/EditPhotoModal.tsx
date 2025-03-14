@@ -8,8 +8,26 @@ import {
 } from "@mui/material";
 import ReactCrop, { type Crop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { FC, useEffect, useState } from "react";
+import { FC, SyntheticEvent, useState } from "react";
 import CroppedPicture from "../classes/CroppedPicture";
+import { centerCrop, makeAspectCrop } from "react-image-crop";
+
+const onloadFunction = function (e: SyntheticEvent): Crop {
+  const image = e.target as HTMLImageElement;
+  return centerCrop(
+    makeAspectCrop(
+      {
+        unit: "%",
+        width: 90,
+      },
+      4 / 3,
+      image.naturalWidth,
+      image.naturalHeight
+    ),
+    image.naturalWidth,
+    image.naturalHeight
+  );
+};
 
 interface EditPhotoModalProps {
   reportImage: CroppedPicture;
@@ -59,7 +77,9 @@ const EditPhotoModal: FC<EditPhotoModalProps> = function ({
         >
           <img
             src={reportImage.image.src}
-            onLoad={() => reportImage.getUpdatedCrop(setCrop)}
+            onLoad={(e) => {
+              setCrop(onloadFunction(e));
+            }}
             alt="ACES Photo Screenshot"
           />
         </ReactCrop>

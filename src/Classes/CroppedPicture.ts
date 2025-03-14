@@ -1,3 +1,4 @@
+import { SyntheticEvent } from "react";
 import Picture from "./Picture";
 import { Crop, centerCrop, makeAspectCrop } from "react-image-crop";
 
@@ -15,34 +16,16 @@ class CroppedPicture extends Picture {
   constructor(image?: File | Blob, crop?: Crop) {
     super(image);
 
-    this.image.onload = (e: Event) => {
-      const image = e.target as HTMLImageElement;
-      const crop = centerCrop(
-        makeAspectCrop(
-          {
-            unit: "%",
-            width: 90,
-          },
-          4 / 3,
-          image.naturalWidth,
-          image.naturalHeight
-        ),
-        image.naturalWidth,
-        image.naturalHeight
-      );
-
-      this.crop = crop;
-    };
-
     if (image) this.image.src = URL.createObjectURL(image);
     if (crop) this.crop = crop;
   }
 
   get croppedBlob(): Blob {
-    if (!this._croppedBlob) {
-      console.error("Cropped blob not set");
-      return new Blob();
-    }
+    if (!this._croppedBlob)
+      throw new Error(
+        "Cropped blob is not available. Call saveCroppedBlob() first."
+      );
+
     return this._croppedBlob;
   }
 
@@ -87,20 +70,13 @@ class CroppedPicture extends Picture {
     });
   };
 
-  getUpdatedCrop = (
-    setCrop: React.Dispatch<React.SetStateAction<Crop>>
-  ): Crop => {
-    setCrop(this.crop);
-    return this.crop;
+  saveCroppedBlob = async (): Promise<void> => {
+    this._croppedBlob = await this.getNewCroppedBlob();
   };
 
   updateAndReturnCrop = (crop: Crop): this => {
     this.crop = crop;
     return this;
-  };
-
-  saveCroppedBlob = async (): Promise<void> => {
-    this._croppedBlob = await this.getNewCroppedBlob();
   };
 }
 

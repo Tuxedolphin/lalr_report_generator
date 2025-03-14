@@ -1,3 +1,5 @@
+import { RefObject, SyntheticEvent } from "react";
+
 export function getItem(key: string): string {
   const result = localStorage.getItem(key);
 
@@ -26,4 +28,36 @@ export function camelCaseToTitleCase(string: string): string {
 
 export function timeToSeconds(minute: number, second: number) {
   return minute * 60 + second;
+}
+
+export const getOffset = function (
+  event: SyntheticEvent,
+  canvasRef: RefObject<HTMLCanvasElement>
+): [number, number] {
+  if (!canvasRef.current) return [0, 0];
+  const rect = canvasRef.current.getBoundingClientRect();
+  const e = event.nativeEvent as MouseEvent | TouchEvent;
+  const x = "touches" in e ? e.touches[0].clientX : e.clientX;
+  const y = "touches" in e ? e.touches[0].clientY : e.clientY;
+  const scaleX = canvasRef.current.width / rect.width;
+  const scaleY = canvasRef.current.height / rect.height;
+  return [(x - rect.left) * scaleX, (y - rect.top) * scaleY];
+};
+
+export function clearCanvas(
+  context: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement
+) {
+  context.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+export function setCanvasStroke(
+  context: CanvasRenderingContext2D | null,
+  color: string,
+  width: number
+) {
+  if (!context) return;
+
+  context.strokeStyle = color;
+  context.lineWidth = width;
 }
