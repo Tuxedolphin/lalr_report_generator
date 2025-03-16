@@ -1,4 +1,5 @@
 import { RefObject, SyntheticEvent } from "react";
+import { Dayjs } from "dayjs";
 
 export function getItem(key: string): string {
   const result = localStorage.getItem(key);
@@ -52,12 +53,18 @@ export function clearCanvas(
 }
 
 export function setCanvasStroke(
-  context: CanvasRenderingContext2D | null,
+  context: CanvasRenderingContext2D,
   color: string,
   width: number
 ) {
-  if (!context) return;
-
   context.strokeStyle = color;
   context.lineWidth = width;
 }
+
+export const getTotalTime = function (
+  start: Dayjs,
+  end: Dayjs,
+  buffer?: Dayjs
+) {
+  return (start.diff(end) + (buffer ? buffer.millisecond() : 0)) / 100;
+};

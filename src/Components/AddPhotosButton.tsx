@@ -3,6 +3,7 @@ import { Image as ImageIcon, Clear as ClearIcon } from "@mui/icons-material";
 import { FC, useState } from "react";
 import EditPhotoModal from "./EditPhotoModal";
 import CroppedPicture from "../classes/CroppedPicture";
+import DrawnOnPicture from "../classes/DrawnOnPicture";
 import { Crop } from "react-image-crop";
 import { useReportContext } from "../context/contextFunctions";
 import { camelCaseToTitleCase } from "../utils/generalFunctions";
@@ -32,9 +33,18 @@ const AddPhotosButton: FC<AddPhotosFormProps> = function ({ photoType }) {
    * Updates the image of the report object passed in
    * @param crop The crop object, or null if the photo is to be deleted
    */
-  const updateImage = (crop: Crop | null) => {
+  const updateImage = async (crop: Crop | null) => {
     if (crop === null) updateReport(photoType, new CroppedPicture());
-    else updateReport(photoType, reportImage?.updateAndReturnCrop(crop)!);
+    else
+      updateReport(
+        photoType,
+        reportImage?.updateAndReturnCrop(crop) ?? new CroppedPicture()
+      );
+
+    if (photoType === "acesScreenshot" && reportImage) {
+      const blob = await reportImage.getNewCroppedBlob();
+      updateReport("drawnScreenshot", new DrawnOnPicture(blob));
+    }
   };
 
   let reportImage =

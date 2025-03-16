@@ -5,12 +5,14 @@
 import Report from "../classes/Report";
 import { useContext, createContext } from "react";
 import { ReportValueKeysType, ReportValueTypes } from "../types/types";
+import { PromiseExtended } from "dexie";
 
 export const ReportContext = createContext<
   | [
       Report,
       (key: ReportValueKeysType, value: ReportValueTypes) => void,
       React.Dispatch<React.SetStateAction<Report>>,
+      (report: Report) => PromiseExtended<number> | -1,
     ]
   | undefined
 >(undefined);
@@ -20,7 +22,7 @@ export const ReportContext = createContext<
  * it'll throw an error.
  *
  * @param report An optional parameter of type Report, add it in if one needs to set the report
- * @returns [report, updateReport]. updateReport functions requires only the key and value.
+ * @returns [report, updateReport, addReport]. updateReport functions requires only the key and value.
  */
 export const useReportContext = function (report?: Report) {
   const result = useContext(ReportContext);
@@ -31,11 +33,11 @@ export const useReportContext = function (report?: Report) {
     );
   }
 
-  const [r, updateReport, setReport] = result;
+  const [r, updateReport, setReport, addReport] = result;
 
   if (report) setReport(report);
 
-  return [report ? report : r, updateReport] as const;
+  return [report ?? r, updateReport, addReport] as const;
 };
 
 export const IsDarkModeContext = createContext<

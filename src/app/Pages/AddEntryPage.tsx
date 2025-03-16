@@ -15,6 +15,7 @@ import SecondFootageForm from "../../components/forms/SecondFootageForm";
 const AddEntryPage: FC = function () {
   const [activeStep, setActiveStep] = useState(0);
   const [maxSteps, setMaxSteps] = useState(4);
+  const buttonWidth = 77.5; // Arbitrary number to ensure different texts results in the same width
 
   updateBackground();
 
@@ -29,12 +30,13 @@ const AddEntryPage: FC = function () {
   };
 
   const handleNext = function (newMaxSteps?: number, newActiveStep?: number) {
+
     if (activeStep === maxSteps - 1) {
       console.error("Submit function not defined yet");
+    } else {
+      setActiveStep(newActiveStep ?? activeStep + 1);
+      if (newMaxSteps) setMaxSteps(newMaxSteps);
     }
-
-    setActiveStep(newActiveStep ?? activeStep + 1);
-    if (newMaxSteps) setMaxSteps(newMaxSteps);
   };
 
   const commonProps = {
@@ -66,18 +68,16 @@ const AddEntryPage: FC = function () {
         activeStep={activeStep}
         nextButton={
           <Button
-            size="small"
             form={Object.keys(stepsContent)[activeStep]}
             type="submit"
-            sx={{ paddingX: 1 }}
-            disabled={activeStep === maxSteps - 1}
+            sx={{ width: "77.5px" }}
           >
-            Next
-            <KeyboardArrowRight />
+            {activeStep === maxSteps - 1 ? "Submit" : "Next"}
+            {activeStep !== maxSteps - 1 && <KeyboardArrowRight />}
           </Button>
         }
         backButton={
-          <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+          <Button onClick={handleBack} disabled={activeStep === 0}>
             <KeyboardArrowLeft />
             Back
           </Button>

@@ -21,10 +21,12 @@ class CroppedPicture extends Picture {
   }
 
   get croppedBlob(): Blob {
-    if (!this._croppedBlob)
-      throw new Error(
+    if (!this._croppedBlob) {
+      console.error(
         "Cropped blob is not available. Call saveCroppedBlob() first."
       );
+      return new Blob();
+    }
 
     return this._croppedBlob;
   }

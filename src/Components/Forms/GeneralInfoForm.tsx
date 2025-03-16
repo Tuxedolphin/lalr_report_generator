@@ -34,7 +34,7 @@ const GeneralInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
     handleNext(report.incidentInformation.opsCenterAcknowledged ? 3 : 4);
   }
 
-  const [report, updateReport] = useReportContext();
+  const [report, updateReport, addReport] = useReportContext();
 
   const information = report.incidentInformation;
 

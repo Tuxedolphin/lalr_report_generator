@@ -48,9 +48,6 @@ const EditPhotoModal: FC<EditPhotoModalProps> = function ({
 
   function handleSubmit(): void {
     updateImage(crop);
-    reportImage.saveCroppedBlob().catch((error: unknown) => {
-      console.error(error);
-    });
     handleClose();
   }
 

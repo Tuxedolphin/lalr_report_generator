@@ -10,6 +10,7 @@ import {
   type ReportValueKeysType,
   type ReportValueTypes,
 } from "../types/types";
+import { addReport } from "../features/db";
 
 const ReportProvider: FC<ChildrenOnly> = function ({ children }) {
   const [report, setReport] = useState<Report>(new Report());
@@ -22,7 +23,7 @@ const ReportProvider: FC<ChildrenOnly> = function ({ children }) {
   };
 
   return (
-    <ReportContext.Provider value={[report, updateReport, setReport]}>
+    <ReportContext.Provider value={[report, updateReport, setReport, addReport]}>
       {children}
     </ReportContext.Provider>
   );

@@ -32,6 +32,8 @@ interface CommonFormProps {
   updateReport: (key: ReportValueKeysType, value: ReportValueTypes) => void;
 }
 
+// BUG: Fix the display timing bug
+
 const LAForm: FC<CommonFormProps> = function ({
   cameraInformation,
   updateReport,
@@ -114,10 +116,10 @@ const LRForm: FC<CommonFormProps> = function ({
             sx={{ textAlign: "center", marginTop: 2, marginBottom: 1 }}
           >
             Total time:{" "}
-            <span style={{ color: "red" }}>
+            <Typography component="span" sx={{ color: "red" }}>
               {dayjs().millisecond(4320).minute()}min{" "}
               {dayjs().millisecond(432000).second()}sec
-            </span>
+            </Typography>
           </Typography>
         </Paper>
       )}
@@ -129,18 +131,27 @@ interface SecondFootageFormType {
   handleNext: (newMaxSteps?: number, newActiveStep?: number) => void;
 }
 
-const SecondFootageForm: FC<SecondFootageFormType> = function () {
+const SecondFootageForm: FC<SecondFootageFormType> = function ({ handleNext }) {
   const [report, updateReport] = useReportContext();
+
+  const handleSubmit = function (event: React.FormEvent) {
+    event.preventDefault();
+    handleNext();
+  };
 
   const commonProps = {
     cameraInformation: report.cameraInformation,
     updateReport: updateReport,
   } as const;
 
-  return report.incidentInformation.reportType === "LA" ? (
-    <LAForm {...commonProps} />
-  ) : (
-    <LRForm {...commonProps} />
+  return (
+    <form id="secondFootageForm" onSubmit={handleSubmit}>
+      {report.incidentInformation.reportType === "LA" ? (
+        <LAForm {...commonProps} />
+      ) : (
+        <LRForm {...commonProps} />
+      )}
+    </form>
   );
 };
 

@@ -1,14 +1,20 @@
 import { FC, SyntheticEvent, useEffect, useRef, useState } from "react";
 import TimingAndPhotoInput from "../TimingAndPhotoInput";
 import { useReportContext } from "../../context/contextFunctions";
-import { Box, Typography } from "@mui/material";
-import Canvas from "../Canvas";
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Typography,
+} from "@mui/material";
+import { ExpandMore } from "@mui/icons-material";
 import DrawnOnPicture from "../../classes/DrawnOnPicture";
 import {
   clearCanvas,
   getOffset,
   setCanvasStroke,
 } from "../../utils/generalFunctions";
+import exampleImage from "../../assets/example_image.png";
 
 /**
  * If the report is acknowledged by the ops center, the form should be a drawing form instead.
@@ -20,11 +26,11 @@ const DrawingForm: FC<DrawingFormProps> = function () {
   const [report, updateReport] = useReportContext();
   const [isDown, setIsDown] = useState(false);
 
-  // BUG: The cropped image is not replaced if the previous aces screenshot is updated
-
   const reportImage =
     report.acesInformation.drawnScreenshot ??
-    new DrawnOnPicture(report.acesInformation.acesScreenshot?.croppedBlob!); // It'll never be null
+    new DrawnOnPicture(
+      report.acesInformation.acesScreenshot?.croppedBlob ?? new Blob() // Technically this should never be null
+    );
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -68,7 +74,6 @@ const DrawingForm: FC<DrawingFormProps> = function () {
     contextRef.current?.closePath();
   };
 
-  // On page load, update and set the image
   useEffect(() => {
     const image = reportImage.image;
     const canvas = canvasRef.current;
@@ -82,6 +87,8 @@ const DrawingForm: FC<DrawingFormProps> = function () {
       canvas.height = image.naturalHeight;
     };
 
+    if (!context) return;
+
     if (image.complete) {
       updateCanvasSize();
       setCanvasStroke(context, "red", 3);
@@ -92,12 +99,21 @@ const DrawingForm: FC<DrawingFormProps> = function () {
       };
     }
 
+    const start = reportImage.startCoordinates;
+    const end = reportImage.endCoordinates;
+
+    context.strokeRect(
+      start[0],
+      start[1],
+      end[0] - start[0],
+      end[1] - start[1]
+    );
+
     contextRef.current = context;
   }, []);
 
   return (
     <>
-      <Typography></Typography>
       <canvas
         ref={canvasRef}
         className="full-width"
@@ -114,6 +130,28 @@ const DrawingForm: FC<DrawingFormProps> = function () {
           backgroundSize: "cover",
         }}
       />
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMore />}>
+          <Typography component="span">Guide</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography component="p">
+            To indicate that ops center has acknowledged the incident, please
+            draw a rectangular selection on the image. Click and drag to create
+            a rectangle that encompasses the relevant acknowledgment
+            information.
+          </Typography>
+          <p></p>
+          <Typography component="p">
+            Please refer to an example below:
+          </Typography>
+          <img
+            src={exampleImage}
+            alt="Example acknowledgment"
+            className="full-width"
+          />
+        </AccordionDetails>
+      </Accordion>
     </>
   );
 };
@@ -150,11 +188,13 @@ const FirstFootageForm: FC<FirstFootageFormProps> = function ({ handleNext }) {
     <TimingAndPhotoInput timingInput={timing} key={Object.keys(timing)[0]} />
   ));
 
-  return report.incidentInformation.opsCenterAcknowledged ? (
-    <DrawingForm />
-  ) : (
+  return (
     <form id="firstFootageForm" onSubmit={handleSubmit}>
-      {timingAndPhotoInputs}
+      {report.incidentInformation.opsCenterAcknowledged ? (
+        <DrawingForm />
+      ) : (
+        timingAndPhotoInputs
+      )}
     </form>
   );
 };
