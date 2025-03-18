@@ -13,10 +13,12 @@ const timingInputToPhoto = {
 
 interface TimingAndPhotoInputProps {
   timingInput: TimingInputsType;
+  reportKey: "cameraInformation" | "acesInformation";
 }
 
 const TimingAndPhotoInput: FC<TimingAndPhotoInputProps> = function ({
   timingInput,
+  reportKey,
 }) {
   if (Object.keys(timingInput).length > 1)
     throw new Error(
@@ -32,7 +34,11 @@ const TimingAndPhotoInput: FC<TimingAndPhotoInputProps> = function ({
     <>
       <AddPhotosButton photoType={photoType} />
       <Paper sx={{ padding: 1, marginY: 1 }}>
-        <TimingInputs headerText="" timingInputs={timingInput} />
+        <TimingInputs
+          headerText=""
+          timingInputs={timingInput}
+          reportKey={reportKey}
+        />
       </Paper>
     </>
   );

@@ -25,20 +25,20 @@ export interface GeneralInformationType {
 }
 
 export interface AcesInformationType {
-  timeDispatched: Dayjs | undefined;
-  timeResponded: Dayjs | undefined;
-  timeEnRoute: Dayjs | undefined;
-  timeArrived: Dayjs | undefined;
+  timeDispatched: Dayjs | null;
+  timeResponded: Dayjs | null;
+  timeEnRoute: Dayjs | null;
+  timeArrived: Dayjs | null;
   acesScreenshot: CroppedPicture | undefined;
   drawnScreenshot: DrawnOnPicture | undefined;
 }
 
 export interface CameraInformationType {
-  timeDispatched: Dayjs | null | undefined;
-  timeResponded: Dayjs | null | undefined;
-  timeAllIn: Dayjs | null | undefined;
-  timeMoveOff: Dayjs | null | undefined;
-  timeArrived: Dayjs | null | undefined;
+  timeDispatched: Dayjs | null;
+  timeResponded: Dayjs | null;
+  timeAllIn: Dayjs | null;
+  timeMoveOff: Dayjs | null;
+  timeArrived: Dayjs | null;
   hasBufferTime: boolean | null;
   bufferingTime: Dayjs | null;
   bufferingLocation: string;
@@ -64,6 +64,12 @@ export type ReportValueTypes =
   | number
   | boolean;
 
+export type ReportKeys =
+  | "incidentInformation"
+  | "generalInformation"
+  | "acesInformation"
+  | "cameraInformation";
+
 export interface EditType {
   key: ReportValueKeysType;
   value: ReportValueTypes;
@@ -80,3 +86,27 @@ export type PhotosType =
   | "allInPhoto"
   | "moveOffPhoto"
   | "arrivedPhoto";
+
+export interface UpdateReportType {
+  id: (id: number) => void;
+  cameraInformation: (
+    key: keyof CameraInformationType,
+    value: CameraInformationType[typeof key],
+    saveToDB?: boolean
+  ) => void;
+  acesInformation: (
+    key: keyof AcesInformationType,
+    value: AcesInformationType[typeof key],
+    saveToDB?: boolean
+  ) => void;
+  generalInformation: (
+    key: keyof GeneralInformationType,
+    value: GeneralInformationType[typeof key],
+    saveToDB?: boolean
+  ) => void;
+  incidentInformation: (
+    key: keyof IncidentInformationType,
+    value: IncidentInformationType[typeof key],
+    saveToDB?: boolean
+  ) => void;
+}

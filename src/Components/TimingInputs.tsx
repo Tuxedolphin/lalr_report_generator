@@ -3,13 +3,10 @@
 import { camelCaseToTitleCase } from "../utils/generalFunctions";
 import { TimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { Divider, Grid2 as Grid, Box } from "@mui/material";
+import { Divider, Grid2 as Grid } from "@mui/material";
 import { Dayjs } from "dayjs";
 import { FC, useState, useEffect, useMemo } from "react";
-import {
-  useIsDarkModeContext,
-  useReportContext,
-} from "../context/contextFunctions";
+import { useReportContext } from "../context/contextFunctions";
 import { alternateGridFormatting } from "../utils/constants";
 
 export interface TimingInputsType {
@@ -32,12 +29,16 @@ type secondEntryKeys =
 interface TimingInputsProps {
   headerText: string;
   timingInputs: TimingInputsType;
+  reportKey: "cameraInformation" | "acesInformation";
 }
 
 export const TimingInputs: FC<TimingInputsProps> = function ({
   headerText,
   timingInputs,
+  reportKey,
 }) {
+  const [report, updateReport] = useReportContext();
+
   const [display, setDisplay] = useState({
     first: false,
     second: false,
@@ -83,8 +84,6 @@ export const TimingInputs: FC<TimingInputsProps> = function ({
     setDisplay({ ...newDisplay, total: counter });
   }, [secondEntryType, timingInputs]);
 
-  const [_, updateReport] = useReportContext();
-
   return (
     <>
       {headerText && <Divider sx={{ paddingBottom: 1 }}>{headerText}</Divider>}
@@ -99,7 +98,8 @@ export const TimingInputs: FC<TimingInputsProps> = function ({
                   value={timingInputs.timeDispatched}
                   views={["hours", "minutes", "seconds"]}
                   onChange={(time: Dayjs | null) => {
-                    updateReport("timeDispatched", time);
+                    updateReport[reportKey]("timeDispatched", time);
+                    report.updateDBReport(reportKey);
                   }}
                 />
               </Grid>
@@ -115,7 +115,8 @@ export const TimingInputs: FC<TimingInputsProps> = function ({
                   views={["hours", "minutes", "seconds"]}
                   onChange={(time: Dayjs | null) => {
                     if (!secondEntryType) return;
-                    updateReport(secondEntryType, time);
+                    updateReport[reportKey](secondEntryType as any, time); // Unsafe but I can't be bothered to fix the type issue
+                    report.updateDBReport(reportKey);
                   }}
                 />
               </Grid>
@@ -130,7 +131,8 @@ export const TimingInputs: FC<TimingInputsProps> = function ({
                   value={timingInputs.timeArrived}
                   views={["hours", "minutes", "seconds"]}
                   onChange={(time: Dayjs | null) => {
-                    updateReport("timeArrived", time);
+                    updateReport[reportKey]("timeArrived", time);
+                    report.updateDBReport(reportKey);
                   }}
                 />
               </Grid>

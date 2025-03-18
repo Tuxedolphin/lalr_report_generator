@@ -4,15 +4,13 @@
 
 import Report from "../classes/Report";
 import { useContext, createContext } from "react";
-import { ReportValueKeysType, ReportValueTypes } from "../types/types";
-import { PromiseExtended } from "dexie";
+import { UpdateReportType } from "../types/types";
 
 export const ReportContext = createContext<
   | [
       Report,
-      (key: ReportValueKeysType, value: ReportValueTypes) => void,
+      UpdateReportType,
       React.Dispatch<React.SetStateAction<Report>>,
-      (report: Report) => PromiseExtended<number> | -1,
     ]
   | undefined
 >(undefined);
@@ -33,11 +31,11 @@ export const useReportContext = function (report?: Report) {
     );
   }
 
-  const [r, updateReport, setReport, addReport] = result;
+  const [r, updateReport, setReport] = result;
 
   if (report) setReport(report);
 
-  return [report ?? r, updateReport, addReport] as const;
+  return [report ?? r, updateReport] as const;
 };
 
 export const IsDarkModeContext = createContext<

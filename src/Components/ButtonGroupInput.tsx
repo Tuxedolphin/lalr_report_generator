@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { ReportValueKeysType, ReportValueTypes } from "../types/types";
+import { IncidentInformationType, ReportValueTypes } from "../types/types";
 import {
   FormControl,
   FormLabel,
@@ -10,8 +10,8 @@ import { useReportContext } from "../context/contextFunctions";
 
 interface ButtonGroupInputType {
   title: string;
-  buttonTextsValues: { [index: string]: ReportValueTypes };
-  id: ReportValueKeysType;
+  buttonTextsValues: Record<string, ReportValueTypes>;
+  id: keyof IncidentInformationType;
   selected: ReportValueTypes;
 }
 
@@ -21,7 +21,7 @@ const ButtonGroupInput: FC<ButtonGroupInputType> = function ({
   id,
   selected,
 }) {
-  const [_, updateReport] = useReportContext();
+  const [, updateReport] = useReportContext();
 
   const buttons = Object.entries(buttonTextsValues).map((button) => {
     const [text, value] = button;
@@ -43,10 +43,13 @@ const ButtonGroupInput: FC<ButtonGroupInputType> = function ({
   });
 
   const handleChange = function (
-    e: React.MouseEvent<HTMLElement>,
+    _: React.MouseEvent<HTMLElement>,
     newValue: string | null
   ) {
-    updateReport(id, newValue);
+    if (!["reportType", "opsCenterAcknowledged"].includes(id))
+      throw new Error(`${id} was not implemented to update in DB`);
+
+    updateReport.incidentInformation(id, newValue, true);
   };
 
   return (

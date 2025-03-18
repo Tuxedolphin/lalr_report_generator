@@ -18,10 +18,11 @@ const TimeLengthPicker: FC<TimeLengthPickerProps> = function ({ entryKey }) {
       <TimePicker
         sx={{ width: "100%" }}
         label={camelCaseToTitleCase(entryKey)}
-        value={report.getValue(entryKey) as Dayjs | null}
+        value={report.cameraInformation[entryKey]}
         views={["minutes", "seconds"]}
         onChange={(time: Dayjs | null) => {
-          updateReport(entryKey, time);
+          updateReport.cameraInformation(entryKey, time);
+          report.updateDBReport("cameraInformation");
         }}
       />
     </LocalizationProvider>

@@ -6,6 +6,7 @@ import {
   CameraInformationType,
   GeneralInformationType,
   IncidentInformationType,
+  ReportKeys,
   ReportValueKeysType,
   ReportValueTypes,
 } from "../types/types";
@@ -96,16 +97,29 @@ function formatReport(report: Report): ReportDBType {
   };
 }
 
+function reconstructDBPhoto(photo?: DBPhoto): DBPhoto | undefined {
+  if (!photo) return;
+  return new DBPhoto(
+    photo.crop
+      ? new CroppedPicture(photo.blob, photo.crop)
+      : new DrawnOnPicture(
+          photo.blob,
+          photo.coordinates?.[0] ?? undefined,
+          photo.coordinates?.[1] ?? undefined
+        )
+  );
+}
+
 function formatAcesInformationForUse(
   info: DBAcesInformationType
 ): AcesInformationType {
   return {
     ...info,
     acesScreenshot: info.acesScreenshot
-      ? info.acesScreenshot.getCroppedPicture()
+      ? reconstructDBPhoto(info.acesScreenshot)?.getCroppedPicture()
       : undefined,
     drawnScreenshot: info.drawnScreenshot
-      ? info.drawnScreenshot.getDrawnOnPicture()
+      ? reconstructDBPhoto(info.drawnScreenshot)?.getDrawnOnPicture()
       : undefined,
   };
 }
@@ -116,16 +130,16 @@ function formatCameraInformationForUse(
   return {
     ...info,
     dispatchPhoto: info.dispatchPhoto
-      ? info.dispatchPhoto.getCroppedPicture()
+      ? reconstructDBPhoto(info.dispatchPhoto)?.getCroppedPicture()
       : undefined,
     allInPhoto: info.allInPhoto
-      ? info.allInPhoto.getCroppedPicture()
+      ? reconstructDBPhoto(info.allInPhoto)?.getCroppedPicture()
       : undefined,
     moveOffPhoto: info.moveOffPhoto
-      ? info.moveOffPhoto.getCroppedPicture()
+      ? reconstructDBPhoto(info.moveOffPhoto)?.getCroppedPicture()
       : undefined,
     arrivedPhoto: info.arrivedPhoto
-      ? info.arrivedPhoto.getCroppedPicture()
+      ? reconstructDBPhoto(info.arrivedPhoto)?.getCroppedPicture()
       : undefined,
   };
 }
@@ -144,25 +158,25 @@ function formatDBReport(report: ReportDBType): Report {
 //       Accessing/ Retrieving from DB
 // =========================================
 
-export function addReport(report: Report) {
+/**
+ * Adds a report to IndexedDB
+ * @param report The report to be added to the database
+ * @returns A promise which successfully resolves to be the id of the object
+ */
+export async function addReport(report: Report) {
   const r = formatReport(report);
 
-  try {
-    return db.reports.add({
-      acesInformation: r.acesInformation,
-      cameraInformation: r.cameraInformation,
-      incidentInformation: r.incidentInformation,
-      generalInformation: r.generalInformation,
-    });
-  } catch (error) {
-    console.error(error);
-    return -1;
-  }
+  return await db.reports.add({
+    acesInformation: r.acesInformation,
+    cameraInformation: r.cameraInformation,
+    incidentInformation: r.incidentInformation,
+    generalInformation: r.generalInformation,
+  });
 }
 
 export function updateReport(
   id: number,
-  key: Omit<keyof Report, "id">,
+  key: ReportKeys,
   value:
     | AcesInformationType
     | CameraInformationType
@@ -191,13 +205,13 @@ export function updateReport(
 
 export function deleteReport(id: number) {
   db.reports.delete(id).catch((error: unknown) => {
-    console.error(error);
+    throw new Error(String(error)); // Rethrow the error just so that eslint is happy with the catch block
   });
 }
 
 export function deleteAll() {
   db.reports.clear().catch((error: unknown) => {
-    console.error(error);
+    throw new Error(String(error));
   });
 }
 

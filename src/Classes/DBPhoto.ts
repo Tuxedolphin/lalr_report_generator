@@ -12,7 +12,7 @@ class DBPhoto {
 
     if (image instanceof CroppedPicture) this.crop = image.crop;
     else if (image instanceof DrawnOnPicture)
-      this.coordinates = [image.startCoordinates, image.endCoordinates];
+      this.coordinates = [image.start, image.end];
     else throw new Error("Input image does not match either type");
   }
 
@@ -28,7 +28,7 @@ class DBPhoto {
   getDrawnOnPicture() {
     if (!this.coordinates)
       throw new Error(
-        `Cropped picture was retrieved without having a crop. Is ${JSON.stringify(this)} a DrawnOnPicture?`
+        `Drawn-on picture was retrieved without having coordinates. Is ${JSON.stringify(this)} a CroppedPicture?`
       );
 
     return new DrawnOnPicture(

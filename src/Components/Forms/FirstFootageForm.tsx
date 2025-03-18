@@ -36,26 +36,29 @@ const DrawingForm: FC<DrawingFormProps> = function () {
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
 
   const updateImage = function (image: DrawnOnPicture) {
-    updateReport("drawnScreenshot", image);
+    updateReport.acesInformation("drawnScreenshot", image);
+    report.updateDBReport("acesInformation");
   };
 
-  const beginDraw = function (e: SyntheticEvent) {
+  const beginDraw = (e: SyntheticEvent) => {
     if (!canvasRef.current || !contextRef.current) return;
 
     contextRef.current.beginPath();
-    reportImage.startCoordinates = getOffset(e, canvasRef);
+    reportImage.start = getOffset(e, canvasRef);
     updateImage(reportImage);
 
     clearCanvas(contextRef.current, canvasRef.current);
     setIsDown(true);
+
+    report.updateDBReport("acesInformation");
   };
 
-  const updateDraw = function (e: SyntheticEvent) {
+  const updateDraw = (e: SyntheticEvent) => {
     if (!canvasRef.current || !contextRef.current || !isDown) return;
 
     clearCanvas(contextRef.current, canvasRef.current);
 
-    const start = reportImage.startCoordinates;
+    const start = reportImage.start;
     const end = getOffset(e, canvasRef);
 
     contextRef.current.strokeRect(
@@ -65,13 +68,14 @@ const DrawingForm: FC<DrawingFormProps> = function () {
       end[1] - start[1]
     );
 
-    reportImage.endCoordinates = end;
+    reportImage.end = end;
     updateImage(reportImage);
   };
 
   const endDraw = function () {
     setIsDown(false);
     contextRef.current?.closePath();
+    report.updateDBReport("acesInformation");
   };
 
   useEffect(() => {
@@ -99,8 +103,8 @@ const DrawingForm: FC<DrawingFormProps> = function () {
       };
     }
 
-    const start = reportImage.startCoordinates;
-    const end = reportImage.endCoordinates;
+    const start = reportImage.start;
+    const end = reportImage.end;
 
     context.strokeRect(
       start[0],
@@ -165,7 +169,7 @@ interface FirstFootageFormProps {
 }
 
 const FirstFootageForm: FC<FirstFootageFormProps> = function ({ handleNext }) {
-  const [report, updateReport] = useReportContext();
+  const [report] = useReportContext();
   const cameraInformation = report.cameraInformation;
   const isLA = report.incidentInformation.reportType === "LA";
 
@@ -185,7 +189,11 @@ const FirstFootageForm: FC<FirstFootageFormProps> = function ({ handleNext }) {
       ] as const);
 
   const timingAndPhotoInputs = timings.map((timing) => (
-    <TimingAndPhotoInput timingInput={timing} key={Object.keys(timing)[0]} />
+    <TimingAndPhotoInput
+      timingInput={timing}
+      key={Object.keys(timing)[0]}
+      reportKey="cameraInformation"
+    />
   ));
 
   return (

@@ -1,21 +1,28 @@
 import React, { useState, FC } from "react";
 import { MobileStepper, Box, Button } from "@mui/material";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
-import GeneralInfoForm from "../../components/forms/GeneralInfoForm";
+import IncidentInfoForm from "../../components/forms/IncidentInfoForm";
 import { AcesForm } from "../../components/forms/AcesInfoForm";
 import FirstFootageForm from "../../components/forms/FirstFootageForm";
 import updateBackground from "../../features/updateBackground";
 import {
   useNavBarHeightContext,
   useNavBarTextContext,
+  useReportContext,
 } from "../../context/contextFunctions";
 import SecondFootageForm from "../../components/forms/SecondFootageForm";
+import generateReportPpt from "../../features/generateReport";
 
 const AddEntryPage: FC = function () {
+  const [report] = useReportContext();
+
   const [activeStep, setActiveStep] = useState(0);
-  const [maxSteps, setMaxSteps] = useState(4);
-  const buttonWidth = 77.5; // Arbitrary number to ensure different texts results in the same width
+  const [maxSteps, setMaxSteps] = useState(4); // Length of stepsContent, better to not be magic numbers but :D
+  const navigate = useNavigate();
+
+  const buttonWidth = "77.5px"; // Arbitrary number to ensure different texts results in the same width
 
   updateBackground();
 
@@ -30,9 +37,13 @@ const AddEntryPage: FC = function () {
   };
 
   const handleNext = function (newMaxSteps?: number, newActiveStep?: number) {
-
     if (activeStep === maxSteps - 1) {
-      console.error("Submit function not defined yet");
+      // Updating to make sure that the DB report is saved correctly
+      report.updateDBReport();
+
+      generateReportPpt(report);
+
+      navigate("/history");
     } else {
       setActiveStep(newActiveStep ?? activeStep + 1);
       if (newMaxSteps) setMaxSteps(newMaxSteps);
@@ -44,7 +55,7 @@ const AddEntryPage: FC = function () {
   } as const;
 
   const stepsContent = {
-    generalInfoForm: <GeneralInfoForm {...commonProps} key={0} />,
+    generalInfoForm: <IncidentInfoForm {...commonProps} key={0} />,
     acesInfoForm: <AcesForm {...commonProps} key={1} />,
     firstFootageForm: <FirstFootageForm {...commonProps} key={3} />,
     secondFootageForm: <SecondFootageForm {...commonProps} key={4} />,
@@ -70,7 +81,7 @@ const AddEntryPage: FC = function () {
           <Button
             form={Object.keys(stepsContent)[activeStep]}
             type="submit"
-            sx={{ width: "77.5px" }}
+            sx={{ width: buttonWidth }}
           >
             {activeStep === maxSteps - 1 ? "Submit" : "Next"}
             {activeStep !== maxSteps - 1 && <KeyboardArrowRight />}

@@ -58,13 +58,11 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
   useEffect(() => {
     const newTimings = timings;
 
-    for (const key of Object.keys(newTimings)) {
-      const timing = acesInformation[key as TimingsKey];
-      if (timing !== undefined) newTimings[key as TimingsKey] = timing;
-    }
+    for (const key of Object.keys(newTimings))
+      newTimings[key as TimingsKey] = acesInformation[key as TimingsKey];
 
     setTimings(newTimings);
-  }, [acesInformation]);
+  }, [acesInformation, timings]);
 
   return (
     <form id="acesInfoForm" onSubmit={handleSubmit}>
@@ -78,7 +76,13 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
                 label="Weather"
                 value={generalInformation.weather ?? ""}
                 onChange={(event) => {
-                  updateReport("weather", event.target.value);
+                  updateReport.generalInformation(
+                    "weather",
+                    event.target.value
+                  );
+                }}
+                onBlur={() => {
+                  report.updateDBReport("generalInformation");
                 }}
                 fullWidth
                 sx={{ marginBottom: 2 }}
@@ -92,7 +96,11 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
                   label="Response Zone"
                   value={generalInformation.boundary ?? ""}
                   onChange={(event: SelectChangeEvent) => {
-                    updateReport("boundary", event.target.value);
+                    updateReport.generalInformation(
+                      "boundary",
+                      event.target.value,
+                      true
+                    );
                   }}
                 >
                   <MenuItem value={"8"}>8 Minutes</MenuItem>
@@ -108,7 +116,13 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
             label="Incident Outcome"
             value={generalInformation.incidentOutcome ?? ""}
             onChange={(event) => {
-              updateReport("incidentOutcome", event.target.value);
+              updateReport.generalInformation(
+                "incidentOutcome",
+                event.target.value
+              );
+            }}
+            onBlur={() => {
+              report.updateDBReport("generalInformation");
             }}
             multiline
             rows={3}
@@ -117,7 +131,11 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
         </Paper>
       )}
       <Paper sx={{ marginTop: 1, padding: 1 }}>
-        <TimingInputs headerText="Timings From Aces" timingInputs={timings} />
+        <TimingInputs
+          headerText="Timings From Aces"
+          timingInputs={timings}
+          reportKey="acesInformation"
+        />
       </Paper>
     </form>
   );

@@ -2,7 +2,6 @@ import CroppedPicture from "../classes/CroppedPicture";
 import { useRef, useEffect, FC } from "react";
 
 import "../styles/style.css";
-import DrawnOnPicture from "../classes/DrawnOnPicture";
 
 interface CanvasProps {
   reportImage: CroppedPicture;

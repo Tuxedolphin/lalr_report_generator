@@ -1,10 +1,7 @@
 import { FC } from "react";
 import { useReportContext } from "../../context/contextFunctions";
-import {
-  ReportValueTypes,
-  ReportValueKeysType,
-  CameraInformationType,
-} from "../../types/types";
+import Report from "../../classes/Report";
+import { UpdateReportType } from "../../types/types";
 import TimingAndPhotoInput from "../TimingAndPhotoInput";
 import {
   Paper,
@@ -28,29 +25,26 @@ const { mainGridFormat, smallInput, largeInput } = alternateGridFormatting;
  */
 
 interface CommonFormProps {
-  cameraInformation: CameraInformationType;
-  updateReport: (key: ReportValueKeysType, value: ReportValueTypes) => void;
+  report: Report;
+  updateReport: UpdateReportType;
 }
 
 // BUG: Fix the display timing bug
 
-const LAForm: FC<CommonFormProps> = function ({
-  cameraInformation,
-  updateReport,
-}) {
+const LAForm: FC<CommonFormProps> = function ({ report, updateReport }) {
   return (
     <TimingAndPhotoInput
-      timingInput={{ timeMoveOff: cameraInformation.timeMoveOff ?? null }}
+      timingInput={{ timeMoveOff: report.cameraInformation.timeMoveOff }}
+      reportKey="cameraInformation"
     />
   );
 };
 
 // TODO: Maybe have to add justification text input?
 
-const LRForm: FC<CommonFormProps> = function ({
-  cameraInformation,
-  updateReport,
-}) {
+const LRForm: FC<CommonFormProps> = function ({ report, updateReport }) {
+  const cameraInformation = report.cameraInformation;
+
   return (
     <>
       <Paper sx={{ p: 1, marginTop: 2 }}>
@@ -71,7 +65,8 @@ const LRForm: FC<CommonFormProps> = function ({
             aria-labelledby={"button-group-control"}
             onChange={(_, newValue: boolean | null) => {
               if (newValue !== null) {
-                updateReport("hasBufferTime", newValue);
+                updateReport.cameraInformation("hasBufferTime", newValue);
+                report.updateDBReport("cameraInformation");
               }
             }}
             fullWidth
@@ -98,7 +93,13 @@ const LRForm: FC<CommonFormProps> = function ({
                 variant="outlined"
                 value={cameraInformation.bufferingLocation}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  updateReport("bufferingLocation", event.target.value);
+                  updateReport.cameraInformation(
+                    "bufferingLocation",
+                    event.target.value
+                  );
+                }}
+                onBlur={() => {
+                  report.updateDBReport("cameraInformation");
                 }}
                 fullWidth
                 slotProps={{
@@ -140,8 +141,8 @@ const SecondFootageForm: FC<SecondFootageFormType> = function ({ handleNext }) {
   };
 
   const commonProps = {
-    cameraInformation: report.cameraInformation,
-    updateReport: updateReport,
+    report,
+    updateReport,
   } as const;
 
   return (

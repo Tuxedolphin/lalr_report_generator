@@ -1,11 +1,12 @@
 import React, { FC } from "react";
-import { TextField, Divider, Paper, Autocomplete, Box } from "@mui/material";
-import Grid from "@mui/material/Grid2";
-
-import "@fontsource/roboto/300.css";
-import "@fontsource/roboto/400.css";
-import "@fontsource/roboto/500.css";
-import "@fontsource/roboto/700.css";
+import {
+  TextField,
+  Divider,
+  Paper,
+  Autocomplete,
+  Box,
+  Grid2 as Grid,
+} from "@mui/material";
 
 import ButtonGroupInput from "../ButtonGroupInput";
 import { gridFormatting } from "../../utils/constants";
@@ -28,15 +29,19 @@ interface GeneralInfoFormProps {
   handleNext: (newMaxSteps?: number, newActiveStep?: number) => void;
 }
 
-const GeneralInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
+const IncidentInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     handleNext(report.incidentInformation.opsCenterAcknowledged ? 3 : 4);
   }
 
-  const [report, updateReport, addReport] = useReportContext();
+  const [report, updateReport] = useReportContext();
 
   const information = report.incidentInformation;
+
+  const onBlur = () => {
+    report.updateDBReport("incidentInformation");
+  };
 
   return (
     <form id="generalInfoForm" onSubmit={handleSubmit}>
@@ -50,8 +55,12 @@ const GeneralInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
               fullWidth
               value={information.incidentNumb}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                updateReport("incidentNumb", event.target.value);
+                updateReport.incidentInformation(
+                  "incidentNumb",
+                  event.target.value
+                );
               }}
+              onBlur={onBlur}
             />
           </Grid>
           <Grid size={smallInput}>
@@ -60,7 +69,7 @@ const GeneralInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
               inputValue={information.station}
               value={information.station}
               onInputChange={(_, newValue: string) => {
-                updateReport("station", newValue);
+                updateReport.incidentInformation("station", newValue, true);
               }}
               renderInput={(params) => (
                 <TextField {...params} label="Station" />
@@ -74,8 +83,12 @@ const GeneralInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
               variant="outlined"
               value={information.appliance}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                updateReport("appliance", event.target.value);
+                updateReport.incidentInformation(
+                  "appliance",
+                  event.target.value
+                );
               }}
+              onBlur={onBlur}
               fullWidth
             />
           </Grid>
@@ -85,8 +98,9 @@ const GeneralInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
               variant="outlined"
               value={information.SC}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                updateReport("SC", event.target.value);
+                updateReport.incidentInformation("SC", event.target.value);
               }}
+              onBlur={onBlur}
               fullWidth
             />
           </Grid>
@@ -103,7 +117,7 @@ const GeneralInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
           }
           value={information.turnoutFrom}
           onInputChange={(_, newValue: string) => {
-            updateReport("turnoutFrom", newValue);
+            updateReport.incidentInformation("turnoutFrom", newValue, true);
           }}
           renderInput={(params) => (
             <TextField {...params} label="Turnout From" />
@@ -115,8 +129,9 @@ const GeneralInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
           fullWidth
           value={information.typeOfCall}
           onChange={(event) => {
-            updateReport("typeOfCall", event.target.value);
+            updateReport.incidentInformation("typeOfCall", event.target.value);
           }}
+          onBlur={onBlur}
           sx={{ marginTop: 2 }}
         />
         <TextField
@@ -125,8 +140,9 @@ const GeneralInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
           sx={{ marginTop: 2 }}
           value={information.location}
           onChange={(event) => {
-            updateReport("location", event.target.value);
+            updateReport.incidentInformation("location", event.target.value);
           }}
+          onBlur={onBlur}
         />
       </Paper>
 
@@ -162,4 +178,4 @@ const GeneralInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
   );
 };
 
-export default GeneralInfoForm;
+export default IncidentInfoForm;

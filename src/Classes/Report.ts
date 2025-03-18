@@ -3,9 +3,13 @@ import {
   type GeneralInformationType,
   type AcesInformationType,
   type CameraInformationType,
-  type ReportValueKeysType,
-  type ReportValueTypes,
+  ReportKeys,
 } from "../types/types";
+import {
+  addReport,
+  updateReport as updateDBReport,
+  deleteReport,
+} from "../features/db";
 
 class Report {
   // Setting default values
@@ -32,20 +36,20 @@ class Report {
   // Manually setting the values to undefined as it is updated to null for some values manually.
   // Those keys whose values are not undefined will be displayed
   protected _acesInformation: AcesInformationType = {
-    timeDispatched: undefined,
-    timeResponded: undefined,
-    timeEnRoute: undefined,
-    timeArrived: undefined,
+    timeDispatched: null,
+    timeResponded: null,
+    timeEnRoute: null,
+    timeArrived: null,
     acesScreenshot: undefined,
     drawnScreenshot: undefined,
   };
 
   protected _cameraInformation: CameraInformationType = {
-    timeDispatched: undefined,
-    timeResponded: undefined,
-    timeAllIn: undefined,
-    timeMoveOff: undefined,
-    timeArrived: undefined,
+    timeDispatched: null,
+    timeResponded: null,
+    timeAllIn: null,
+    timeMoveOff: null,
+    timeArrived: null,
     hasBufferTime: null,
     bufferingTime: null,
     bufferingLocation: "",
@@ -89,15 +93,16 @@ class Report {
     }
 
     this.id = id;
+
     this._incidentInformation = incidentInformation;
     this._generalInformation = generalInformation;
     this._acesInformation = acesInformation;
     this._cameraInformation = cameraInformation;
   }
 
-  /**
-   * Getters
-   */
+  // =========================================
+  //                Getters
+  // =========================================
 
   get incidentInformation() {
     return this._incidentInformation;
@@ -115,7 +120,11 @@ class Report {
     return this._cameraInformation;
   }
 
-  get acesActivationTime() {
+  // =========================================
+  //            Methods - Getters
+  // =========================================
+
+  getAcesActivationTime() {
     const respondTime =
       this.incidentInformation.reportType == "LA"
         ? this.acesInformation.timeResponded
@@ -132,7 +141,7 @@ class Report {
     return respondTime.diff(timeDispatched) / 100;
   }
 
-  get cameraActivationTime() {
+  getCameraActivationTime() {
     const timeMoveOff = this.cameraInformation.timeMoveOff;
     const timeDispatched = this.cameraInformation.timeDispatched;
 
@@ -145,61 +154,107 @@ class Report {
     return timeMoveOff.diff(timeDispatched) / 100;
   }
 
-  /**
-   * A getter function to get the value of a specific key, no matter where it is grouped in
-   * @param key The key of the value to be obtained
-   * @returns The required value
-   */
-  getValue(key: ReportValueKeysType): ReportValueTypes {
-    if (key === "id") return this.id;
+  // =========================================
+  //            Methods - Setters
+  // =========================================
 
-    for (const [infoType, objKeyArray] of Object.entries(this._keyToInfoKey)) {
-      for (const objKey of objKeyArray) {
-        if (objKey === key) {
-          return (this[infoType as keyof Report] as any)[key]; // Same as below, I can't be bothered :D
-        }
-      }
-    }
-
-    throw new Error(`Key ${key} as not found in Object Report.`);
+  updateID(value: number) {
+    this.id = value;
   }
 
-  /**
-   * Updates the value of the key in the current report class
-   * @param key The key of the value to be changed
-   * @param value The new value to be updated to
-   */
-  updateReport(key: ReportValueKeysType, value: ReportValueTypes) {
-    if (key === "id") {
-      this.id = value as number;
+  updateCameraInformation(
+    key: keyof CameraInformationType,
+    value: CameraInformationType[typeof key]
+  ) {
+    this._cameraInformation = {
+      ...this.cameraInformation,
+      [key]: value,
+    };
+  }
+
+  updateAcesInformation(
+    key: keyof AcesInformationType,
+    value: AcesInformationType[typeof key]
+  ) {
+    this._acesInformation = {
+      ...this.acesInformation,
+      [key]: value,
+    };
+  }
+
+  updateGeneralInformation(
+    key: keyof GeneralInformationType,
+    value: GeneralInformationType[typeof key]
+  ) {
+    this._generalInformation = {
+      ...this.generalInformation,
+      [key]: value,
+    };
+  }
+
+  updateIncidentInformation(
+    key: keyof IncidentInformationType,
+    value: IncidentInformationType[typeof key]
+  ) {
+    this._incidentInformation = {
+      ...this.incidentInformation,
+      [key]: value,
+    };
+  }
+
+  // =========================================
+  //            Methods - Misc
+  // =========================================
+
+  copy() {
+    return new Report(
+      this.id,
+      this.incidentInformation,
+      this.generalInformation,
+      this.acesInformation,
+      this.cameraInformation
+    );
+  }
+
+  // =========================================
+  //               DB Methods
+  // =========================================
+
+  async addReportDB() {
+    try {
+      const id = await addReport(this);
+      this.id = id;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  updateDBReport(key?: ReportKeys) {
+    if (this.id < 0) throw new Error("Report with id < 0 was called");
+
+    if (!key) {
+      for (const k of [
+        "incidentInformation",
+        "generalInformation",
+        "acesInformation",
+        "cameraInformation",
+      ] as const)
+        updateDBReport(this.id, k, this[k]);
+
       return;
     }
 
-    for (const [infoType, objKeyArray] of Object.entries(this._keyToInfoKey)) {
-      for (const objKey of objKeyArray) {
-        if (objKey === key) {
-          (this[infoType as keyof Report] as any)[key] = value; // Can't be bothered to fix the type error
-          return;
-        }
-      }
-    }
-
-    console.error(`Report was not updated. Key ${key} was not found.`);
+    updateDBReport(this.id, key, this[key]);
   }
-  /**
-   * Returns a new report class with the updated value
-   * @param key The key of the value to be changed
-   * @param value The new value to be updated to
-   */
-  static updateReport(
-    report: Report,
-    key: ReportValueKeysType,
-    value: ReportValueTypes
-  ) {
-    const updatedReport = Object.create(report) as Report;
-    updatedReport.updateReport(key, value);
-    return updatedReport;
+
+  deleteDBReport() {
+    try {
+      deleteReport(this.id);
+      this.id = -1;
+    } catch (e) {
+      console.error(e);
+    }
   }
 }
 
-export default Report
+export default Report;

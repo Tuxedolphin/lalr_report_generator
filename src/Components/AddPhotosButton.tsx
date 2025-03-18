@@ -29,32 +29,53 @@ interface AddPhotosFormProps {
 const AddPhotosButton: FC<AddPhotosFormProps> = function ({ photoType }) {
   const [report, updateReport] = useReportContext();
 
+  const isAces = photoType === "acesScreenshot";
+
   /**
    * Updates the image of the report object passed in
-   * @param crop The crop object, or null if the photo is to be deleted
+   * @param crop The crop object, or null if the photo is to be deleted / to be created
    */
-  const updateImage = async (crop: Crop | null) => {
-    if (crop === null) updateReport(photoType, new CroppedPicture());
-    else
-      updateReport(
-        photoType,
-        reportImage?.updateAndReturnCrop(crop) ?? new CroppedPicture()
-      );
+  const updateImage = async (crop: Crop | null, image?: Blob | File) => {
+    if (isAces) {
+      if (crop === null) {
+        updateReport.acesInformation(photoType, new CroppedPicture(image));
+        updateReport.acesInformation("drawnScreenshot", null);
+      } else {
+        updateReport.acesInformation(
+          photoType,
+          reportImage?.updateAndReturnCrop(crop)
+        );
+        updateReport.acesInformation(
+          "drawnScreenshot",
+          new DrawnOnPicture(await reportImage?.getNewCroppedBlob())
+        );
+      }
 
-    if (photoType === "acesScreenshot" && reportImage) {
-      const blob = await reportImage.getNewCroppedBlob();
-      updateReport("drawnScreenshot", new DrawnOnPicture(blob));
+      report.updateDBReport("acesInformation");
+    } else {
+      if (crop === null)
+        updateReport.cameraInformation(photoType, new CroppedPicture(image));
+      else
+        updateReport.cameraInformation(
+          photoType,
+          reportImage?.updateAndReturnCrop(crop)
+        );
+
+      report.updateDBReport("incidentInformation");
     }
   };
 
-  let reportImage =
-    photoType === "acesScreenshot"
-      ? report.acesInformation.acesScreenshot
-      : report.cameraInformation[photoType];
+  let reportImage = isAces
+    ? report.acesInformation.acesScreenshot
+    : report.cameraInformation[photoType];
 
   if (reportImage === undefined) {
     reportImage = new CroppedPicture();
-    updateReport(photoType, reportImage);
+    if (isAces) {
+      updateReport.acesInformation(photoType, reportImage);
+    } else {
+      updateReport.cameraInformation(photoType, reportImage);
+    }
   }
 
   const [openModal, setOpenModal] = useState(false); // To be set to true if we need to change the button to the image
@@ -68,7 +89,9 @@ const AddPhotosButton: FC<AddPhotosFormProps> = function ({ photoType }) {
             <IconButton
               sx={{ position: "absolute", top: 0, right: 0, zIndex: 100 }}
               onClick={() => {
-                updateReport(photoType, new CroppedPicture());
+                updateImage(null).catch((e: unknown) => {
+                  console.error(e);
+                });
               }}
             >
               <ClearIcon />
@@ -102,10 +125,9 @@ const AddPhotosButton: FC<AddPhotosFormProps> = function ({ photoType }) {
               type="file"
               onChange={(event) => {
                 if (event.target.files) {
-                  updateReport(
-                    photoType,
-                    new CroppedPicture(event.target.files[0])
-                  );
+                  updateImage(null, event.target.files[0]).catch((e: unknown) => {
+                    console.error(e);
+                  });
                   setOpenModal(true);
                 }
               }}
