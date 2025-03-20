@@ -8,9 +8,9 @@ import {
   Grid2 as Grid,
 } from "@mui/material";
 
-import ButtonGroupInput from "../ButtonGroupInput";
-import { gridFormatting } from "../../utils/constants";
-import { useReportContext } from "../../context/contextFunctions";
+import ButtonGroupInput from "../../../components/ButtonGroupInput";
+import { gridFormatting } from "../../../utils/constants";
+import { useReportContext } from "../../../context/contextFunctions";
 const { mainGridFormat, smallInput, largeInput } = gridFormatting;
 
 // The different fire posts/ fire stations corresponding to each fire station

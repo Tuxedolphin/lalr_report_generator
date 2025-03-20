@@ -202,6 +202,14 @@ class Report {
     };
   }
 
+  updateAll(report: Report) {
+    this.id = report.id;
+    this._cameraInformation = report.cameraInformation;
+    this._acesInformation = report.acesInformation;
+    this._generalInformation = report.generalInformation;
+    this._incidentInformation = report.incidentInformation;
+  }
+
   // =========================================
   //            Methods - Misc
   // =========================================

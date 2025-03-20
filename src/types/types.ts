@@ -2,6 +2,7 @@ import { Dayjs } from "dayjs";
 import CroppedPicture from "../classes/CroppedPicture";
 import { ReactNode } from "react";
 import DrawnOnPicture from "../classes/DrawnOnPicture";
+import type Report from "../classes/Report";
 
 export type reportType = "LA" | "LR" | null;
 
@@ -109,4 +110,5 @@ export interface UpdateReportType {
     value: IncidentInformationType[typeof key],
     saveToDB?: boolean
   ) => void;
+  all: (report: Report) => void;
 }

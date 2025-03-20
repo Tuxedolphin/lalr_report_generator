@@ -5,7 +5,9 @@
 import { FC, useState } from "react";
 import Report from "../classes/Report";
 import { ReportContext } from "./contextFunctions";
-import { type UpdateReportType, type ChildrenOnly } from "../types/types";
+import { type ChildrenOnly } from "../types/types";
+import { type UpdateReportType } from "../types/types";
+
 import { checkAndUpdateID } from "../utils/generalFunctions";
 import {
   type CameraInformationType,
@@ -49,7 +51,7 @@ const ReportProvider: FC<ChildrenOnly> = function ({ children }) {
           report.updateAcesInformation(key, value);
           setReport(report.copy());
 
-          if (saveToDB) report.updateDBReport("acesInformation")
+          if (saveToDB) report.updateDBReport("acesInformation");
         })
         .catch((e: unknown) => {
           console.error(e);
@@ -65,7 +67,7 @@ const ReportProvider: FC<ChildrenOnly> = function ({ children }) {
           report.updateGeneralInformation(key, value);
           setReport(report.copy());
 
-          if (saveToDB) report.updateDBReport("generalInformation")
+          if (saveToDB) report.updateDBReport("generalInformation");
         })
         .catch((e: unknown) => {
           console.error(e);
@@ -82,11 +84,14 @@ const ReportProvider: FC<ChildrenOnly> = function ({ children }) {
           report.updateIncidentInformation(key, value);
           setReport(report.copy());
 
-          if (saveToDB) report.updateDBReport("incidentInformation")
+          if (saveToDB) report.updateDBReport("incidentInformation");
         })
         .catch((e: unknown) => {
           console.error(e);
         });
+    },
+    all: (report: Report) => {
+      setReport(report);
     },
   } as const;
 

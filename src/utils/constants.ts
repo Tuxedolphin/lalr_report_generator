@@ -32,3 +32,10 @@ export const alternateGridFormatting = {
     sm: 4,
   },
 } as const;
+
+export const defaultJustification = {
+  LA: "Network Busy",
+  LR: (boundary: string) => {
+    return `Total Time < ${boundary} (justified by MVC footage)`;
+  },
+};

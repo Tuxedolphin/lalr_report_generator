@@ -5,7 +5,7 @@ import {
   CssBaseline,
   Toolbar,
 } from "@mui/material";
-import { useState, FC, useEffect } from "react";
+import { FC } from "react";
 import { useIsDarkModeContext } from "../context/contextFunctions";
 import ReportProvider from "../context/ReportProvider";
 

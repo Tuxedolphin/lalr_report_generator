@@ -1,41 +1,45 @@
+import Dexie, { type EntityTable } from "dexie";
+
 import Report from "../classes/Report";
 import DBPhoto from "../classes/DBPhoto";
-import Dexie, { type EntityTable } from "dexie";
 import {
   AcesInformationType,
   CameraInformationType,
   GeneralInformationType,
   IncidentInformationType,
   ReportKeys,
-  ReportValueKeysType,
-  ReportValueTypes,
 } from "../types/types";
 import CroppedPicture from "../classes/CroppedPicture";
 import DrawnOnPicture from "../classes/DrawnOnPicture";
-import { Crop } from "react-image-crop";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 // =========================================
 //         Defining useful types
 // =========================================
 
-type DBAcesInformationType = Omit<
-  AcesInformationType,
-  "acesScreenshot" | "drawnScreenshot"
-> & {
+interface DBAcesInformationType {
+  timeDispatched: string | null;
+  timeResponded: string | null;
+  timeEnRoute: string | null;
+  timeArrived: string | null;
   acesScreenshot: DBPhoto | undefined;
   drawnScreenshot: DBPhoto | undefined;
-};
+}
 
-type DBCameraInformationType = Omit<
-  CameraInformationType,
-  "dispatchPhoto" | "allInPhoto" | "moveOffPhoto" | "arrivedPhoto"
-> & {
+interface DBCameraInformationType {
+  timeDispatched: string | null;
+  timeResponded: string | null;
+  timeAllIn: string | null;
+  timeMoveOff: string | null;
+  timeArrived: string | null;
+  hasBufferTime: boolean | null;
+  bufferingTime: string | null;
+  bufferingLocation: string;
   dispatchPhoto: DBPhoto | undefined;
   allInPhoto: DBPhoto | undefined;
   moveOffPhoto: DBPhoto | undefined;
   arrivedPhoto: DBPhoto | undefined;
-};
+}
 
 export interface ReportDBType {
   id: number;
@@ -61,17 +65,24 @@ db.version(1).stores({
 //           Utility Functions
 // =========================================
 
-function updateErrorType(image?: CroppedPicture | DrawnOnPicture) {
+function formatImage(image?: CroppedPicture | DrawnOnPicture) {
   return image ? new DBPhoto(image) : undefined;
+}
+
+function formatDayjs(dayjs: Dayjs | null) {
+  return dayjs ? dayjs.toJSON() : null;
 }
 
 function formatAcesInformationForDB(
   info: AcesInformationType
 ): DBAcesInformationType {
   return {
-    ...info,
-    acesScreenshot: updateErrorType(info.acesScreenshot),
-    drawnScreenshot: updateErrorType(info.drawnScreenshot),
+    timeDispatched: formatDayjs(info.timeDispatched),
+    timeArrived: formatDayjs(info.timeArrived),
+    timeEnRoute: formatDayjs(info.timeEnRoute),
+    timeResponded: formatDayjs(info.timeResponded),
+    acesScreenshot: formatImage(info.acesScreenshot),
+    drawnScreenshot: formatImage(info.drawnScreenshot),
   };
 }
 
@@ -80,10 +91,16 @@ function formatCameraInformationForDB(
 ): DBCameraInformationType {
   return {
     ...info,
-    dispatchPhoto: updateErrorType(info.dispatchPhoto),
-    allInPhoto: updateErrorType(info.allInPhoto),
-    moveOffPhoto: updateErrorType(info.moveOffPhoto),
-    arrivedPhoto: updateErrorType(info.arrivedPhoto),
+    timeDispatched: formatDayjs(info.timeDispatched),
+    timeArrived: formatDayjs(info.timeArrived),
+    timeAllIn: formatDayjs(info.timeAllIn),
+    timeMoveOff: formatDayjs(info.timeMoveOff),
+    timeResponded: formatDayjs(info.timeResponded),
+    bufferingTime: formatDayjs(info.bufferingTime),
+    dispatchPhoto: formatImage(info.dispatchPhoto),
+    allInPhoto: formatImage(info.allInPhoto),
+    moveOffPhoto: formatImage(info.moveOffPhoto),
+    arrivedPhoto: formatImage(info.arrivedPhoto),
   };
 }
 
@@ -110,17 +127,24 @@ function reconstructDBPhoto(photo?: DBPhoto): DBPhoto | undefined {
   );
 }
 
+function reconstructDayjs(time: string | null): Dayjs | null {
+  return time ? dayjs(time) : null;
+}
+
 function formatAcesInformationForUse(
   info: DBAcesInformationType
 ): AcesInformationType {
   return {
-    ...info,
-    acesScreenshot: info.acesScreenshot
-      ? reconstructDBPhoto(info.acesScreenshot)?.getCroppedPicture()
-      : undefined,
-    drawnScreenshot: info.drawnScreenshot
-      ? reconstructDBPhoto(info.drawnScreenshot)?.getDrawnOnPicture()
-      : undefined,
+    timeDispatched: reconstructDayjs(info.timeDispatched),
+    timeArrived: reconstructDayjs(info.timeArrived),
+    timeEnRoute: reconstructDayjs(info.timeEnRoute),
+    timeResponded: reconstructDayjs(info.timeResponded),
+    acesScreenshot: reconstructDBPhoto(
+      info.acesScreenshot
+    )?.getCroppedPicture(),
+    drawnScreenshot: reconstructDBPhoto(
+      info.drawnScreenshot
+    )?.getDrawnOnPicture(),
   };
 }
 
@@ -129,18 +153,16 @@ function formatCameraInformationForUse(
 ): CameraInformationType {
   return {
     ...info,
-    dispatchPhoto: info.dispatchPhoto
-      ? reconstructDBPhoto(info.dispatchPhoto)?.getCroppedPicture()
-      : undefined,
-    allInPhoto: info.allInPhoto
-      ? reconstructDBPhoto(info.allInPhoto)?.getCroppedPicture()
-      : undefined,
-    moveOffPhoto: info.moveOffPhoto
-      ? reconstructDBPhoto(info.moveOffPhoto)?.getCroppedPicture()
-      : undefined,
-    arrivedPhoto: info.arrivedPhoto
-      ? reconstructDBPhoto(info.arrivedPhoto)?.getCroppedPicture()
-      : undefined,
+    timeDispatched: reconstructDayjs(info.timeDispatched),
+    timeArrived: reconstructDayjs(info.timeArrived),
+    timeAllIn: reconstructDayjs(info.timeAllIn),
+    timeMoveOff: reconstructDayjs(info.timeMoveOff),
+    timeResponded: reconstructDayjs(info.timeResponded),
+    bufferingTime: reconstructDayjs(info.bufferingTime),
+    dispatchPhoto: reconstructDBPhoto(info.dispatchPhoto)?.getCroppedPicture(),
+    allInPhoto: reconstructDBPhoto(info.allInPhoto)?.getCroppedPicture(),
+    moveOffPhoto: reconstructDBPhoto(info.moveOffPhoto)?.getCroppedPicture(),
+    arrivedPhoto: reconstructDBPhoto(info.arrivedPhoto)?.getCroppedPicture(),
   };
 }
 

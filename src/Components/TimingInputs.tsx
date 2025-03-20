@@ -84,6 +84,14 @@ export const TimingInputs: FC<TimingInputsProps> = function ({
     setDisplay({ ...newDisplay, total: counter });
   }, [secondEntryType, timingInputs]);
 
+  const handleChange =
+    (key: "timeDispatched" | "timeArrived" | secondEntryKeys | null) =>
+    (time: Dayjs | null) => {
+      if (!key) return;
+
+      updateReport[reportKey](key as any, time);
+    };
+
   return (
     <>
       {headerText && <Divider sx={{ paddingBottom: 1 }}>{headerText}</Divider>}
@@ -97,10 +105,7 @@ export const TimingInputs: FC<TimingInputsProps> = function ({
                   sx={{ width: "100%" }}
                   value={timingInputs.timeDispatched}
                   views={["hours", "minutes", "seconds"]}
-                  onChange={(time: Dayjs | null) => {
-                    updateReport[reportKey]("timeDispatched", time);
-                    report.updateDBReport(reportKey);
-                  }}
+                  onChange={handleChange("timeDispatched")}
                 />
               </Grid>
             </>
@@ -113,11 +118,7 @@ export const TimingInputs: FC<TimingInputsProps> = function ({
                   sx={{ width: "100%" }}
                   value={secondEntryType ? timingInputs[secondEntryType] : null}
                   views={["hours", "minutes", "seconds"]}
-                  onChange={(time: Dayjs | null) => {
-                    if (!secondEntryType) return;
-                    updateReport[reportKey](secondEntryType as any, time); // Unsafe but I can't be bothered to fix the type issue
-                    report.updateDBReport(reportKey);
-                  }}
+                  onChange={handleChange(secondEntryType)}
                 />
               </Grid>
             </>
@@ -130,10 +131,7 @@ export const TimingInputs: FC<TimingInputsProps> = function ({
                   sx={{ width: "100%" }}
                   value={timingInputs.timeArrived}
                   views={["hours", "minutes", "seconds"]}
-                  onChange={(time: Dayjs | null) => {
-                    updateReport[reportKey]("timeArrived", time);
-                    report.updateDBReport(reportKey);
-                  }}
+                  onChange={handleChange("timeArrived")}
                 />
               </Grid>
             </>

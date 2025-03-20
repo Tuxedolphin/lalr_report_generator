@@ -10,6 +10,7 @@ import DarkBackground from "../../assets/dark-background.jpg";
 import LightBackground from "../../assets/light-background.jpg";
 import updateBackground from "../../features/updateBackground";
 import { Link } from "react-router-dom";
+import ls from "../../features/LocalStorage";
 
 const Home: FC = function () {
   updateBackground(useIsDarkModeContext() ? DarkBackground : LightBackground);
@@ -18,7 +19,14 @@ const Home: FC = function () {
   const updateNavBarText = useNavBarTextContext() as React.Dispatch<
     React.SetStateAction<string>
   >;
-  updateNavBarText("");
+
+  useEffect(() => {
+    updateNavBarText("");
+  }, []);
+
+  const onClick = () => {
+    ls.finish();
+  };
 
   return (
     <>
@@ -60,6 +68,7 @@ const Home: FC = function () {
               variant="contained"
               sx={{ width: "90%" }}
               endIcon={<KeyboardArrowRight />}
+              onClick={onClick}
             >
               Get Started
             </Button>

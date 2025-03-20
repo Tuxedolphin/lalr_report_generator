@@ -1,6 +1,6 @@
 import { FC, SyntheticEvent, useEffect, useRef, useState } from "react";
-import TimingAndPhotoInput from "../TimingAndPhotoInput";
-import { useReportContext } from "../../context/contextFunctions";
+import TimingAndPhotoInput from "../../../components/TimingAndPhotoInput";
+import { useReportContext } from "../../../context/contextFunctions";
 import {
   Accordion,
   AccordionSummary,
@@ -8,13 +8,13 @@ import {
   Typography,
 } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
-import DrawnOnPicture from "../../classes/DrawnOnPicture";
+import DrawnOnPicture from "../../../classes/DrawnOnPicture";
 import {
   clearCanvas,
   getOffset,
   setCanvasStroke,
-} from "../../utils/generalFunctions";
-import exampleImage from "../../assets/example_image.png";
+} from "../../../utils/generalFunctions";
+import exampleImage from "../../../assets/example_image.png";
 
 /**
  * If the report is acknowledged by the ops center, the form should be a drawing form instead.
@@ -72,7 +72,7 @@ const DrawingForm: FC<DrawingFormProps> = function () {
     updateImage(reportImage);
   };
 
-  const endDraw = function () {
+  const endDraw = function (e: SyntheticEvent) {
     setIsDown(false);
     contextRef.current?.closePath();
     report.updateDBReport("acesInformation");
@@ -114,7 +114,7 @@ const DrawingForm: FC<DrawingFormProps> = function () {
     );
 
     contextRef.current = context;
-  }, []);
+  });
 
   return (
     <>
@@ -132,6 +132,7 @@ const DrawingForm: FC<DrawingFormProps> = function () {
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
+          touchAction: isDown ? "none" : "pan-y", // Allow scrolling when not drawing
         }}
       />
       <Accordion>
@@ -170,6 +171,7 @@ interface FirstFootageFormProps {
 
 const FirstFootageForm: FC<FirstFootageFormProps> = function ({ handleNext }) {
   const [report] = useReportContext();
+
   const cameraInformation = report.cameraInformation;
   const isLA = report.incidentInformation.reportType === "LA";
 

@@ -16,7 +16,7 @@ const TimeLengthPicker: FC<TimeLengthPickerProps> = function ({ entryKey }) {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <TimePicker
-        sx={{ width: "100%" }}
+        sx={{ width: "100%", touchAction: "pan-y" }}
         label={camelCaseToTitleCase(entryKey)}
         value={report.cameraInformation[entryKey]}
         views={["minutes", "seconds"]}
@@ -24,6 +24,12 @@ const TimeLengthPicker: FC<TimeLengthPickerProps> = function ({ entryKey }) {
           updateReport.cameraInformation(entryKey, time);
           report.updateDBReport("cameraInformation");
         }}
+        onTouchStart={(e) =>
+          console.log("TimeLengthPicker touchStart:", e.defaultPrevented)
+        }
+        onTouchMove={(e) =>
+          console.log("TimeLengthPicker touchMove:", e.defaultPrevented)
+        }
       />
     </LocalizationProvider>
   );

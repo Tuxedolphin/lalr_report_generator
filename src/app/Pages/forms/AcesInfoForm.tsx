@@ -10,11 +10,13 @@ import {
   Grid2 as Grid,
 } from "@mui/material";
 import { FC, useState, useEffect } from "react";
-import { TimingInputs, type TimingInputsType } from "../TimingInputs";
-import AddPhotosButton from "../AddPhotosButton";
-import { gridFormatting } from "../../utils/constants";
-
-import { useReportContext } from "../../context/contextFunctions";
+import {
+  TimingInputs,
+  type TimingInputsType,
+} from "../../../components/TimingInputs";
+import AddPhotosButton from "../../../components/AddPhotosButton";
+import { useReportContext } from "../../../context/contextFunctions";
+import { gridFormatting } from "../../../utils/constants";
 
 const { mainGridFormat, smallInput } = gridFormatting;
 
@@ -56,17 +58,17 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
 
   // On page load, make sure that all of the timings are loaded in correctly
   useEffect(() => {
-    const newTimings = timings;
+    const newTimings = {} as TimingInputsType;
 
-    for (const key of Object.keys(newTimings))
+    for (const key of Object.keys(timings))
       newTimings[key as TimingsKey] = acesInformation[key as TimingsKey];
 
     setTimings(newTimings);
-  }, [acesInformation, timings]);
+  }, [acesInformation]);
 
   return (
     <form id="acesInfoForm" onSubmit={handleSubmit}>
-      <AddPhotosButton photoType="acesScreenshot" />
+      {!(!isLR && !report.incidentInformation.opsCenterAcknowledged) && <AddPhotosButton photoType="acesScreenshot" />}
       {isLR && (
         <Paper sx={{ p: 1, textAlign: "center", marginTop: 2 }}>
           <Divider sx={{ paddingBottom: 1 }}>Incident Information</Divider>

@@ -7,11 +7,7 @@ import { useContext, createContext } from "react";
 import { UpdateReportType } from "../types/types";
 
 export const ReportContext = createContext<
-  | [
-      Report,
-      UpdateReportType,
-      React.Dispatch<React.SetStateAction<Report>>,
-    ]
+  | [Report, UpdateReportType, React.Dispatch<React.SetStateAction<Report>>]
   | undefined
 >(undefined);
 
@@ -20,9 +16,9 @@ export const ReportContext = createContext<
  * it'll throw an error.
  *
  * @param report An optional parameter of type Report, add it in if one needs to set the report
- * @returns [report, updateReport, addReport]. updateReport functions requires only the key and value.
+ * @returns [report, updateReport, setReport]. updateReport functions requires only the key and value.
  */
-export const useReportContext = function (report?: Report) {
+export const useReportContext = function () {
   const result = useContext(ReportContext);
 
   if (result === undefined) {
@@ -31,11 +27,7 @@ export const useReportContext = function (report?: Report) {
     );
   }
 
-  const [r, updateReport, setReport] = result;
-
-  if (report) setReport(report);
-
-  return [report ?? r, updateReport] as const;
+  return result;
 };
 
 export const IsDarkModeContext = createContext<

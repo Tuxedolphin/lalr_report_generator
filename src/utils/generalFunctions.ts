@@ -1,11 +1,11 @@
 import Report from "../classes/Report";
 import { RefObject, SyntheticEvent } from "react";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 export const getItem = function (key: string): string {
   const result = localStorage.getItem(key);
 
-  return result ? result : "";
+  return result ?? "";
 };
 
 const capitalisedWords = ["ACES"] as const;
@@ -79,4 +79,30 @@ export const checkAndUpdateID = async function (report: Report) {
 
   await report.addReportDB();
   return report;
+};
+
+export const calculateTime = function (
+  start: Dayjs | null,
+  end: Dayjs | null,
+  buffer?: Dayjs | null
+) {
+
+  if (!start || !end) return { minutes: 0, seconds: 0 };
+
+  let totalSeconds =
+    end.hour() * 3600 +
+    end.minute() * 60 +
+    end.second() -
+    (start.hour() * 3600 + start.minute() * 60 + start.second());
+
+  // If end time is less than start time, it means we've crossed midnight
+  if (totalSeconds < 0) {
+    totalSeconds += 12 * 3600;
+  }
+
+  const minutes =
+    Math.floor(totalSeconds / 60) + (buffer ? buffer.minute() : 0);
+  const remainingSeconds = (totalSeconds % 60) + (buffer ? buffer.second() : 0);
+
+  return { minutes, seconds: remainingSeconds };
 };

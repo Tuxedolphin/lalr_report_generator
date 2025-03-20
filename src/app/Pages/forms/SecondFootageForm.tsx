@@ -1,8 +1,8 @@
-import { FC } from "react";
-import { useReportContext } from "../../context/contextFunctions";
-import Report from "../../classes/Report";
-import { UpdateReportType } from "../../types/types";
-import TimingAndPhotoInput from "../TimingAndPhotoInput";
+import { FC, useEffect, useState } from "react";
+import { useReportContext } from "../../../context/contextFunctions";
+import Report from "../../../classes/Report";
+import { UpdateReportType } from "../../../types/types";
+import TimingAndPhotoInput from "../../../components/TimingAndPhotoInput";
 import {
   Paper,
   Divider,
@@ -14,10 +14,13 @@ import {
   Typography,
   InputAdornment,
 } from "@mui/material";
-import dayjs from "dayjs";
 
-import { alternateGridFormatting } from "../../utils/constants";
-import TimeLengthPicker from "../TimeLengthPicker";
+import {
+  alternateGridFormatting,
+  defaultJustification,
+} from "../../../utils/constants";
+import TimeLengthPicker from "../../../components/TimeLengthPicker";
+import { calculateTime } from "../../../utils/generalFunctions";
 const { mainGridFormat, smallInput, largeInput } = alternateGridFormatting;
 
 /**
@@ -29,8 +32,6 @@ interface CommonFormProps {
   updateReport: UpdateReportType;
 }
 
-// BUG: Fix the display timing bug
-
 const LAForm: FC<CommonFormProps> = function ({ report, updateReport }) {
   return (
     <TimingAndPhotoInput
@@ -40,14 +41,34 @@ const LAForm: FC<CommonFormProps> = function ({ report, updateReport }) {
   );
 };
 
-// TODO: Maybe have to add justification text input?
-
 const LRForm: FC<CommonFormProps> = function ({ report, updateReport }) {
   const cameraInformation = report.cameraInformation;
 
+  const [totalTime, setTotalTime] = useState<{
+    minutes: number;
+    seconds: number;
+  } | null>(null);
+
+  useEffect(() => {
+    const activationTime = calculateTime(
+      report.acesInformation.timeDispatched,
+      report.acesInformation.timeEnRoute
+    );
+    const responseTime = calculateTime(
+      cameraInformation.timeMoveOff,
+      cameraInformation.timeArrived,
+      cameraInformation.bufferingTime
+    );
+
+    setTotalTime({
+      minutes: activationTime.minutes + responseTime.minutes,
+      seconds: activationTime.seconds + responseTime.seconds,
+    });
+  }, [cameraInformation.bufferingTime]);
+
   return (
     <>
-      <Paper sx={{ p: 1, marginTop: 2 }}>
+      <Paper sx={{ p: 1, marginTop: 1 }}>
         <Divider>Has Buffer Time</Divider>
         <FormControl
           sx={{
@@ -65,11 +86,14 @@ const LRForm: FC<CommonFormProps> = function ({ report, updateReport }) {
             aria-labelledby={"button-group-control"}
             onChange={(_, newValue: boolean | null) => {
               if (newValue !== null) {
-                updateReport.cameraInformation("hasBufferTime", newValue);
-                report.updateDBReport("cameraInformation");
+                updateReport.cameraInformation("hasBufferTime", newValue, true);
               }
             }}
             fullWidth
+            sx={{
+              marginTop: 1,
+              touchAction: "pan-y", // This allows vertical scrolling during touch interactions
+            }}
           >
             <ToggleButton value={true} sx={{ marginTop: 1 }}>
               Yes
@@ -118,8 +142,7 @@ const LRForm: FC<CommonFormProps> = function ({ report, updateReport }) {
           >
             Total time:{" "}
             <Typography component="span" sx={{ color: "red" }}>
-              {dayjs().millisecond(4320).minute()}min{" "}
-              {dayjs().millisecond(432000).second()}sec
+              {totalTime?.minutes}min {totalTime?.seconds}sec
             </Typography>
           </Typography>
         </Paper>
@@ -140,6 +163,14 @@ const SecondFootageForm: FC<SecondFootageFormType> = function ({ handleNext }) {
     handleNext();
   };
 
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    updateReport.generalInformation("justification", event.target.value);
+  };
+
+  const onBlur = () => {
+    report.updateDBReport("generalInformation");
+  };
+
   const commonProps = {
     report,
     updateReport,
@@ -152,6 +183,24 @@ const SecondFootageForm: FC<SecondFootageFormType> = function ({ handleNext }) {
       ) : (
         <LRForm {...commonProps} />
       )}
+      <Paper sx={{ p: 1, marginTop: 2 }}>
+        <TextField
+          label="Justification"
+          value={
+            report.generalInformation.justification ??
+            (report.incidentInformation.reportType === "LA"
+              ? defaultJustification.LA
+              : defaultJustification.LR(
+                  report.generalInformation.boundary ?? "Boundary Time"
+                ))
+          }
+          onChange={onChange}
+          onBlur={onBlur}
+          multiline
+          rows={2}
+          fullWidth
+        />
+      </Paper>
     </form>
   );
 };
