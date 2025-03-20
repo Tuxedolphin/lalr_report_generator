@@ -28,7 +28,7 @@ import {
   useNavBarHeightContext,
   useNavBarTextContext,
 } from "../context/contextFunctions";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const navItems = [
   { text: "Home", path: "/" },
@@ -47,6 +47,8 @@ const NavDrawer: FC<NavDrawerProps> = function ({
   handleDrawerToggle,
 }) {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const handleClick = (path: string) => () => {
     navigate(path);
     handleDrawerToggle();
@@ -55,7 +57,7 @@ const NavDrawer: FC<NavDrawerProps> = function ({
   const drawer = (
     <Box sx={{ textAlign: "center" }}>
       <Typography variant="h6" sx={{ my: 2 }}>
-        Report Generator
+        LALR Generator
       </Typography>
       <Divider />
       <List>
@@ -64,6 +66,7 @@ const NavDrawer: FC<NavDrawerProps> = function ({
             <ListItemButton
               sx={{ textAlign: "center" }}
               onClick={handleClick(item.path)}
+              disabled={location.pathname === item.path}
             >
               <ListItemText primary={item.text} />
             </ListItemButton>
@@ -101,11 +104,18 @@ const ElevationScroll: FC<ElevationType> = function ({ children }) {
     threshold: 10,
   });
 
+  const isDarkMode = useIsDarkModeContext(true) as boolean;
+  const location = useLocation();
+
   const elevation = trigger ? 4 : 0;
   const sx = {
-    backgroundColor: trigger ? undefined : "transparent",
+    backgroundColor: trigger
+      ? undefined
+      : location.pathname === "/" || !isDarkMode
+        ? "transparent"
+        : undefined,
     transition: "background-color 0.3s ease",
-    position: "sticky"
+    position: "sticky",
   };
 
   return cloneElement(children, {
@@ -142,8 +152,7 @@ const NavBar: FC = function () {
   return (
     <>
       <ElevationScroll>
-        <AppBar
-        >
+        <AppBar>
           <Toolbar ref={ref}>
             <Grid container width={"100%"} spacing={2}>
               <Grid size="grow">
