@@ -1,7 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import {
   Paper,
-  Grid2 as Grid,
   List,
   ListItem,
   ListItemText,
@@ -16,7 +15,6 @@ import { useNavigate } from "react-router-dom";
 import "./History.css";
 import {
   useNavBarTextContext,
-  useReportContext,
 } from "../../context/contextFunctions";
 import updateBackground from "../../features/updateBackground";
 import { retrieveAll } from "../../features/db";
@@ -42,7 +40,8 @@ const History: FC = function () {
     };
 
     fetchReports().catch((e: unknown) => {
-      // Console error removed
+      console.error(e);
+      
     });
   }, []);
 

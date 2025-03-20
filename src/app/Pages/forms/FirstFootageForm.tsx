@@ -20,9 +20,7 @@ import exampleImage from "../../../assets/example_image.png";
  * If the report is acknowledged by the ops center, the form should be a drawing form instead.
  */
 
-interface DrawingFormProps {}
-
-const DrawingForm: FC<DrawingFormProps> = function () {
+const DrawingForm: FC = function () {
   const [report, updateReport] = useReportContext();
   const [isDown, setIsDown] = useState(false);
 
@@ -72,7 +70,7 @@ const DrawingForm: FC<DrawingFormProps> = function () {
     updateImage(reportImage);
   };
 
-  const endDraw = function (e: SyntheticEvent) {
+  const endDraw = function () {
     setIsDown(false);
     contextRef.current?.closePath();
     report.updateDBReport("acesInformation");

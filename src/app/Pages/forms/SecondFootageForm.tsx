@@ -32,7 +32,7 @@ interface CommonFormProps {
   updateReport: UpdateReportType;
 }
 
-const LAForm: FC<CommonFormProps> = function ({ report, updateReport }) {
+const LAForm: FC<CommonFormProps> = function ({ report }) {
   return (
     <TimingAndPhotoInput
       timingInput={{ timeMoveOff: report.cameraInformation.timeMoveOff }}

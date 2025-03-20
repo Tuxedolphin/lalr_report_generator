@@ -1,6 +1,6 @@
 import Report from "../classes/Report";
 import { RefObject, SyntheticEvent } from "react";
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 
 export const getItem = function (key: string): string {
   const result = localStorage.getItem(key);

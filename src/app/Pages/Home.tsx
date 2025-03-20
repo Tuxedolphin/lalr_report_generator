@@ -1,6 +1,6 @@
-import { Box, Button, Toolbar, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { KeyboardArrowRight, History } from "@mui/icons-material";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 import {
   useIsDarkModeContext,
   useNavBarHeightContext,

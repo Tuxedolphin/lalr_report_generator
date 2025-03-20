@@ -3,7 +3,6 @@ import {
   createTheme,
   ThemeProvider,
   CssBaseline,
-  Toolbar,
 } from "@mui/material";
 import { FC } from "react";
 import { useIsDarkModeContext } from "../context/contextFunctions";

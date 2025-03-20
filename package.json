@@ -1,5 +1,6 @@
 {
   "name": "lalr_report_generator",
+  "homepage": "https://tuxedolphin.github.io/lalr_report_generator/",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,7 +10,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "prepare": "husky",
-    "format": "prettier ."
+    "format": "prettier .",
+    "predeploy": "pnpm run build",
+    "deploy": "gh-pages -d dist"
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write"
@@ -27,6 +30,7 @@
     "dexie": "^4.0.11",
     "dexie-react-hooks": "^1.1.7",
     "eslint-plugin-react": "^7.37.4",
+    "gh-pages": "^6.3.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.0",
     "pptxgenjs": "^3.12.0",

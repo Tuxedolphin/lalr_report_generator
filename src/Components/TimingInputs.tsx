@@ -37,7 +37,7 @@ export const TimingInputs: FC<TimingInputsProps> = function ({
   timingInputs,
   reportKey,
 }) {
-  const [report, updateReport] = useReportContext();
+  const [, updateReport] = useReportContext();
 
   const [display, setDisplay] = useState({
     first: false,

@@ -10,7 +10,7 @@ const generateReportPpt = function (report: Report) {
   pptx.defineLayout({ name: "A4", width: 7.5, height: 11 });
   pptx.layout = "A4";
 
-  const slide = pptx.addSlide();
+  pptx.addSlide();
 
   pptx
     .writeFile({ fileName: report.incidentInformation.incidentNumb })

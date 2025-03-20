@@ -1,6 +1,5 @@
-import { SyntheticEvent } from "react";
 import Picture from "./Picture";
-import { Crop, centerCrop, makeAspectCrop } from "react-image-crop";
+import { Crop } from "react-image-crop";
 
 class CroppedPicture extends Picture {
   crop: Crop = {
