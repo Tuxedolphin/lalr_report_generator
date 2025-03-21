@@ -12,7 +12,7 @@
     "prepare": "husky",
     "format": "prettier .",
     "predeploy": "pnpm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d build"
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write"
