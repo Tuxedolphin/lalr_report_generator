@@ -1,6 +1,6 @@
 import Report from "../classes/Report";
 import { RefObject, SyntheticEvent } from "react";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 export const getItem = function (key: string): string {
   const result = localStorage.getItem(key);
@@ -86,7 +86,6 @@ export const calculateTime = function (
   end: Dayjs | null,
   buffer?: Dayjs | null
 ) {
-
   if (!start || !end) return { minutes: 0, seconds: 0 };
 
   let totalSeconds =
@@ -105,4 +104,14 @@ export const calculateTime = function (
   const remainingSeconds = (totalSeconds % 60) + (buffer ? buffer.second() : 0);
 
   return { minutes, seconds: remainingSeconds };
+};
+
+export const checkIncNumber = function (incNumber: string) {
+  const regex = /^\d{8}\/\d{4}$/;
+  if (!regex.test(incNumber)) {
+    return null;
+  }
+
+  const day = dayjs(incNumber.split("/")[0], "YYYYMMDD");
+  return !day.isValid() ? null : day;
 };

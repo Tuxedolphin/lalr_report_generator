@@ -115,7 +115,6 @@ const ElevationScroll: FC<ElevationType> = function ({ children }) {
         ? "transparent"
         : undefined,
     transition: "background-color 0.3s ease",
-    position: "sticky",
   };
 
   return cloneElement(children, {
@@ -208,7 +207,9 @@ const NavBar: FC = function () {
         mobileOpen={mobileOpen}
         handleDrawerToggle={handleDrawerToggle}
       />
+      <Toolbar />
     </>
+    
   );
 };
 

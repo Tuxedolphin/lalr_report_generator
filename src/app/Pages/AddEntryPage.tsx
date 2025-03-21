@@ -13,7 +13,7 @@ import {
   useNavBarTextContext,
   useReportContext,
 } from "../../context/contextFunctions";
-import generateReportPpt from "../../features/generateReport";
+import generateReportPpt from "../../features/generateReport/generateReport";
 import ls from "../../features/LocalStorage";
 import { retrieveReport } from "../../features/db";
 
