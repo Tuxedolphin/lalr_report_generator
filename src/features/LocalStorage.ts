@@ -15,7 +15,7 @@ class LocalStorage {
     localStorage.setItem("workingOn", String(id));
   }
 
-  finish() {
+  clear() {
     localStorage.removeItem("workingOn");
   }
 }
