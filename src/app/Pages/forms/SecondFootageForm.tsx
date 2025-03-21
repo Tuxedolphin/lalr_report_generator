@@ -13,6 +13,7 @@ import {
   Grid2 as Grid,
   Typography,
   InputAdornment,
+  Box,
 } from "@mui/material";
 
 import {
@@ -47,7 +48,10 @@ const LRForm: FC<CommonFormProps> = function ({ report, updateReport }) {
   const [totalTime, setTotalTime] = useState<{
     minutes: number;
     seconds: number;
-  } | null>(null);
+  }>({
+    minutes: 0,
+    seconds: 0,
+  });
 
   useEffect(() => {
     const activationTime = calculateTime(
@@ -70,39 +74,40 @@ const LRForm: FC<CommonFormProps> = function ({ report, updateReport }) {
     <>
       <Paper sx={{ p: 1, marginTop: 1 }}>
         <Divider>Has Buffer Time</Divider>
-        <FormControl
-          sx={{
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            maxWidth: "80%",
-            justifySelf: "center",
-          }}
-        >
-          <ToggleButtonGroup
-            value={cameraInformation.hasBufferTime}
-            exclusive
-            aria-labelledby={"button-group-control"}
-            onChange={(_, newValue: boolean | null) => {
-              if (newValue !== null) {
-                updateReport.cameraInformation("hasBufferTime", newValue, true);
-              }
-            }}
-            fullWidth
+        <Box sx={{ justifyContent: "center", display: "flex" }}>
+          <FormControl
             sx={{
-              marginTop: 1,
-              touchAction: "pan-y", // This allows vertical scrolling during touch interactions
+              width: "100%",
+              maxWidth: "80%",
             }}
           >
-            <ToggleButton value={true} sx={{ marginTop: 1 }}>
-              Yes
-            </ToggleButton>
-            <ToggleButton value={false} sx={{ marginTop: 1 }}>
-              No
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </FormControl>
+            <ToggleButtonGroup
+              value={cameraInformation.hasBufferTime}
+              exclusive
+              aria-labelledby={"button-group-control"}
+              onChange={(_, newValue: boolean | null) => {
+                if (newValue !== null) {
+                  updateReport.cameraInformation(
+                    "hasBufferTime",
+                    newValue,
+                    true
+                  );
+                }
+              }}
+              fullWidth
+              sx={{
+                marginTop: 1,
+              }}
+            >
+              <ToggleButton value={true} sx={{ marginTop: 1 }}>
+                Yes
+              </ToggleButton>
+              <ToggleButton value={false} sx={{ marginTop: 1 }}>
+                No
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </FormControl>
+        </Box>
       </Paper>
 
       {cameraInformation.hasBufferTime && (
@@ -141,8 +146,17 @@ const LRForm: FC<CommonFormProps> = function ({ report, updateReport }) {
             sx={{ textAlign: "center", marginTop: 2, marginBottom: 1 }}
           >
             Total time:{" "}
-            <Typography component="span" sx={{ color: "red" }}>
-              {totalTime?.minutes}min {totalTime?.seconds}sec
+            <Typography
+              component="span"
+              sx={{
+                color:
+                  totalTime.minutes + totalTime.seconds / 60 >
+                  Number(report.generalInformation.boundary)
+                    ? "red"
+                    : "default",
+              }}
+            >
+              {totalTime.minutes}min {totalTime.seconds}sec
             </Typography>
           </Typography>
         </Paper>

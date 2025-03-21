@@ -148,7 +148,7 @@ const IncidentInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
 
       <Paper sx={{ p: 1, marginTop: 2 }}>
         <Divider>Report Type</Divider>
-        <Box sx={{ justifyContent: "center" }}>
+        <Box sx={{ justifyContent: "center", display: "flex" }}>
           <ButtonGroupInput
             title=""
             buttonTextsValues={{
@@ -162,7 +162,7 @@ const IncidentInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
       </Paper>
       <Paper sx={{ p: 1, marginTop: 2 }}>
         <Divider>Ops Center Acknowledged</Divider>
-        <Box>
+        <Box sx={{ justifyContent: "center", display: "flex" }}>
           <ButtonGroupInput
             title=""
             buttonTextsValues={{

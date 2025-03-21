@@ -56,11 +56,7 @@ const ButtonGroupInput: FC<ButtonGroupInputType> = function ({
     <FormControl
       sx={{
         width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
         maxWidth: "80%",
-        justifySelf: "center",
       }}
     >
       <FormLabel id={id}>{title}</FormLabel>
