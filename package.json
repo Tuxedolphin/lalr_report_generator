@@ -2,7 +2,7 @@
   "name": "lalr_report_generator",
   "homepage": "https://tuxedolphin.github.io/lalr_report_generator/",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
