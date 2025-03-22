@@ -7,7 +7,7 @@ interface CanvasProps {
   reportImage: CroppedPicture;
 }
 
-const Canvas: FC<CanvasProps> = function ({ reportImage }) {
+const DisplayPhotoCanvas: FC<CanvasProps> = function ({ reportImage }) {
   const image = reportImage.image;
   const crop = reportImage.crop;
 
@@ -44,4 +44,4 @@ const Canvas: FC<CanvasProps> = function ({ reportImage }) {
   return <canvas ref={ref} className="full-width" />;
 };
 
-export default Canvas;
+export default DisplayPhotoCanvas;

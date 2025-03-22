@@ -8,7 +8,7 @@ import { Crop } from "react-image-crop";
 import { useReportContext } from "../context/contextFunctions";
 import { camelCaseToTitleCase } from "../utils/generalFunctions";
 import { PhotosType } from "../types/types";
-import Canvas from "./Canvas";
+import DisplayPhotoCanvas from "./DisplayPhotoCanvas";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -82,10 +82,10 @@ const AddPhotosButton: FC<AddPhotosFormProps> = function ({ photoType }) {
 
   return (
     <>
-      <Box sx={{ width: "100%", aspectRatio: 4 / 3, position: "relative" }}>
+      <Box sx={{ width: "100%", aspectRatio: 3 / 2, position: "relative" }}>
         {!openModal && reportImage.image.src ? (
           <>
-            <Canvas reportImage={reportImage} />
+            <DisplayPhotoCanvas reportImage={reportImage} />
             <IconButton
               sx={{ position: "absolute", top: 0, right: 0, zIndex: 100 }}
               onClick={() => {
@@ -94,7 +94,7 @@ const AddPhotosButton: FC<AddPhotosFormProps> = function ({ photoType }) {
                 });
               }}
             >
-              <ClearIcon />
+              <ClearIcon color="error"/>
             </IconButton>
           </>
         ) : (
@@ -125,9 +125,11 @@ const AddPhotosButton: FC<AddPhotosFormProps> = function ({ photoType }) {
               type="file"
               onChange={(event) => {
                 if (event.target.files) {
-                  updateImage(null, event.target.files[0]).catch((e: unknown) => {
-                    console.error(e);
-                  });
+                  updateImage(null, event.target.files[0]).catch(
+                    (e: unknown) => {
+                      console.error(e);
+                    }
+                  );
                   setOpenModal(true);
                 }
               }}

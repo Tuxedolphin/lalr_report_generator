@@ -25,7 +25,7 @@ const Home: FC = function () {
   }, []);
 
   const onClick = () => {
-    ls.finish();
+    ls.clear();
   };
 
   return (

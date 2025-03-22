@@ -72,7 +72,6 @@ const ReportProvider: FC<ChildrenOnly> = function ({ children }) {
         .catch((e: unknown) => {
           console.error(e);
         });
-      setReport(report.copy());
     },
     incidentInformation: (
       key: keyof IncidentInformationType,

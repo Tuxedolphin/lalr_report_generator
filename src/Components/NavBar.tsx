@@ -29,6 +29,7 @@ import {
   useNavBarTextContext,
 } from "../context/contextFunctions";
 import { useLocation, useNavigate } from "react-router-dom";
+import ls from "../features/LocalStorage";
 
 const navItems = [
   { text: "Home", path: "/" },
@@ -50,6 +51,8 @@ const NavDrawer: FC<NavDrawerProps> = function ({
   const location = useLocation();
 
   const handleClick = (path: string) => () => {
+    if (path === "/add_entry") ls.clear();
+
     navigate(path);
     handleDrawerToggle();
   };
@@ -85,7 +88,6 @@ const NavDrawer: FC<NavDrawerProps> = function ({
         keepMounted: true,
       }}
       sx={{
-        display: { xs: "block", sm: "none" },
         "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
       }}
     >
@@ -209,7 +211,6 @@ const NavBar: FC = function () {
       />
       <Toolbar />
     </>
-    
   );
 };
 

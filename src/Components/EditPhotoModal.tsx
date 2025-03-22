@@ -20,7 +20,7 @@ const onloadFunction = function (e: SyntheticEvent): Crop {
         unit: "%",
         width: 90,
       },
-      4 / 3,
+      3 / 2,
       image.naturalWidth,
       image.naturalHeight
     ),

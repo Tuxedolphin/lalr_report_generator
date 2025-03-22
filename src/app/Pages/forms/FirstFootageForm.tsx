@@ -43,6 +43,7 @@ const DrawingForm: FC = function () {
 
     contextRef.current.beginPath();
     reportImage.start = getOffset(e, canvasRef);
+
     updateImage(reportImage);
 
     clearCanvas(contextRef.current, canvasRef.current);
@@ -112,7 +113,7 @@ const DrawingForm: FC = function () {
     );
 
     contextRef.current = context;
-  });
+  }, []);
 
   return (
     <>

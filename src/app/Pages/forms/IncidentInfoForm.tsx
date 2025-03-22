@@ -68,8 +68,12 @@ const IncidentInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
               options={Object.keys(firePosts)}
               inputValue={information.station}
               value={information.station}
-              onInputChange={(_, newValue: string) => {
-                updateReport.incidentInformation("station", newValue, true);
+              onChange={(_, newValue: string | null) => {
+                updateReport.incidentInformation(
+                  "station",
+                  newValue ?? "",
+                  true
+                );
               }}
               renderInput={(params) => (
                 <TextField {...params} label="Station" />
@@ -85,7 +89,7 @@ const IncidentInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 updateReport.incidentInformation(
                   "appliance",
-                  event.target.value
+                  event.target.value.toUpperCase()
                 );
               }}
               onBlur={onBlur}
@@ -116,8 +120,12 @@ const IncidentInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
               : Object.values(firePosts).flat()
           }
           value={information.turnoutFrom}
-          onInputChange={(_, newValue: string) => {
-            updateReport.incidentInformation("turnoutFrom", newValue, true);
+          onChange={(_, newValue: string | null) => {
+            updateReport.incidentInformation(
+              "turnoutFrom",
+              newValue ?? "",
+              true
+            );
           }}
           renderInput={(params) => (
             <TextField {...params} label="Turnout From" />

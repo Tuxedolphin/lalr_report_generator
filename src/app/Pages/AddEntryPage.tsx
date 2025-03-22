@@ -43,7 +43,7 @@ const AddEntryPage: FC = function () {
       report.updateDBReport();
 
       generateReportPpt(report);
-      ls.finish();
+      ls.clear();
 
       navigate("/history");
     } else {

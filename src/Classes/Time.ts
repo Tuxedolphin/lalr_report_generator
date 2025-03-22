@@ -8,29 +8,29 @@ class Time {
   constructor(time: dayjs.Dayjs | null);
   constructor(seconds: number, minutes: number, hour?: number);
   constructor(
-    minutesOrTime: number | dayjs.Dayjs | null,
-    seconds?: number,
+    secondsOrTime: number | dayjs.Dayjs | null,
+    minute?: number,
     hour = 0
   ) {
-    if (minutesOrTime === null) {
+    if (secondsOrTime === null) {
       this._second = 0;
       this._minute = 0;
       this._hour = 0;
       return;
     }
 
-    if (dayjs.isDayjs(minutesOrTime)) {
-      this._minute = minutesOrTime.minute();
-      this._second = minutesOrTime.second();
-      this._hour = minutesOrTime.hour();
+    if (dayjs.isDayjs(secondsOrTime)) {
+      this._second = secondsOrTime.second();
+      this._minute = secondsOrTime.minute();
+      this._hour = secondsOrTime.hour();
       return;
     }
 
-    if (seconds === undefined) throw new Error("Seconds must be provided");
+    if (minute === undefined) throw new Error("Minute must be provided");
 
     // Handle overflow
-    let totalSeconds = seconds;
-    let totalMinutes = minutesOrTime;
+    let totalSeconds = secondsOrTime;
+    let totalMinutes = minute;
 
     if (totalSeconds >= 60) {
       totalMinutes += Math.floor(totalSeconds / 60);
@@ -71,19 +71,39 @@ class Time {
   }
 
   public add(time: Time): Time {
-    return new Time(
-      this._hour + time.hour,
-      this._minute + time.minute,
-      this._second + time.second
-    );
+    const totalSeconds = this.totalSeconds + time.totalSeconds;
+
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return new Time(seconds, minutes, hours > 24 ? hours - 24 : hours);
   }
 
   public subtract(time: Time): Time {
-    return new Time(
-      this._hour - time.hour,
-      this._minute - time.minute,
-      this._second - time.second
-    );
+    let totalSeconds = this.totalSeconds - time.totalSeconds;
+
+    // If end time is less than start time, it means we've crossed midnight
+    if (totalSeconds < 0 && this.hour === 0) totalSeconds += 24 * 3600;
+    else totalSeconds = Math.abs(totalSeconds);
+
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return new Time(seconds, minutes, hours);
+  }
+
+  public static getHour(time: Time | dayjs.Dayjs): number {
+    return dayjs.isDayjs(time) ? time.hour() : time.hour;
+  }
+
+  public static getMinute(time: Time | dayjs.Dayjs): number {
+    return dayjs.isDayjs(time) ? time.minute() : time.minute;
+  }
+
+  public static getSecond(time: Time | dayjs.Dayjs): number {
+    return dayjs.isDayjs(time) ? time.second() : time.second;
   }
 
   public static calculateTime = function (
@@ -93,31 +113,26 @@ class Time {
   ): Time {
     if (!start || !end) return new Time(0, 0);
 
-    const getHour = (t: dayjs.Dayjs | Time) =>
-      dayjs.isDayjs(t) ? t.hour() : t.hour;
-    const getMinute = (t: dayjs.Dayjs | Time) =>
-      dayjs.isDayjs(t) ? t.minute() : t.minute;
-    const getSecond = (t: dayjs.Dayjs | Time) =>
-      dayjs.isDayjs(t) ? t.second() : t.second;
-
     let totalSeconds =
-      getHour(end) * 3600 +
-      getMinute(end) * 60 +
-      getSecond(end) -
-      (getHour(start) * 3600 + getMinute(start) * 60 + getSecond(start));
+      Time.getHour(end) * 3600 +
+      Time.getMinute(end) * 60 +
+      Time.getSecond(end) -
+      (Time.getHour(start) * 3600 +
+        Time.getMinute(start) * 60 +
+        Time.getSecond(start));
 
     // If end time is less than start time, it means we've crossed midnight
     if (totalSeconds < 0) {
-      totalSeconds += 12 * 3600;
+      totalSeconds += 24 * 3600;
     }
 
     // Buffer will always be less than 1 hour
     const minutes =
-      Math.floor(totalSeconds / 60) + (buffer ? getMinute(buffer) : 0);
+      Math.floor(totalSeconds / 60) + (buffer ? Time.getMinute(buffer) : 0);
     const remainingSeconds =
-      (totalSeconds % 60) + (buffer ? getSecond(buffer) : 0);
+      (totalSeconds % 60) + (buffer ? Time.getSecond(buffer) : 0);
 
-    return new Time(minutes, remainingSeconds);
+    return new Time(remainingSeconds, minutes);
   };
 
   public static timeToString(

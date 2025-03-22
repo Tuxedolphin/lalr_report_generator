@@ -89,7 +89,7 @@ export const TimingInputs: FC<TimingInputsProps> = function ({
     (time: Dayjs | null) => {
       if (!key) return;
 
-      updateReport[reportKey](key as any, time);
+      updateReport[reportKey](key as any, time, true);
     };
 
   return (

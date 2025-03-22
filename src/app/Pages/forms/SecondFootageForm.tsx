@@ -21,7 +21,7 @@ import {
   defaultJustification,
 } from "../../../utils/constants";
 import TimeLengthPicker from "../../../components/TimeLengthPicker";
-import { calculateTime } from "../../../utils/generalFunctions";
+import Time from "../../../classes/Time";
 const { mainGridFormat, smallInput, largeInput } = alternateGridFormatting;
 
 /**
@@ -43,31 +43,22 @@ const LAForm: FC<CommonFormProps> = function ({ report }) {
 };
 
 const LRForm: FC<CommonFormProps> = function ({ report, updateReport }) {
-  const cameraInformation = report.cameraInformation;
+  const { cameraInformation, acesInformation } = report;
 
-  const [totalTime, setTotalTime] = useState<{
-    minutes: number;
-    seconds: number;
-  }>({
-    minutes: 0,
-    seconds: 0,
-  });
+  const [totalTime, setTotalTime] = useState<Time>(new Time(0, 0));
 
   useEffect(() => {
-    const activationTime = calculateTime(
-      report.acesInformation.timeDispatched,
-      report.acesInformation.timeEnRoute
+    const activationTime = Time.calculateTime(
+      acesInformation.timeDispatched,
+      acesInformation.timeEnRoute
     );
-    const responseTime = calculateTime(
+    const responseTime = Time.calculateTime(
       cameraInformation.timeMoveOff,
       cameraInformation.timeArrived,
       cameraInformation.bufferingTime
     );
 
-    setTotalTime({
-      minutes: activationTime.minutes + responseTime.minutes,
-      seconds: activationTime.seconds + responseTime.seconds,
-    });
+    setTotalTime(activationTime.add(responseTime));
   }, [cameraInformation.bufferingTime]);
 
   return (
@@ -150,13 +141,13 @@ const LRForm: FC<CommonFormProps> = function ({ report, updateReport }) {
               component="span"
               sx={{
                 color:
-                  totalTime.minutes + totalTime.seconds / 60 >
+                  totalTime.totalSeconds / 60 >
                   Number(report.generalInformation.boundary)
                     ? "red"
                     : "default",
               }}
             >
-              {totalTime.minutes}min {totalTime.seconds}sec
+              {totalTime.toString(true)}
             </Typography>
           </Typography>
         </Paper>

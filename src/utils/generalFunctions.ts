@@ -81,30 +81,7 @@ export const checkAndUpdateID = async function (report: Report) {
   return report;
 };
 
-export const calculateTime = function (
-  start: Dayjs | null,
-  end: Dayjs | null,
-  buffer?: Dayjs | null
-) {
-  if (!start || !end) return { minutes: 0, seconds: 0 };
 
-  let totalSeconds =
-    end.hour() * 3600 +
-    end.minute() * 60 +
-    end.second() -
-    (start.hour() * 3600 + start.minute() * 60 + start.second());
-
-  // If end time is less than start time, it means we've crossed midnight
-  if (totalSeconds < 0) {
-    totalSeconds += 12 * 3600;
-  }
-
-  const minutes =
-    Math.floor(totalSeconds / 60) + (buffer ? buffer.minute() : 0);
-  const remainingSeconds = (totalSeconds % 60) + (buffer ? buffer.second() : 0);
-
-  return { minutes, seconds: remainingSeconds };
-};
 
 export const checkIncNumber = function (incNumber: string) {
   const regex = /^\d{8}\/\d{4}$/;
@@ -114,4 +91,12 @@ export const checkIncNumber = function (incNumber: string) {
 
   const day = dayjs(incNumber.split("/")[0], "YYYYMMDD");
   return !day.isValid() ? null : day;
+};
+
+export const generateAcronym = function (text: string): string {
+  if (!text) return "";
+
+  const words = text.split(" ").filter((word) => word.length > 0);
+
+  return words.map((word) => word[0].toUpperCase()).join("");
 };

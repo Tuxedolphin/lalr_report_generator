@@ -1,14 +1,16 @@
 import Picture from "./Picture";
-import { Crop } from "react-image-crop";
+import { Crop, makeAspectCrop } from "react-image-crop";
 
 class CroppedPicture extends Picture {
-  crop: Crop = {
-    unit: "%",
-    x: 0,
-    y: 0,
-    width: 40,
-    height: 30,
-  }; // Default crop is arbitrary
+  crop: Crop = makeAspectCrop(
+    {
+      unit: "%",
+      width: 90,
+    },
+    3 / 2,
+    this.image.naturalWidth,
+    this.image.naturalHeight
+  );
 
   protected _croppedBlob: Blob | null = null;
 
@@ -69,6 +71,14 @@ class CroppedPicture extends Picture {
       this._croppedBlob = blob;
       return blob;
     });
+  };
+
+  getCroppedBlob = async (): Promise<Blob | null> => {
+    if (!this._croppedBlob) {
+      await this.saveCroppedBlob();
+    }
+
+    return this._croppedBlob;
   };
 
   saveCroppedBlob = async (): Promise<void> => {
