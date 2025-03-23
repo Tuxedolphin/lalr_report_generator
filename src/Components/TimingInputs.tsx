@@ -1,6 +1,6 @@
 /// <reference types="vite-plugin-svgr/client" />
 
-import { camelCaseToTitleCase } from "../utils/generalFunctions";
+import { camelCaseToTitleCase } from "../utils/helperFunctions";
 import { TimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Divider, Grid2 as Grid } from "@mui/material";

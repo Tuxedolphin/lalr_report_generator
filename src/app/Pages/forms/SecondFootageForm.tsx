@@ -16,10 +16,8 @@ import {
   Box,
 } from "@mui/material";
 
-import {
-  alternateGridFormatting,
-  defaultJustification,
-} from "../../../utils/constants";
+import { alternateGridFormatting } from "../../../utils/constants";
+import { defaultJustification } from "../../../features/generateReport/utils/constants";
 import TimeLengthPicker from "../../../components/TimeLengthPicker";
 import Time from "../../../classes/Time";
 const { mainGridFormat, smallInput, largeInput } = alternateGridFormatting;
@@ -143,8 +141,8 @@ const LRForm: FC<CommonFormProps> = function ({ report, updateReport }) {
                 color:
                   totalTime.totalSeconds / 60 >
                   Number(report.generalInformation.boundary)
-                    ? "red"
-                    : "default",
+                    ? "error"
+                    : "success",
               }}
             >
               {totalTime.toString(true)}

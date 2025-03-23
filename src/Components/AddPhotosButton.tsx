@@ -6,7 +6,7 @@ import CroppedPicture from "../classes/CroppedPicture";
 import DrawnOnPicture from "../classes/DrawnOnPicture";
 import { Crop } from "react-image-crop";
 import { useReportContext } from "../context/contextFunctions";
-import { camelCaseToTitleCase } from "../utils/generalFunctions";
+import { camelCaseToTitleCase } from "../utils/helperFunctions";
 import { PhotosType } from "../types/types";
 import DisplayPhotoCanvas from "./DisplayPhotoCanvas";
 
@@ -94,7 +94,7 @@ const AddPhotosButton: FC<AddPhotosFormProps> = function ({ photoType }) {
                 });
               }}
             >
-              <ClearIcon color="error"/>
+              <ClearIcon color="error" />
             </IconButton>
           </>
         ) : (

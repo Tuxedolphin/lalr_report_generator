@@ -13,7 +13,7 @@ import {
   clearCanvas,
   getOffset,
   setCanvasStroke,
-} from "../../../utils/generalFunctions";
+} from "../../../utils/helperFunctions";
 import exampleImage from "../../../assets/example_image.png";
 
 /**

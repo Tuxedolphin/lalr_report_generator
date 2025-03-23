@@ -34,24 +34,3 @@ export const alternateGridFormatting = {
     sm: 4,
   },
 } as const;
-
-export const defaultJustification = {
-  LA: "Network Busy",
-  LR: (boundary: string) => {
-    return `MVC < ${boundary} min (Justified by MVC Footage)`;
-  },
-  LRpptShort: (
-    boundary: string,
-    opsCenterAcknowledged: boolean,
-    totalTime?: Time
-  ) => {
-    return opsCenterAcknowledged
-      ? `MVC < ${boundary} min \n(Ops Center Acknowledged)`
-      : `MVC: ${totalTime?.minute.toString() ?? "0"} min ${totalTime?.second.toString() ?? "0"} sec`;
-  },
-  LRpptLong: (boundary: string, opsCenterAcknowledged: boolean, time: Time) => {
-    return opsCenterAcknowledged
-      ? `Ops Center acknowledged appliance responded within ${boundary}min`
-      : `Total Time — ${time.toString()}`;
-  },
-};

@@ -1,4 +1,4 @@
-import { titleCaseString } from "../utils/generalFunctions";
+import { titleCaseString } from "../utils/helperFunctions";
 import {
   Button,
   Dialog,

@@ -8,7 +8,7 @@ import { ReportContext } from "./contextFunctions";
 import { type ChildrenOnly } from "../types/types";
 import { type UpdateReportType } from "../types/types";
 
-import { checkAndUpdateID } from "../utils/generalFunctions";
+import { checkAndUpdateID } from "../utils/helperFunctions";
 import {
   type CameraInformationType,
   type AcesInformationType,
