@@ -4,20 +4,20 @@ import PptxGenJS from "pptxgenjs";
 import {
   formatPage,
   dayjsToString,
-  formatAcesCameraTiming,
   formatLabelTiming,
   generateLeftTable,
   generateOpsAcknowledgePhoto,
   generateRightTable,
   mergeLowerTableDataHeader,
   formatIncidentNumber,
+  formatAcesCameraTiming
 } from "./utils/helperFunctions";
 import {
   defaultBorder,
   enDash,
   colors,
   topTableHeaders,
-  topTableCellSize,
+  topTableOptions,
   lowerTableHeaders,
   lowerTableCellFormat,
   defaultJustification,
@@ -28,10 +28,15 @@ import DrawnOnPicture from "../../classes/DrawnOnPicture";
 
 const { red, grey } = colors;
 
-export const generateLrReport = async function (
-  pptx: PptxGenJS,
-  report: Report
-) {
+const lowerTableOptions = {
+  colW: lowerTableCellFormat.ColW,
+  rowH: lowerTableCellFormat.ColH,
+  x: lowerTableCellFormat.x,
+  y: 3.33,
+  border: defaultBorder,
+};
+
+const generateLrReport = async function (pptx: PptxGenJS, report: Report) {
   const { incidentInformation, acesInformation, cameraInformation } = report;
 
   const opsCenterAcknowledged = !!incidentInformation.opsCenterAcknowledged;
@@ -76,19 +81,9 @@ export const generateLrReport = async function (
   if (topTableData.length !== topTableHeaders.LR.length)
     throw new Error("First page's top table data and headers do not match");
 
-  first.addTable([topTableHeaders.LR, topTableData], {
-    colW: topTableCellSize.LRColW,
-    rowH: topTableCellSize.LRColH,
-    x: 0.16,
-    y: 2.2,
-    h: 3,
-    align: "center",
-    border: defaultBorder,
-    fill: { color: grey },
-    margin: 0,
-  });
+  first.addTable([topTableHeaders.LR, topTableData], topTableOptions.LR);
 
-  const secondTableData = getLowerLRTableData(
+  const lowerTableData = getLowerLRTableData(
     report,
     acesResponseTime,
     cameraTotalTime,
@@ -96,20 +91,15 @@ export const generateLrReport = async function (
   );
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (secondTableData.length !== lowerTableHeaders.LR.length)
+  if (lowerTableData.length !== lowerTableHeaders.LR.length)
     // For safety
     throw new Error("First page's lower data and headers do not match");
 
   first.addTable(
-    mergeLowerTableDataHeader(lowerTableHeaders.LR, secondTableData),
-    {
-      colW: lowerTableCellFormat.ColW,
-      rowH: lowerTableCellFormat.ColH,
-      x: lowerTableCellFormat.x,
-      y: 3.33,
-      border: defaultBorder,
-    }
+    mergeLowerTableDataHeader(lowerTableHeaders.LR, lowerTableData),
+    lowerTableOptions
   );
+
 
   const second = formatPage(
     pptx,
@@ -138,7 +128,7 @@ export const generateLrReport = async function (
         (await cameraInformation.moveOffPhoto?.getCroppedBlob()) ?? new Blob(),
         (await cameraInformation.arrivedPhoto?.getCroppedBlob()) ?? new Blob(),
       ],
-      generateLrRightTableData(
+      getLrRightTableData(
         report,
         activationTime,
         cameraTimeDispatched,
@@ -148,7 +138,7 @@ export const generateLrReport = async function (
     );
 };
 
-export const getTopLRTableData = function (
+const getTopLRTableData = function (
   report: Report,
   acesResponseTime: Time,
   totalTime: Time
@@ -226,7 +216,7 @@ export const getLowerLRTableData = function (
   ] as const;
 };
 
-export const generateLrRightTableData = function (
+const getLrRightTableData = function (
   report: Report,
   activationTime: Time,
   cameraTimeDispatched: Time,
@@ -306,3 +296,5 @@ export const generateLrRightTableData = function (
     },
   ] as const;
 };
+
+export default generateLrReport;

@@ -165,16 +165,14 @@ export const generateOpsAcknowledgePhoto = function (
 
 export const mergeLowerTableDataHeader = function (
   headers: readonly string[],
-  data:
-    | ReturnType<typeof getLowerLATableData>
-    | ReturnType<typeof getLowerLRTableData>
+  data: ReturnType<typeof getLowerLATableData> | ReturnType<typeof getLowerLRTableData>
 ): TableRow[] {
   if (headers.length !== data.length)
     throw new Error("Headers and data do not match");
 
   // Create an array of rows for the table
   const tableRows = headers.map((header, index) => {
-    const currentData = data[index] as string | TableCell;
+    const currentData = data[index];
 
     // The data for appliance and justification is always a string
     if (header.toLowerCase() === "appliance")
@@ -192,7 +190,7 @@ export const mergeLowerTableDataHeader = function (
     if (typeof currentData === "string")
       return [{ text: header }, { text: currentData }];
 
-    return [{ text: header }, currentData];
+    return [{ text: header }, currentData] as TableRow;
   });
 
   return tableRows;
@@ -252,26 +250,6 @@ export const dayjsToString = function (day: dayjs.Dayjs | null) {
   return day ? day.format("HH:mm:ss") : "";
 };
 
-export const formatAcesCameraTiming = function (
-  acesTiming: string,
-  cameraTiming: string,
-  isLaAndAcknowledged?: boolean
-): TableCell {
-  if (!cameraTiming) {
-    return { text: acesTiming, options: { color: black } };
-  }
-
-  return {
-    text: [
-      { text: `${acesTiming} / `, options: { color: black } },
-      {
-        text: isLaAndAcknowledged ? "< 1min" : cameraTiming,
-        options: { color: red, bold: true },
-      },
-    ],
-  };
-};
-
 export const formatLabelTiming = function (
   label: string,
   timing: TableCell | string,
@@ -291,6 +269,26 @@ export const formatLabelTiming = function (
               ? { text: timing.text }
               : timing.text,
           ]),
+    ],
+  };
+};
+
+export const formatAcesCameraTiming = function (
+  acesTiming: string,
+  cameraTiming: string,
+  isLaAndAcknowledged?: boolean
+): TableCell {
+  if (!cameraTiming) {
+    return { text: acesTiming, options: { color: black } };
+  }
+
+  return {
+    text: [
+      { text: `${acesTiming} / `, options: { color: black } },
+      {
+        text: isLaAndAcknowledged ? "< 1min" : cameraTiming,
+        options: { color: red, bold: true },
+      },
     ],
   };
 };

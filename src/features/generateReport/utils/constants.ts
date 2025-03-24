@@ -55,10 +55,10 @@ export const topTableHeaders = {
     "INCIDENT LOCATION",
     "T-DISPATCHED",
     "T-RESPONDED",
-    "V2 ACTIVATION TIME",
-    "RESPONDING FROM",
-    "ACTIVATION TIME BAND",
-    "JUSTIFIED ACTIVATION TIME",
+    "V2\nACTIVATION TIME",
+    "RESPONDING\nFROM",
+    "ACTIVATION\nTIME BAND",
+    "JUSTIFIED\nACTIVATION TIME",
   ].map((header) => ({
     text: header,
     options: { bold: true, fill: { color: white } },
@@ -70,12 +70,37 @@ export const defaultBorder = {
   pt: 1,
 } as const;
 
-export const topTableCellSize = {
+const topTableCellSize = {
   LRColW: [0.3, 1.21, 0.75, 1.69, 1.06, 1.06, 1.3, 1.29, 1.04, 1.04, 2.28],
   LRColH: [0.4, 0.4],
   LAColW: [0.33, 1.09, 0.75, 1.69, 1.06, 1.06, 1.68, 1.68, 1.68, 1.68],
   LAColH: [0.59, 0.7],
-}; // No const assertion as pptxgenjs is not happy with readonly arrays
+};
+
+const topTableCommonOptions = {
+  x: 0.16,
+  y: 2.2,
+  align: "center",
+  valign: "middle",
+  border: defaultBorder,
+  fill: { color: colors.grey },
+  margin: 0,
+} as const;
+
+export const topTableOptions = {
+  LR: {
+    colW: topTableCellSize.LRColW,
+    rowH: topTableCellSize.LRColH,
+    h: 3,
+    ...topTableCommonOptions,
+  },
+  LA: {
+    colW: topTableCellSize.LAColW,
+    rowH: topTableCellSize.LAColH,
+    h: 1.29,
+    ...topTableCommonOptions,
+  },
+};
 
 export const lowerTableHeaders = {
   LR: [
