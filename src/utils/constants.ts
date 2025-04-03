@@ -1,5 +1,3 @@
-import Time from "../classes/Time";
-
 // Default grid formatting based on material design
 export const gridFormatting = {
   mainGridFormat: {

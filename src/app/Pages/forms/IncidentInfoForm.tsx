@@ -1,16 +1,25 @@
-import React, { FC } from "react";
+import React, { FC, useState, useRef } from "react";
 import {
-  TextField,
-  Divider,
-  Paper,
   Autocomplete,
   Box,
+  Divider,
   Grid2 as Grid,
+  MenuItem,
+  Paper,
+  TextField as MuiTextField,
 } from "@mui/material";
 
 import ButtonGroupInput from "../../../components/ButtonGroupInput";
-import { gridFormatting } from "../../../utils/constants";
+import TextField from "../../../components/TextField";
 import { useReportContext } from "../../../context/contextFunctions";
+import { gridFormatting } from "../../../utils/constants";
+import { ErrorsType, IncidentInformationType } from "../../../types/types";
+
+import {
+  getOnBlurFunction,
+  getOnChangeFunction,
+} from "../../../utils/helperFunctions";
+
 const { mainGridFormat, smallInput, largeInput } = gridFormatting;
 
 // The different fire posts/ fire stations corresponding to each fire station
@@ -36,12 +45,25 @@ const IncidentInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
   }
 
   const [report, updateReport] = useReportContext();
+  const [errors, setErrors] = useState<ErrorsType>({
+    incidentNumb: "",
+    station: "",
+    appliance: "",
+    SC: "",
+    turnoutFrom: "",
+    typeOfCall: "",
+    location: "",
+    reportType: "",
+    opsCenterAcknowledged: "",
+  });
 
+  const textFieldRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const information = report.incidentInformation;
 
-  const onBlur = () => {
-    report.updateDBReport("incidentInformation");
-  };
+  const commonProps = {
+    setErrors: setErrors,
+    refHook: textFieldRefs,
+  } as const;
 
   return (
     <form id="generalInfoForm" onSubmit={handleSubmit}>
@@ -50,62 +72,48 @@ const IncidentInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
         <Grid {...mainGridFormat}>
           <Grid size={largeInput}>
             <TextField
+              {...commonProps}
               label="Incident Number"
-              variant="outlined"
-              fullWidth
-              value={information.incidentNumb}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                updateReport.incidentInformation(
-                  "incidentNumb",
-                  event.target.value
-                );
-              }}
-              onBlur={onBlur}
+              valueKey="incidentNumb"
+              errorText={errors.incidentNumb ?? ""}
             />
           </Grid>
           <Grid size={smallInput}>
-            <Autocomplete
-              options={Object.keys(firePosts)}
-              inputValue={information.station}
-              value={information.station}
-              onChange={(_, newValue: string | null) => {
-                updateReport.incidentInformation(
-                  "station",
-                  newValue ?? "",
-                  true
-                );
-              }}
-              renderInput={(params) => (
-                <TextField {...params} label="Station" />
-              )}
+            <MuiTextField
+              select
+              label="Station"
               fullWidth
-            />
+              value={information.station}
+              onChange={getOnChangeFunction(
+                updateReport,
+                setErrors,
+                "station",
+                textFieldRefs
+              )}
+              error={!!errors.station}
+              helperText={errors.station}
+            >
+              {Object.keys(firePosts).map((key) => (
+                <MenuItem key={key} value={key}>
+                  {key}
+                </MenuItem>
+              ))}
+            </MuiTextField>
           </Grid>
           <Grid size={smallInput}>
             <TextField
+              {...commonProps}
               label="Call Sign"
-              variant="outlined"
-              value={information.appliance}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                updateReport.incidentInformation(
-                  "appliance",
-                  event.target.value.toUpperCase()
-                );
-              }}
-              onBlur={onBlur}
-              fullWidth
+              valueKey="appliance"
+              errorText={errors.appliance ?? ""}
             />
           </Grid>
           <Grid size={largeInput}>
             <TextField
+              {...commonProps}
               label="SC Rank and Name"
-              variant="outlined"
-              value={information.SC}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                updateReport.incidentInformation("SC", event.target.value);
-              }}
-              onBlur={onBlur}
-              fullWidth
+              valueKey="SC"
+              errorText={errors.SC ?? ""}
             />
           </Grid>
         </Grid>
@@ -119,38 +127,37 @@ const IncidentInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
               ? firePosts[information.station as keyof typeof firePosts]
               : Object.values(firePosts).flat()
           }
-          value={information.turnoutFrom}
-          onChange={(_, newValue: string | null) => {
-            updateReport.incidentInformation(
-              "turnoutFrom",
-              newValue ?? "",
-              true
-            );
-          }}
+          fullWidth
+          inputValue={information.turnoutFrom}
+          onInputChange={getOnChangeFunction(
+            updateReport,
+            setErrors,
+            "turnoutFrom",
+            textFieldRefs
+          )}
+          onBlur={getOnBlurFunction(setErrors, report, "turnoutFrom")}
           renderInput={(params) => (
-            <TextField {...params} label="Turnout From" />
+            <MuiTextField
+              {...params}
+              label="Turnout From"
+              fullWidth
+              error={!!errors.turnoutFrom}
+              helperText={errors.turnoutFrom}
+            />
           )}
         />
         <TextField
-          label="Type of Call"
-          variant="outlined"
-          fullWidth
-          value={information.typeOfCall}
-          onChange={(event) => {
-            updateReport.incidentInformation("typeOfCall", event.target.value);
-          }}
-          onBlur={onBlur}
+          {...commonProps}
           sx={{ marginTop: 2 }}
+          valueKey="typeOfCall"
+          errorText={errors.typeOfCall ?? ""}
         />
         <TextField
+          {...commonProps}
           label="Incident Location"
-          fullWidth
           sx={{ marginTop: 2 }}
-          value={information.location}
-          onChange={(event) => {
-            updateReport.incidentInformation("location", event.target.value);
-          }}
-          onBlur={onBlur}
+          valueKey="location"
+          errorText={errors.location ?? ""}
         />
       </Paper>
 
@@ -159,12 +166,13 @@ const IncidentInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
         <Box sx={{ justifyContent: "center", display: "flex" }}>
           <ButtonGroupInput
             title=""
+            id="reportType"
             buttonTextsValues={{
               "Late Activation": "LA",
               "Late Response": "LR",
             }}
-            id="reportType"
             selected={information.reportType}
+            error={!!errors.reportType}
           />
         </Box>
       </Paper>
@@ -173,17 +181,20 @@ const IncidentInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
         <Box sx={{ justifyContent: "center", display: "flex" }}>
           <ButtonGroupInput
             title=""
+            id="opsCenterAcknowledged"
             buttonTextsValues={{
               yes: true,
               no: false,
             }}
-            id="opsCenterAcknowledged"
             selected={information.opsCenterAcknowledged}
+            error={!!errors.opsCenterAcknowledged}
           />
         </Box>
       </Paper>
     </form>
   );
 };
+
+const checkAllIfEmpty = function () {};
 
 export default IncidentInfoForm;

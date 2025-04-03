@@ -217,7 +217,7 @@ export const generateLeftTable = function (
 
 export const generateRightTable = function (
   slide: PptxGenJS.Slide,
-  images: [Blob, Blob, Blob],
+  images: [string, string, string],
   cellTexts: [TableCell, TableCell, TableCell]
 ) {
   const tableData = cellTexts.map((cell) => {
@@ -229,7 +229,7 @@ export const generateRightTable = function (
 
   images.forEach((image, index) => {
     slide.addImage({
-      path: URL.createObjectURL(image),
+      data: image,
       h: rightTableFormat.colH,
       w: rightTableFormat.colW[0],
       x: rightTableFormat.x,

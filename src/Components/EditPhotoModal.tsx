@@ -47,9 +47,7 @@ const EditPhotoModal: FC<EditPhotoModalProps> = function ({
   const [crop, setCrop] = useState<Crop>(reportImage.crop);
 
   function handleSubmit(): void {
-    updateImage(crop).catch((e: unknown) => {
-      console.error(e);
-    });
+    updateImage(crop).catch(console.error);
     handleClose();
   }
 

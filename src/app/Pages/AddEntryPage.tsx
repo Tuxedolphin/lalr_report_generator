@@ -42,7 +42,7 @@ const AddEntryPage: FC = function () {
       // Updating to make sure that the DB report is saved correctly
       report.updateDBReport();
 
-      generateReportPpt(report);
+      generateReportPpt(report).catch(console.error);
       ls.clear();
 
       navigate("/history");

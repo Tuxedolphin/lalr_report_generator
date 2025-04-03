@@ -5,6 +5,7 @@ import {
   FormLabel,
   ToggleButtonGroup,
   ToggleButton,
+  FormHelperText,
 } from "@mui/material";
 import { useReportContext } from "../context/contextFunctions";
 
@@ -13,6 +14,7 @@ interface ButtonGroupInputType {
   buttonTextsValues: Record<string, ReportValueTypes>;
   id: keyof IncidentInformationType;
   selected: ReportValueTypes;
+  error: boolean;
 }
 
 const ButtonGroupInput: FC<ButtonGroupInputType> = function ({
@@ -20,6 +22,7 @@ const ButtonGroupInput: FC<ButtonGroupInputType> = function ({
   buttonTextsValues,
   id,
   selected,
+  error
 }) {
   const [, updateReport] = useReportContext();
 
@@ -58,6 +61,7 @@ const ButtonGroupInput: FC<ButtonGroupInputType> = function ({
         width: "100%",
         maxWidth: "80%",
       }}
+      error={error}
     >
       <FormLabel id={id}>{title}</FormLabel>
       <ToggleButtonGroup
@@ -69,6 +73,7 @@ const ButtonGroupInput: FC<ButtonGroupInputType> = function ({
       >
         {buttons}
       </ToggleButtonGroup>
+      {error && <FormHelperText sx={{ textAlign: 'right' }}>Required</FormHelperText>}
     </FormControl>
   );
 };

@@ -10,7 +10,7 @@ import {
   generateRightTable,
   mergeLowerTableDataHeader,
   formatIncidentNumber,
-  formatAcesCameraTiming
+  formatAcesCameraTiming,
 } from "./utils/helperFunctions";
 import {
   defaultBorder,
@@ -26,7 +26,7 @@ import { generateAcronym } from "../../utils/helperFunctions";
 import { TableRow, TableCell } from "./utils/types";
 import DrawnOnPicture from "../../classes/DrawnOnPicture";
 
-const { red, grey } = colors;
+const { red } = colors;
 
 const lowerTableOptions = {
   colW: lowerTableCellFormat.ColW,
@@ -100,7 +100,6 @@ const generateLrReport = async function (pptx: PptxGenJS, report: Report) {
     lowerTableOptions
   );
 
-
   const second = formatPage(
     pptx,
     "LR",
@@ -124,9 +123,9 @@ const generateLrReport = async function (pptx: PptxGenJS, report: Report) {
     generateRightTable(
       second,
       [
-        (await acesInformation.acesScreenshot?.getCroppedBlob()) ?? new Blob(),
-        (await cameraInformation.moveOffPhoto?.getCroppedBlob()) ?? new Blob(),
-        (await cameraInformation.arrivedPhoto?.getCroppedBlob()) ?? new Blob(),
+        (await acesInformation.acesScreenshot?.getBase64()) ?? "",
+        (await cameraInformation.moveOffPhoto?.getBase64()) ?? "",
+        (await cameraInformation.arrivedPhoto?.getBase64()) ?? "",
       ],
       getLrRightTableData(
         report,

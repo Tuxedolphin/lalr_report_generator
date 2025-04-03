@@ -8,82 +8,168 @@ import {
   Typography,
   Box,
   IconButton,
+  Button,
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 import "./History.css";
-import {
-  useNavBarTextContext,
-} from "../../context/contextFunctions";
+import { useNavBarTextContext } from "../../context/contextFunctions";
 import updateBackground from "../../features/updateBackground";
-import { retrieveAll } from "../../features/db";
-import Report from "../../classes/Report";
+import { retrieveAll, deleteReport } from "../../features/db";
 import ls from "../../features/LocalStorage";
+import { DisplayReportDataType } from "../../types/types";
+
+interface SortedDisplayReportDataType {
+  LA: DisplayReportDataType[];
+  LR: DisplayReportDataType[];
+  NoReportType: DisplayReportDataType[];
+}
 
 const History: FC = function () {
   updateBackground();
-  const [reports, setReports] = useState<Report[]>([]);
+  const [reports, setReports] = useState<SortedDisplayReportDataType>({
+    LA: [],
+    LR: [],
+    NoReportType: [],
+  });
 
   const updateNavBarText = useNavBarTextContext() as React.Dispatch<
     React.SetStateAction<string>
   >;
 
   useEffect(() => {
-    updateNavBarText("History");
-  }, [updateNavBarText]);
-
-  useEffect(() => {
     const fetchReports = async () => {
       const data = await retrieveAll();
-      setReports(data);
+      const sortedData: SortedDisplayReportDataType = {
+        LA: [],
+        LR: [],
+        NoReportType: [],
+      };
+      data.forEach((report) => {
+        switch (report.reportType) {
+          case "LA":
+            sortedData.LA.push(report);
+            break;
+          case "LR":
+            sortedData.LR.push(report);
+            break;
+          default:
+            sortedData.NoReportType.push(report);
+            break;
+        }
+      });
+
+      setReports(sortedData);
     };
 
-    fetchReports().catch((e: unknown) => {
-      console.error(e);
-      
-    });
+    updateNavBarText("History");
+
+    fetchReports().catch(console.error);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleDelete = (report: Report) => () => {
-    const newData = [...reports];
+  const navigate = useNavigate();
 
-    const index = newData.indexOf(report);
+  const handleDelete = (report: DisplayReportDataType) => () => {
+    const newReports = { ...reports };
+
+    const reportType = report.reportType ?? "NoReportType";
+
+    const index = newReports[reportType].indexOf(report);
     if (index < 0) return;
 
-    newData.splice(index, 1);
-    setReports(newData);
+    newReports[reportType].splice(index, 1);
+    setReports(newReports);
 
-    report.deleteDBReport();
+    deleteReport(report.id);
   };
 
-  const reportItems = reports.map((report) => (
-    <SectionOverview
-      report={report}
-      handleDelete={handleDelete}
-      key={report.id}
-    />
-  ));
-
   return (
-    <Paper sx={{ m: 1 }}>
-      <List sx={{ width: "100%" }}>{reportItems}</List>
-    </Paper>
+    <>
+      {reports.LA.length === 0 &&
+      reports.LR.length === 0 &&
+      reports.NoReportType.length === 0 ? (
+        <Paper sx={{ m: 1, p: 3, textAlign: "center" }}>
+            <Typography variant="h6" gutterBottom>
+            No Records Available
+            </Typography>
+          <Button
+            color="primary"
+            onClick={() => {
+              navigate("/add_entry");
+            }}
+            sx={{ mt: 1 }}
+            aria-label="add report"
+            startIcon={<Edit />}
+            size="large"
+
+          >
+            Add Report
+          </Button>
+        </Paper>
+      ) : (
+        <>
+          <SectionOverview
+            header="Late Activation"
+            reports={reports.LA}
+            handleDelete={handleDelete}
+          />
+          <SectionOverview
+            header="Late Response"
+            reports={reports.LR}
+            handleDelete={handleDelete}
+          />
+          <SectionOverview
+            header="No Report Type"
+            reports={reports.NoReportType}
+            handleDelete={handleDelete}
+          />
+        </>
+      )}
+    </>
   );
 };
 
 interface SectionOverviewType {
-  report: Report;
-  handleDelete: (report: Report) => () => void;
+  header: "Late Activation" | "Late Response" | "No Report Type";
+  reports: DisplayReportDataType[];
+  handleDelete: (report: DisplayReportDataType) => () => void;
 }
 
 const SectionOverview: FC<SectionOverviewType> = function ({
+  header,
+  reports,
+  handleDelete,
+}) {
+  if (reports.length === 0) return;
+
+  return (
+    <Paper sx={{ m: 1 }}>
+      <List sx={{ width: "100%" }}>
+        <Divider sx={{ paddingBottom: 1 }}>{header}</Divider>
+        {reports.map((report) => (
+          <ReportOverview
+            report={report}
+            key={report.id}
+            handleDelete={handleDelete}
+          />
+        ))}
+      </List>
+    </Paper>
+  );
+};
+
+interface ReportOverviewType {
+  report: DisplayReportDataType;
+  handleDelete: (report: DisplayReportDataType) => () => void;
+}
+
+const ReportOverview: FC<ReportOverviewType> = function ({
   report,
   handleDelete,
 }) {
   const navigate = useNavigate();
-
-  const incidentInformation = report.incidentInformation;
 
   return (
     <>
@@ -121,26 +207,44 @@ const SectionOverview: FC<SectionOverviewType> = function ({
         <ListItemText
           inset
           primary={
-            incidentInformation.incidentNumb
-              ? incidentInformation.incidentNumb
+            report.incidentNumb
+              ? report.incidentNumb
               : "No Incident Number Found"
-          }
+          } // Done as report.incidentNumb could be empty string
           secondary={
             <>
-              <Typography
-                component="span"
-                variant="body2"
-                sx={{ color: "text.primary", display: "inline", p: 1 }}
-              >
-                Appliance:
-              </Typography>
-              {" " + incidentInformation.appliance}
+              <SecondaryText
+                primary="Appliance:"
+                secondary={report.appliance}
+              />
+              <br />
+              <SecondaryText primary="SC:" secondary={report.sc} />
             </>
           }
         />
       </ListItem>
       <Divider variant="inset" component="li" sx={{ my: 1 }} />
     </>
+  );
+};
+
+interface SecondaryTextType {
+  primary: string;
+  secondary: string;
+}
+
+const SecondaryText: FC<SecondaryTextType> = function ({ primary, secondary }) {
+  secondary = secondary ? secondary : "No Data Found"; // Done as secondary could be empty string
+
+  return (
+    <Typography
+      component="span"
+      variant="body2"
+      sx={{ color: "text.primary", display: "inline", p: 1 }}
+    >
+      {primary}
+      {" " + secondary}
+    </Typography>
   );
 };
 

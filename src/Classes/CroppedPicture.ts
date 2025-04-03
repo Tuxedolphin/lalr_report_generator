@@ -2,7 +2,7 @@ import Picture from "./Picture";
 import { Crop, makeAspectCrop } from "react-image-crop";
 
 class CroppedPicture extends Picture {
-  crop: Crop = makeAspectCrop(
+  protected _crop: Crop = makeAspectCrop(
     {
       unit: "%",
       width: 90,
@@ -21,6 +21,16 @@ class CroppedPicture extends Picture {
     if (crop) this.crop = crop;
   }
 
+  // Property accessors
+  set crop(crop: Crop) {
+    this._crop = crop;
+    this.saveCroppedBlob().catch(console.error);
+  }
+
+  get crop(): Crop {
+    return this._crop;
+  }
+
   get croppedBlob(): Blob {
     if (!this._croppedBlob) {
       console.error(
@@ -32,12 +42,31 @@ class CroppedPicture extends Picture {
     return this._croppedBlob;
   }
 
-  /**
-   * Get the blob of the cropped image
-   * @param crop The Crop object to be used to crop the image. If not provided, the default crop object will be used.
-   * @returns A promise that resolves to a Blob of the cropped image
-   */
-  getNewCroppedBlob = (crop?: Crop): Promise<Blob> => {
+  // Main functionality methods
+  updateAndReturnCrop = (crop: Crop): this => {
+    this.crop = crop;
+    return this;
+  };
+
+  private saveCroppedBlob = async (): Promise<void> => {
+    this._croppedBlob = await this.getNewCroppedBlob();
+  };
+
+  private getNewCroppedBlob = async (crop?: Crop): Promise<Blob> => {
+    if (!this.image.complete) {
+      return new Promise<Blob>((resolve) => {
+        this.image.onload = () => {
+          this.getNewCroppedBlob(crop)
+            .then(resolve)
+            .catch((error: unknown) => {
+              console.error("Error in getNewCroppedBlob:", error);
+              resolve(new Blob()); // Resolve with an empty blob to prevent promise hanging
+            });
+        };
+        return;
+      });
+    }
+
     crop = crop ?? this.crop;
 
     const canvas = new OffscreenCanvas(
@@ -73,21 +102,16 @@ class CroppedPicture extends Picture {
     });
   };
 
-  getCroppedBlob = async (): Promise<Blob | null> => {
-    if (!this._croppedBlob) {
-      await this.saveCroppedBlob();
-    }
+  // Utility methods
+  getBase64 = async (): Promise<string> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(this.croppedBlob);
 
-    return this._croppedBlob;
-  };
-
-  saveCroppedBlob = async (): Promise<void> => {
-    this._croppedBlob = await this.getNewCroppedBlob();
-  };
-
-  updateAndReturnCrop = (crop: Crop): this => {
-    this.crop = crop;
-    return this;
+      reader.onload = () => {
+        resolve(reader.result as string);
+      };
+    });
   };
 }
 

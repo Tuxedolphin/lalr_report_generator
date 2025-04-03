@@ -5,9 +5,11 @@ import DBPhoto from "../classes/DBPhoto";
 import {
   AcesInformationType,
   CameraInformationType,
+  DisplayReportDataType,
   GeneralInformationType,
   IncidentInformationType,
   ReportKeys,
+  ReportType,
 } from "../types/types";
 import CroppedPicture from "../classes/CroppedPicture";
 import DrawnOnPicture from "../classes/DrawnOnPicture";
@@ -248,7 +250,15 @@ export async function retrieveReport(id: number) {
   return formatDBReport(result);
 }
 
-export async function retrieveAll() {
+export async function retrieveAll(): Promise<DisplayReportDataType[]> {
   const result = await db.reports.toArray();
-  return result.map(formatDBReport);
+  return result.map((report) => {
+    return {
+      id: report.id,
+      incidentNumb: report.incidentInformation.incidentNumb,
+      appliance: report.incidentInformation.appliance,
+      sc: report.incidentInformation.SC,
+      reportType: report.incidentInformation.reportType,
+    };
+  });
 }

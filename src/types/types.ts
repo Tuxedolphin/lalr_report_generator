@@ -1,11 +1,40 @@
+// External imports
 import { Dayjs } from "dayjs";
-import CroppedPicture from "../classes/CroppedPicture";
 import { ReactNode } from "react";
+
+// Internal imports
+import CroppedPicture from "../classes/CroppedPicture";
 import DrawnOnPicture from "../classes/DrawnOnPicture";
 import type Report from "../classes/Report";
 
-export type reportType = "LA" | "LR" | null;
+// ====== BASIC TYPES ======
 
+// Report identification types
+export type ReportType = "LA" | "LR" | null;
+
+// Report structure types
+export type ReportKeys =
+  | "incidentInformation"
+  | "generalInformation"
+  | "acesInformation"
+  | "cameraInformation";
+
+// Photo related types
+export type PhotosType =
+  | "acesScreenshot"
+  | "dispatchPhoto"
+  | "allInPhoto"
+  | "moveOffPhoto"
+  | "arrivedPhoto";
+
+// ====== UI COMPONENTS ======
+export interface ChildrenOnly {
+  children: ReactNode;
+}
+
+// ====== DATA MODELS ======
+
+// Core information models
 export interface IncidentInformationType {
   incidentNumb: string;
   location: string;
@@ -14,7 +43,7 @@ export interface IncidentInformationType {
   SC: string;
   turnoutFrom: string;
   typeOfCall: string;
-  reportType: reportType;
+  reportType: ReportType;
   opsCenterAcknowledged: boolean | null;
 }
 
@@ -49,6 +78,9 @@ export interface CameraInformationType {
   arrivedPhoto: CroppedPicture | undefined;
 }
 
+// ====== DERIVED TYPES ======
+
+// Value types used across report models
 export type ReportValueKeysType =
   | keyof IncidentInformationType
   | keyof GeneralInformationType
@@ -65,29 +97,24 @@ export type ReportValueTypes =
   | number
   | boolean;
 
-export type ReportKeys =
-  | "incidentInformation"
-  | "generalInformation"
-  | "acesInformation"
-  | "cameraInformation";
+// ====== APPLICATION INTERFACES ======
 
+// Edit operations
 export interface EditType {
   key: ReportValueKeysType;
   value: ReportValueTypes;
 }
 
-export interface ChildrenOnly {
-  children: ReactNode;
+// Display interfaces
+export interface DisplayReportDataType {
+  id: number;
+  incidentNumb: string;
+  appliance: string;
+  sc: string;
+  reportType: ReportType;
 }
 
-// The key of type Report corresponding to each photo type
-export type PhotosType =
-  | "acesScreenshot"
-  | "dispatchPhoto"
-  | "allInPhoto"
-  | "moveOffPhoto"
-  | "arrivedPhoto";
-
+// Update operations
 export interface UpdateReportType {
   id: (id: number) => void;
   cameraInformation: (
@@ -112,3 +139,8 @@ export interface UpdateReportType {
   ) => void;
   all: (report: Report) => void;
 }
+
+// ====== MISC TYPES ======
+
+export type ErrorsType = Partial<Record<ReportValueKeysType, string>>;
+export type SetErrorsType = React.Dispatch<React.SetStateAction<ErrorsType>>;

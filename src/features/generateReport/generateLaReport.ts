@@ -105,9 +105,9 @@ const generateLaReport = async function (pptx: PptxGenJS, report: Report) {
     generateRightTable(
       second,
       [
-        (await cameraInformation.dispatchPhoto?.getCroppedBlob()) ?? new Blob(),
-        (await cameraInformation.allInPhoto?.getCroppedBlob()) ?? new Blob(),
-        (await cameraInformation.allInPhoto?.getCroppedBlob()) ?? new Blob(),
+        (await cameraInformation.dispatchPhoto?.getBase64()) ?? "",
+        (await cameraInformation.allInPhoto?.getBase64()) ?? "",
+        (await cameraInformation.moveOffPhoto?.getBase64()) ?? "",
       ],
       getLaRightTableData(report, cameraActivationTime)
     );
