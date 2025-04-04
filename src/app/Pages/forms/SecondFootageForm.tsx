@@ -57,6 +57,7 @@ const LRForm: FC<CommonFormProps> = function ({ report, updateReport }) {
     );
 
     setTotalTime(activationTime.add(responseTime));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cameraInformation.bufferingTime]);
 
   return (

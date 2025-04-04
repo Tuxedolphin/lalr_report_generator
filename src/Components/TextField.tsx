@@ -1,12 +1,13 @@
 import { TextField as MuiTextField, SxProps } from "@mui/material";
 import { FC } from "react";
 import { ReportValueKeysType, SetErrorsType } from "../types/types";
-import { camelCaseToTitleCase } from "../utils/helperFunctions";
+import { camelCaseToTitleCase, getReportKey } from "../utils/helperFunctions";
 import { useReportContext } from "../context/contextFunctions";
 import {
-  getOnBlurFunction,
-  getOnChangeFunction,
+  getTextFieldOnBlurFn,
+  getTextFieldOnChangeFn,
 } from "../utils/helperFunctions";
+import Report from "../classes/Report";
 
 interface TextFieldProps {
   valueKey: ReportValueKeysType;
@@ -29,14 +30,18 @@ const TextField: FC<TextFieldProps> = function ({
 
   label = label ?? camelCaseToTitleCase(key);
 
-  const onChange = getOnChangeFunction(updateReport, setErrors, key, ref);
-  const onBlur = getOnBlurFunction(setErrors, report, key);
+  const onChange = getTextFieldOnChangeFn(updateReport, setErrors, key, ref);
+  const onBlur = getTextFieldOnBlurFn(setErrors, report, key);
+
+  const infoKey = getReportKey(key);
+  if (!infoKey) throw new Error(`Invalid key: ${key}`);
 
   return (
     <MuiTextField
       label={label}
       variant="outlined"
       fullWidth
+      value={report[infoKey][key as keyof Report[typeof infoKey]]}
       sx={sx}
       onChange={onChange}
       onBlur={onBlur}

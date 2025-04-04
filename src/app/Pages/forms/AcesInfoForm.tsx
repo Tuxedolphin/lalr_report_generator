@@ -64,6 +64,7 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
       newTimings[key as TimingsKey] = acesInformation[key as TimingsKey];
 
     setTimings(newTimings);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [acesInformation]);
 
   return (

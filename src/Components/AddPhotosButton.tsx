@@ -3,7 +3,6 @@ import { Image as ImageIcon, Clear as ClearIcon } from "@mui/icons-material";
 import { FC, useState } from "react";
 import EditPhotoModal from "./EditPhotoModal";
 import CroppedPicture from "../classes/CroppedPicture";
-import DrawnOnPicture from "../classes/DrawnOnPicture";
 import { Crop } from "react-image-crop";
 import { useReportContext } from "../context/contextFunctions";
 import { camelCaseToTitleCase } from "../utils/helperFunctions";
@@ -35,7 +34,7 @@ const AddPhotosButton: FC<AddPhotosFormProps> = function ({ photoType }) {
    * Updates the image of the report object passed in
    * @param crop The crop object, or null if the photo is to be deleted / to be created
    */
-  const updateImage = async (crop: Crop | null, image?: Blob | File) => {
+  const updateImage = (crop: Crop | null, image?: Blob | File) => {
     if (isAces) {
       if (crop === null) {
         updateReport.acesInformation(photoType, new CroppedPicture(image));
@@ -44,10 +43,6 @@ const AddPhotosButton: FC<AddPhotosFormProps> = function ({ photoType }) {
         updateReport.acesInformation(
           photoType,
           reportImage?.updateAndReturnCrop(crop)
-        );
-        updateReport.acesInformation(
-          "drawnScreenshot",
-          new DrawnOnPicture(await reportImage?.getNewCroppedBlob())
         );
       }
 
@@ -89,9 +84,7 @@ const AddPhotosButton: FC<AddPhotosFormProps> = function ({ photoType }) {
             <IconButton
               sx={{ position: "absolute", top: 0, right: 0, zIndex: 100 }}
               onClick={() => {
-                updateImage(null).catch((e: unknown) => {
-                  console.error(e);
-                });
+                updateImage(null)
               }}
             >
               <ClearIcon color="error" />
@@ -125,11 +118,7 @@ const AddPhotosButton: FC<AddPhotosFormProps> = function ({ photoType }) {
               type="file"
               onChange={(event) => {
                 if (event.target.files) {
-                  updateImage(null, event.target.files[0]).catch(
-                    (e: unknown) => {
-                      console.error(e);
-                    }
-                  );
+                  updateImage(null, event.target.files[0])
                   setOpenModal(true);
                 }
               }}

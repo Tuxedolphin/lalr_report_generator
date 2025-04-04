@@ -140,7 +140,7 @@ export interface UpdateReportType {
   all: (report: Report) => void;
 }
 
-// ====== MISC TYPES ======
+// ====== ERROR TYPES ======
 
 export type ErrorsType = Partial<Record<ReportValueKeysType, string>>;
 export type SetErrorsType = React.Dispatch<React.SetStateAction<ErrorsType>>;

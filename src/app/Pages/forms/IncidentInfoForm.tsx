@@ -13,11 +13,16 @@ import ButtonGroupInput from "../../../components/ButtonGroupInput";
 import TextField from "../../../components/TextField";
 import { useReportContext } from "../../../context/contextFunctions";
 import { gridFormatting } from "../../../utils/constants";
-import { ErrorsType, IncidentInformationType } from "../../../types/types";
+import {
+  ErrorsType,
+  IncidentInformationType,
+  SetErrorsType,
+} from "../../../types/types";
 
 import {
-  getOnBlurFunction,
-  getOnChangeFunction,
+  getSelectOnChangeFn,
+  getTextFieldOnBlurFn,
+  getTextFieldOnChangeFn,
 } from "../../../utils/helperFunctions";
 
 const { mainGridFormat, smallInput, largeInput } = gridFormatting;
@@ -41,6 +46,7 @@ interface GeneralInfoFormProps {
 const IncidentInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    if (checkForError(errors, setErrors, report.incidentInformation)) return;
     handleNext(report.incidentInformation.opsCenterAcknowledged ? 3 : 4);
   }
 
@@ -84,11 +90,11 @@ const IncidentInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
               label="Station"
               fullWidth
               value={information.station}
-              onChange={getOnChangeFunction(
+              onChange={getSelectOnChangeFn(
                 updateReport,
                 setErrors,
                 "station",
-                textFieldRefs
+                report
               )}
               error={!!errors.station}
               helperText={errors.station}
@@ -128,14 +134,15 @@ const IncidentInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
               : Object.values(firePosts).flat()
           }
           fullWidth
+          clearOnBlur={false}
           inputValue={information.turnoutFrom}
-          onInputChange={getOnChangeFunction(
+          onInputChange={getTextFieldOnChangeFn(
             updateReport,
             setErrors,
             "turnoutFrom",
             textFieldRefs
           )}
-          onBlur={getOnBlurFunction(setErrors, report, "turnoutFrom")}
+          onBlur={getTextFieldOnBlurFn(setErrors, report, "turnoutFrom")}
           renderInput={(params) => (
             <MuiTextField
               {...params}
@@ -195,6 +202,26 @@ const IncidentInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
   );
 };
 
-const checkAllIfEmpty = function () {};
+const checkForError = function (
+  errors: ErrorsType,
+  setErrors: SetErrorsType,
+  information: IncidentInformationType
+) {
+  let hasError = false;
+
+  for (const [key, value] of Object.entries(information)) {
+    if (value === "") {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [key]: `Required`,
+      }));
+      hasError = true;
+    } else if (errors[key as keyof IncidentInformationType]) {
+      hasError = true;
+    }
+  }
+
+  return hasError;
+};
 
 export default IncidentInfoForm;

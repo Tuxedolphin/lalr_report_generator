@@ -211,40 +211,40 @@ export const getReportKey = function (
  *
  * @throws Will throw an error if the event object doesn't have target.value property
  */
-export const getOnChangeFunction = function (
+export const getTextFieldOnChangeFn = function (
   updateReport: UpdateReportType,
   setErrors: SetErrorsType,
   key: ReportValueKeysType,
   textFieldRefs: React.MutableRefObject<Record<string, HTMLInputElement | null>>
 ) {
+  const infoKey = getReportKey(key);
+  if (!infoKey) throw new Error(`Key ${key} not found in keyToInfoKey mapping`);
+
   return (
     e:
       | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-      | React.SyntheticEvent,
-    v?: string
+      | React.SyntheticEvent
+      | null,
+    value?: unknown
   ) => {
+    if (!e) return;
+
     setErrors((prev) => ({ ...prev, [key]: "" }));
 
-    let value;
+    let newValue;
 
-    if (v) value = v;
-    else if ("target" in e && "value" in e.target) value = e.target.value;
+    if (typeof value === "string") newValue = value;
+    else if ("target" in e && "value" in e.target) newValue = e.target.value;
     else
-      throw new Error(
-        `Event ${JSON.stringify(e)} does not contain target.value`
-      );
+      throw new Error(`Unexpected value type: ${typeof value} and ${typeof e}`);
 
     // Save cursor position before update
     const inputElement = textFieldRefs.current[key];
     const cursorPosition = inputElement?.selectionStart ?? 0;
 
-    const infoKey = getReportKey(key);
-    if (!infoKey)
-      throw new Error(`Key ${key} not found in keyToInfoKey mapping`);
-
     (updateReport[infoKey] as (k: ReportValueKeysType, v: string) => void)(
       key,
-      value
+      newValue
     );
 
     // Restore cursor position after React updates the component
@@ -265,7 +265,7 @@ export const getOnChangeFunction = function (
  * @param key - The key identifying the specific field in the report
  * @returns A function that handles blur events
  */
-export const getOnBlurFunction = function (
+export const getTextFieldOnBlurFn = function (
   setErrors: SetErrorsType,
   report: Report,
   key: ReportValueKeysType
@@ -304,7 +304,7 @@ export const getOnBlurFunction = function (
     default:
       fn = () => {
         setErrors((prev) => ({ ...prev, [key]: "" }));
-        return false;
+        return true;
       };
   }
 
@@ -336,7 +336,43 @@ export const getOnBlurFunction = function (
       value = report[infoKey][key as keyof (typeof report)[typeof infoKey]];
     }
 
-    ls.workingOn = report.id;
+    ls.setWorkingOn(report.id);
     if (fn(value)) report.updateDBReport("incidentInformation");
+  };
+};
+
+export const getSelectOnChangeFn = function (
+  updateReport: UpdateReportType,
+  setErrors: SetErrorsType,
+  key: "station" | "turnoutFrom",
+  report: Report
+) {
+  const infoKey = getReportKey(key);
+  if (!infoKey) throw new Error(`Key ${key} not found in keyToInfoKey mapping`);
+
+  return (
+    e:
+      | React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>
+      | React.SyntheticEvent,
+    value?: unknown
+  ) => {
+    setErrors((prev) => ({ ...prev, [key]: "" }));
+
+    ls.setWorkingOn(report.id);
+
+    let newValue: string;
+
+    if (typeof value === "string") newValue = value;
+    else if ("target" in e && "value" in e.target)
+      newValue = e.target.value as string;
+    else
+      throw new Error(`Unexpected value type: ${typeof value} and ${typeof e}`);
+
+    (updateReport[infoKey] as (k: ReportValueKeysType, v: string) => void)(
+      key,
+      newValue
+    );
+
+    report.updateDBReport("incidentInformation");
   };
 };

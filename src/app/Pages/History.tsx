@@ -91,9 +91,9 @@ const History: FC = function () {
       reports.LR.length === 0 &&
       reports.NoReportType.length === 0 ? (
         <Paper sx={{ m: 1, p: 3, textAlign: "center" }}>
-            <Typography variant="h6" gutterBottom>
+          <Typography variant="h6" gutterBottom>
             No Records Available
-            </Typography>
+          </Typography>
           <Button
             color="primary"
             onClick={() => {
@@ -103,7 +103,6 @@ const History: FC = function () {
             aria-label="add report"
             startIcon={<Edit />}
             size="large"
-
           >
             Add Report
           </Button>
@@ -187,7 +186,7 @@ const ReportOverview: FC<ReportOverviewType> = function ({
                 edge="end"
                 aria-label="edit"
                 onClick={() => {
-                  ls.workingOn = report.id;
+                  ls.setWorkingOn(report.id);
                   navigate("/add_entry");
                 }}
               >

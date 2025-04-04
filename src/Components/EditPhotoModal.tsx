@@ -31,7 +31,7 @@ const onloadFunction = function (e: SyntheticEvent): Crop {
 
 interface EditPhotoModalProps {
   reportImage: CroppedPicture;
-  updateImage: (crop: Crop | null, image?: Blob | File) => Promise<void>;
+  updateImage: (crop: Crop | null, image?: Blob | File) => void;
   titleText: string;
   openModal: boolean;
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -47,7 +47,7 @@ const EditPhotoModal: FC<EditPhotoModalProps> = function ({
   const [crop, setCrop] = useState<Crop>(reportImage.crop);
 
   function handleSubmit(): void {
-    updateImage(crop).catch(console.error);
+    updateImage(crop);
     handleClose();
   }
 
@@ -84,9 +84,7 @@ const EditPhotoModal: FC<EditPhotoModalProps> = function ({
       <DialogActions>
         <Button
           onClick={() => {
-            updateImage(null).catch((e: unknown) => {
-              console.error(e);
-            });
+            updateImage(null)
             handleClose();
           }}
         >

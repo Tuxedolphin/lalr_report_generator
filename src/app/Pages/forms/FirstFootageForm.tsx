@@ -113,6 +113,7 @@ const DrawingForm: FC = function () {
     );
 
     contextRef.current = context;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -131,7 +132,7 @@ const DrawingForm: FC = function () {
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
-          touchAction: isDown ? "none" : "pan-y", // Allow scrolling when not drawing
+          touchAction: "none",
         }}
       />
       <Accordion>

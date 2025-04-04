@@ -1,37 +1,59 @@
+// React and React Router imports
 import React, { useState, FC, useEffect } from "react";
-import { MobileStepper, Box, Button } from "@mui/material";
-import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
+// Material UI imports
+import { MobileStepper, Box, Button } from "@mui/material";
+import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
+
+// Local component imports
 import IncidentInfoForm from "./forms/IncidentInfoForm";
 import { AcesForm } from "./forms/AcesInfoForm";
 import FirstFootageForm from "./forms/FirstFootageForm";
 import SecondFootageForm from "./forms/SecondFootageForm";
+
+// Features and utils
 import updateBackground from "../../features/updateBackground";
+import generateReportPpt from "../../features/generateReport/generateReport";
+import ls from "../../features/LocalStorage";
+import { retrieveReport } from "../../features/db";
+
+// Context hooks
 import {
   useNavBarHeightContext,
   useNavBarTextContext,
   useReportContext,
 } from "../../context/contextFunctions";
-import generateReportPpt from "../../features/generateReport/generateReport";
-import ls from "../../features/LocalStorage";
-import { retrieveReport } from "../../features/db";
 
 const AddEntryPage: FC = function () {
   const [report, updateReport] = useReportContext();
-
   const [activeStep, setActiveStep] = useState(0);
-  const [maxSteps, setMaxSteps] = useState(4); // Length of stepsContent, better to not be a magic number but :D
+  const [maxSteps, setMaxSteps] = useState(4);
   const navigate = useNavigate();
-
-  const buttonWidth = "77.5px"; // Arbitrary number to ensure different texts results in the same width
-
-  updateBackground();
-
   const setNavBarText = useNavBarTextContext() as React.Dispatch<
     React.SetStateAction<string>
   >;
   const navBarHeight = useNavBarHeightContext() as number;
+  const buttonWidth = "77.5px";
+
+  // Update background on component render
+  updateBackground();
+
+  useEffect(() => {
+    setNavBarText("Add Report");
+
+    const id = ls.getWorkingOn();
+
+    if (id < 0) return;
+
+    retrieveReport(id)
+      .then((report) => {
+        updateReport.all(report);
+      })
+      .catch(console.error);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleBack = function () {
     setActiveStep(activeStep - 1);
@@ -52,22 +74,6 @@ const AddEntryPage: FC = function () {
     }
   };
 
-  useEffect(() => {
-    setNavBarText("Add Report");
-
-    const id = ls.workingOn;
-
-    if (id < 0) return;
-
-    retrieveReport(id)
-      .then((report) => {
-        updateReport.all(report);
-      })
-      .catch((e: unknown) => {
-        console.error("Error retrieving report:", e);
-      });
-  }, []);
-
   const commonProps = {
     handleNext: handleNext,
   } as const;
@@ -85,11 +91,6 @@ const AddEntryPage: FC = function () {
         display: "flex",
         flexDirection: "column",
         minHeight: `calc(100vh - ${navBarHeight.toString()}px)`,
-        // Add these properties to ensure scrolling works
-        overscrollBehavior: "auto",
-        touchAction: "pan-y",
-        overflow: "auto",
-        WebkitOverflowScrolling: "touch", // For iOS momentum scrolling
       }}
     >
       <Box
@@ -97,9 +98,6 @@ const AddEntryPage: FC = function () {
           width: "100%",
           p: 1,
           flexGrow: 2,
-          // Ensure this box allows scrolling
-          overflow: "auto",
-          touchAction: "pan-y",
         }}
       >
         {Object.values(stepsContent)[activeStep]}

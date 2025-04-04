@@ -1,23 +1,28 @@
-class LocalStorage {
-  get workingOn() {
-    const result = localStorage.getItem("workingOn");
+import Report from "../classes/Report";
+
+const LocalStorage = {
+  getWorkingOn: () => {
+    const result = Number(localStorage.getItem("workingOn"));
 
     if (!result) return -1;
-    if (result != result)
+
+    if (isNaN(result))
       throw new Error(
-        `Local Storage value for "workingOn, ${result} is invalid`
+        `Local Storage value for "workingOn, ${result.toString()} is invalid`
       );
 
-    return Number(result);
-  }
+    return result;
+  },
 
-  set workingOn(id: number) {
+  setWorkingOn: (id: number) => {
+    if (id < 0) return;
+
     localStorage.setItem("workingOn", String(id));
-  }
+  },
 
-  clear() {
+  clear: () => {
     localStorage.removeItem("workingOn");
-  }
-}
+  },
+} as const;
 
-export default new LocalStorage();
+export default LocalStorage;
