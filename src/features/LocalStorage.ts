@@ -1,10 +1,8 @@
-import Report from "../classes/Report";
-
 const LocalStorage = {
   getWorkingOn: () => {
     const result = Number(localStorage.getItem("workingOn"));
 
-    if (!result) return -1;
+    if (!result) return;
 
     if (isNaN(result))
       throw new Error(

@@ -9,7 +9,6 @@ import {
   GeneralInformationType,
   IncidentInformationType,
   ReportKeys,
-  ReportType,
 } from "../types/types";
 import CroppedPicture from "../classes/CroppedPicture";
 import DrawnOnPicture from "../classes/DrawnOnPicture";

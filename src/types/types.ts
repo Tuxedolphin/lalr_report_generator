@@ -144,3 +144,5 @@ export interface UpdateReportType {
 
 export type ErrorsType = Partial<Record<ReportValueKeysType, string>>;
 export type SetErrorsType = React.Dispatch<React.SetStateAction<ErrorsType>>;
+
+export type ReportGenerationStatusType = "complete" | "inProgress" | "error" | "none";

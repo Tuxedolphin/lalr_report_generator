@@ -242,6 +242,8 @@ export const getTextFieldOnChangeFn = function (
     const inputElement = textFieldRefs.current[key];
     const cursorPosition = inputElement?.selectionStart ?? 0;
 
+    if (key === "appliance") newValue = newValue.toUpperCase();
+
     (updateReport[infoKey] as (k: ReportValueKeysType, v: string) => void)(
       key,
       newValue
@@ -344,7 +346,7 @@ export const getTextFieldOnBlurFn = function (
 export const getSelectOnChangeFn = function (
   updateReport: UpdateReportType,
   setErrors: SetErrorsType,
-  key: "station" | "turnoutFrom",
+  key: "station" | "turnoutFrom" | "reportType" | "opsCenterAcknowledged",
   report: Report
 ) {
   const infoKey = getReportKey(key);
@@ -360,19 +362,21 @@ export const getSelectOnChangeFn = function (
 
     ls.setWorkingOn(report.id);
 
-    let newValue: string;
+    let newValue: string | boolean;
 
-    if (typeof value === "string") newValue = value;
+    if (typeof value === "string" || typeof value === "boolean")
+      newValue = value;
     else if ("target" in e && "value" in e.target)
       newValue = e.target.value as string;
     else
       throw new Error(`Unexpected value type: ${typeof value} and ${typeof e}`);
 
-    (updateReport[infoKey] as (k: ReportValueKeysType, v: string) => void)(
-      key,
-      newValue
-    );
-
-    report.updateDBReport("incidentInformation");
+    (
+      updateReport[infoKey] as (
+        k: ReportValueKeysType,
+        v: string | boolean,
+        s: boolean
+      ) => void
+    )(key, newValue, true);
   };
 };

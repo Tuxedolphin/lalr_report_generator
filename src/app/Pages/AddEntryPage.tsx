@@ -11,6 +11,7 @@ import IncidentInfoForm from "./forms/IncidentInfoForm";
 import { AcesForm } from "./forms/AcesInfoForm";
 import FirstFootageForm from "./forms/FirstFootageForm";
 import SecondFootageForm from "./forms/SecondFootageForm";
+import Report from "../../classes/Report";
 
 // Features and utils
 import updateBackground from "../../features/updateBackground";
@@ -24,8 +25,15 @@ import {
   useNavBarTextContext,
   useReportContext,
 } from "../../context/contextFunctions";
+import { ReportGenerationStatusType } from "../../types/types";
 
-const AddEntryPage: FC = function () {
+interface AddEntryPageProps {
+  setGeneratingReport: React.Dispatch<
+    React.SetStateAction<ReportGenerationStatusType>
+  >;
+}
+
+const AddEntryPage: FC<AddEntryPageProps> = function ({ setGeneratingReport }) {
   const [report, updateReport] = useReportContext();
   const [activeStep, setActiveStep] = useState(0);
   const [maxSteps, setMaxSteps] = useState(4);
@@ -36,14 +44,16 @@ const AddEntryPage: FC = function () {
   const navBarHeight = useNavBarHeightContext() as number;
   const buttonWidth = "77.5px";
 
-  // Update background on component render
-  updateBackground();
-
   useEffect(() => {
+    updateBackground();
     setNavBarText("Add Report");
 
     const id = ls.getWorkingOn();
 
+    if (id === undefined) {
+      updateReport.all(new Report());
+      return;
+    }
     if (id < 0) return;
 
     retrieveReport(id)
@@ -64,10 +74,18 @@ const AddEntryPage: FC = function () {
       // Updating to make sure that the DB report is saved correctly
       report.updateDBReport();
 
-      generateReportPpt(report).catch(console.error);
+      generateReportPpt(report)
+        .then(() => {
+          setGeneratingReport("complete");
+        })
+        .catch((error: unknown) => {
+          console.error(error);
+          setGeneratingReport("error");
+        });
       ls.clear();
 
-      navigate("/history");
+      setGeneratingReport("inProgress");
+      navigate("/download");
     } else {
       setActiveStep(newActiveStep ?? activeStep + 1);
       if (newMaxSteps) setMaxSteps(newMaxSteps);

@@ -178,8 +178,8 @@ const IncidentInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
               "Late Activation": "LA",
               "Late Response": "LR",
             }}
-            selected={information.reportType}
             error={!!errors.reportType}
+            setErrors={setErrors}
           />
         </Box>
       </Paper>
@@ -193,8 +193,8 @@ const IncidentInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
               yes: true,
               no: false,
             }}
-            selected={information.opsCenterAcknowledged}
             error={!!errors.opsCenterAcknowledged}
+            setErrors={setErrors}
           />
         </Box>
       </Paper>
@@ -210,7 +210,7 @@ const checkForError = function (
   let hasError = false;
 
   for (const [key, value] of Object.entries(information)) {
-    if (value === "") {
+    if (value === "" || value === null || value === undefined) {
       setErrors((prevErrors) => ({
         ...prevErrors,
         [key]: `Required`,

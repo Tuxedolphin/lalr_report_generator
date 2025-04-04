@@ -1,59 +1,57 @@
-import React, { FC } from "react";
-import { IncidentInformationType, ReportValueTypes } from "../types/types";
+import { FC } from "react";
 import {
   FormControl,
-  FormLabel,
-  ToggleButtonGroup,
-  ToggleButton,
   FormHelperText,
+  FormLabel,
+  ToggleButton,
+  ToggleButtonGroup,
+  useTheme,
 } from "@mui/material";
+
 import { useReportContext } from "../context/contextFunctions";
+import { getSelectOnChangeFn } from "../utils/helperFunctions";
+import { ReportValueTypes, SetErrorsType } from "../types/types";
 
 interface ButtonGroupInputType {
+  id: "opsCenterAcknowledged" | "reportType";
   title: string;
   buttonTextsValues: Record<string, ReportValueTypes>;
-  id: keyof IncidentInformationType;
-  selected: ReportValueTypes;
   error: boolean;
+  setErrors: SetErrorsType;
 }
 
 const ButtonGroupInput: FC<ButtonGroupInputType> = function ({
+  id,
   title,
   buttonTextsValues,
-  id,
-  selected,
-  error
+  error,
+  setErrors,
 }) {
-  const [, updateReport] = useReportContext();
+  const [report, updateReport] = useReportContext();
+  const errorColour = useTheme().palette.error.main;
+  const handleChange = getSelectOnChangeFn(updateReport, setErrors, id, report);
 
-  const buttons = Object.entries(buttonTextsValues).map((button) => {
-    const [text, value] = button;
-
-    if (value === null)
+  const buttons = Object.entries(buttonTextsValues).map(([text, value]) => {
+    if (value === null) {
       throw new Error(
         `The values provided for the button group is invalid, current value is ${text}, null`
       );
+    }
 
     return (
       <ToggleButton
         value={value}
         key={text.replace(/ /g, "").toLowerCase()}
-        sx={{ marginTop: 1 }}
+        sx={{
+          marginTop: 1,
+          color: error ? errorColour : undefined,
+          borderColor: error ? errorColour : undefined,
+        }}
       >
         {text}
       </ToggleButton>
     );
   });
-
-  const handleChange = function (
-    _: React.MouseEvent<HTMLElement>,
-    newValue: string | null
-  ) {
-    if (!["reportType", "opsCenterAcknowledged"].includes(id))
-      throw new Error(`${id} was not implemented to update in DB`);
-
-    updateReport.incidentInformation(id, newValue, true);
-  };
 
   return (
     <FormControl
@@ -65,7 +63,7 @@ const ButtonGroupInput: FC<ButtonGroupInputType> = function ({
     >
       <FormLabel id={id}>{title}</FormLabel>
       <ToggleButtonGroup
-        value={selected}
+        value={report.incidentInformation[id]}
         exclusive
         aria-labelledby={id}
         onChange={handleChange}
@@ -73,7 +71,7 @@ const ButtonGroupInput: FC<ButtonGroupInputType> = function ({
       >
         {buttons}
       </ToggleButtonGroup>
-      {error && <FormHelperText sx={{ textAlign: 'right' }}>Required</FormHelperText>}
+      {error && <FormHelperText>Required</FormHelperText>}
     </FormControl>
   );
 };

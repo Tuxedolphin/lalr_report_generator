@@ -31,12 +31,12 @@ class CroppedPicture extends Picture {
     return this._crop;
   }
 
-  get croppedBlob(): Blob {
+  get croppedBlob(): Blob | undefined {
     if (!this._croppedBlob) {
-      console.error(
+      console.warn(
         "Cropped blob is not available. Call saveCroppedBlob() first."
       );
-      return new Blob();
+      return;
     }
 
     return this._croppedBlob;
@@ -96,17 +96,21 @@ class CroppedPicture extends Picture {
       this.image.naturalHeight
     );
 
-    return canvas.convertToBlob().then((blob) => {
-      this._croppedBlob = blob;
-      return blob;
-    });
+    const blob = await canvas.convertToBlob();
+    this._croppedBlob = blob;
+
+    return blob;
   };
 
   // Utility methods
   getBase64 = async (): Promise<string> => {
+    let croppedBlob = this.croppedBlob;
+    if (!croppedBlob) croppedBlob = await this.getNewCroppedBlob(this.crop);
+
     return new Promise((resolve) => {
       const reader = new FileReader();
-      reader.readAsDataURL(this.croppedBlob);
+
+      reader.readAsDataURL(croppedBlob);
 
       reader.onload = () => {
         resolve(reader.result as string);
