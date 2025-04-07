@@ -18,8 +18,25 @@ const LocalStorage = {
     localStorage.setItem("workingOn", String(id));
   },
 
-  clear: () => {
+  clearWorkingOn: () => {
     localStorage.removeItem("workingOn");
+  },
+
+  setDarkMode: (isDarkMode: boolean) => {
+    localStorage.setItem("darkMode", String(isDarkMode));
+  },
+
+  getDarkMode: () => {
+    const result = localStorage.getItem("darkMode");
+
+    if (result === null) return true;
+
+    if (result !== "true" && result !== "false")
+      throw new Error(
+        `Local Storage value for "darkMode", ${result} is invalid`
+      );
+
+    return result === "true";
   },
 } as const;
 

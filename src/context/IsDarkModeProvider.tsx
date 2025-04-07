@@ -5,11 +5,13 @@
 import { FC, useState } from "react";
 import { IsDarkModeContext } from "./contextFunctions";
 import { type ChildrenOnly } from "../types/types";
+import ls from "../features/LocalStorage";
 
 const IsDarkModeProvider: FC<ChildrenOnly> = function ({ children }) {
-  const [isDarkMode, setIsDarkMode] = useState(true); // Default mode is dark mode
+  const [isDarkMode, setIsDarkMode] = useState(ls.getDarkMode());
 
   const updateIsDarkMode = function () {
+    ls.setDarkMode(!isDarkMode);
     setIsDarkMode(!isDarkMode);
   };
 

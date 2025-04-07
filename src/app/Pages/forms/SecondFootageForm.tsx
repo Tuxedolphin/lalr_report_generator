@@ -1,41 +1,57 @@
+// React imports
 import { FC, useEffect, useRef, useState } from "react";
-import { useReportContext } from "../../../context/contextFunctions";
-import Report from "../../../classes/Report";
-import {
-  ErrorsType,
-  SetErrorsType,
-  UpdateReportType,
-} from "../../../types/types";
-import TimingAndPhotoInput from "../../../components/TimingAndPhotoInput";
-import {
-  FormControl,
-  TextField as MuiTextField,
-  Grid2 as Grid,
-  Typography,
-  InputAdornment,
-  Box,
-  Stack,
-  alpha,
-  useTheme,
-  Fade,
-} from "@mui/material";
-import TextField from "../../../components/TextField";
 
+// MUI components
+import {
+  alpha,
+  Box,
+  Fade,
+  FormControl,
+  Grid2 as Grid,
+  InputAdornment,
+  Stack,
+  TextField as MuiTextField,
+  Typography,
+  useTheme,
+} from "@mui/material";
+
+// MUI icons
+import {
+  FireTruck,
+  HourglassTop,
+  LocationOn,
+  Notes,
+} from "@mui/icons-material";
+
+// Project context
+import { useReportContext } from "../../../context/contextFunctions";
+
+// Project classes
+import Report from "../../../classes/Report";
+import Time from "../../../classes/Time";
+
+// Project components
+import Section from "../../../components/Section";
+import TextField from "../../../components/TextField";
+import TimeLengthPicker from "../../../components/TimeLengthPicker";
+import TimingAndPhotoInput from "../../../components/TimingAndPhotoInput";
+import ToggleButtonInputType from "../../../components/ToggleButtonInputType";
+
+// Project constants
 import {
   alternateGridFormatting,
   timingInputToPhoto,
 } from "../../../utils/constants";
 import { defaultJustification } from "../../../features/generateReport/utils/constants";
-import TimeLengthPicker from "../../../components/TimeLengthPicker";
-import Time from "../../../classes/Time";
+
+// Project types
 import {
-  HourglassTop,
-  Notes,
-  LocationOn,
-  FireTruck,
-} from "@mui/icons-material";
-import Section from "../../../components/Section";
-import ButtonGroupInput from "../../../components/ButtonGroupInput";
+  ErrorsType,
+  SetErrorsType,
+  UpdateReportType,
+} from "../../../types/types";
+
+// Utility functions
 import {
   checkForError,
   getTextFieldOnBlurFn,
@@ -44,10 +60,23 @@ import {
 
 const { mainGridFormat, smallInput, largeInput } = alternateGridFormatting;
 
+// Types
 interface SecondFootageFormType {
-  handleNext: (newMaxSteps?: number, newActiveStep?: number) => void;
+  handleNext: (
+    newMaxSteps?: number,
+    newActiveStep?: number,
+    hasError?: boolean
+  ) => void;
 }
 
+interface CommonFormProps {
+  report: Report;
+  updateReport: UpdateReportType;
+  errors: ErrorsType;
+  setErrors: SetErrorsType;
+}
+
+// Component implementations
 const SecondFootageForm: FC<SecondFootageFormType> = function ({ handleNext }) {
   const theme = useTheme();
   const [report, updateReport] = useReportContext();
@@ -87,7 +116,7 @@ const SecondFootageForm: FC<SecondFootageFormType> = function ({ handleNext }) {
     if (checkForError(newErrors, setErrors, report.generalInformation))
       hasError = true;
 
-    if (!hasError) handleNext();
+    handleNext(undefined, undefined, hasError);
   };
 
   useEffect(() => {
@@ -137,16 +166,8 @@ const SecondFootageForm: FC<SecondFootageFormType> = function ({ handleNext }) {
 };
 
 /**
- * The first footage form ended up being too long for a phone interface so I decided to split it up
+ * Form variants based on report type
  */
-
-interface CommonFormProps {
-  report: Report;
-  updateReport: UpdateReportType;
-  errors: ErrorsType;
-  setErrors: SetErrorsType;
-}
-
 const LAForm: FC<CommonFormProps> = function ({ report, errors, setErrors }) {
   return (
     <TimingAndPhotoInput
@@ -205,7 +226,7 @@ const LRForm: FC<CommonFormProps> = function ({
               <Typography variant="subtitle2" color="textSecondary">
                 Does this incident have buffer time?
               </Typography>
-              <ButtonGroupInput
+              <ToggleButtonInputType
                 id="hasBufferTime"
                 title=""
                 buttonTextsValues={{
@@ -248,7 +269,11 @@ const LRForm: FC<CommonFormProps> = function ({
                   "bufferingLocation",
                   textFieldRefs
                 )}
-                onBlur={getTextFieldOnBlurFn(setErrors, report, "bufferingLocation")}
+                onBlur={getTextFieldOnBlurFn(
+                  setErrors,
+                  report,
+                  "bufferingLocation"
+                )}
                 fullWidth
                 slotProps={{
                   input: {

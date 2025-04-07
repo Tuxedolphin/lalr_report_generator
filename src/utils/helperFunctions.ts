@@ -15,7 +15,6 @@ import {
   ReportValueTypes,
 } from "../types/types";
 import { SelectChangeEvent } from "@mui/material";
-import { TimingInputsType } from "../components/TimingInputs";
 
 const defaultReport = new Report();
 
@@ -108,8 +107,22 @@ export const checkIncNumber = function (incNumber: string) {
     return null;
   }
 
-  const day = dayjs(incNumber.split("/")[0], "YYYYMMDD");
-  return !day.isValid() ? null : day;
+  const dateStr = incNumber.split("/")[0];
+  const year = parseInt(dateStr.substring(0, 4), 10);
+  const month = parseInt(dateStr.substring(4, 6), 10);
+  const day = parseInt(dateStr.substring(6, 8), 10);
+
+  const date = dayjs(
+    `${year.toString()}-${month.toString()}-${day.toString()}`,
+    "YYYY-M-D"
+  );
+
+  const formattedBack = date.format("YYYYMMDD");
+  if (formattedBack !== dateStr) {
+    return null;
+  }
+
+  return date;
 };
 
 // -------------------- Canvas Utilities --------------------
@@ -336,10 +349,17 @@ export const getTextFieldOnBlurFn = function (
   switch (key) {
     case "incidentNumb":
       fn = (value: string) => {
-        if (!checkIncNumber(value)) {
+        const day = checkIncNumber(value.trim());
+        if (!day) {
           setErrors((prev) => ({
             ...prev,
             incidentNumb: "Please Make Sure it is in the Format YYYYMMDD/XXXX",
+          }));
+          return true;
+        } else if (day.isAfter(dayjs())) {
+          setErrors((prev) => ({
+            ...prev,
+            incidentNumb: "Incident date cannot be in the future",
           }));
           return true;
         }
@@ -350,7 +370,8 @@ export const getTextFieldOnBlurFn = function (
       break;
     case "typeOfCall":
       fn = (value: string) => {
-        if (value && !/^[^\s-]+ - [^\s-]+$/.test(value)) {
+        const trimmedValue = value.trim();
+        if (trimmedValue && !/^[^\s-]+ - [^\s-]+$/.test(trimmedValue)) {
           setErrors((prev) => ({
             ...prev,
             typeOfCall: "Please be in the format of 'Call - Type'",
@@ -398,7 +419,12 @@ export const getTextFieldOnBlurFn = function (
     }
 
     ls.setWorkingOn(report.id);
-    if (fn(value)) report.updateDBReport("incidentInformation");
+
+    const reportKey = getReportKey(key);
+    if (!reportKey)
+      throw new Error(`Key ${key} not found in keyToInfoKey mapping`);
+
+    if (fn(value)) report.updateDBReport(reportKey);
   };
 };
 
@@ -468,7 +494,10 @@ export const getToggleButtonOnChangeFn = function (
   const infoKey = getReportKey(key);
   if (!infoKey) throw new Error(`Key ${key} not found in keyToInfoKey mapping`);
 
-  return (_event: MouseEvent<HTMLElement>, newValue: string) => {
+  return (_event: MouseEvent<HTMLElement>, newValue: string | null) => {
+
+    if (newValue === null) return;
+
     setErrors((prev) => ({ ...prev, [key]: "" }));
 
     ls.setWorkingOn(report.id);

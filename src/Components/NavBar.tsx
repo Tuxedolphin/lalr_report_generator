@@ -50,6 +50,240 @@ const navItems = [
 ];
 const drawerWidth = 280;
 
+const NavBar: FC = function () {
+  const [isDarkMode, toggleDarkMode] = useIsDarkModeContext(true) as [
+    boolean,
+    () => void,
+  ];
+
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleDrawerToggle = () => {
+    setMobileOpen((prevState) => !prevState);
+  };
+
+  const text = useNavBarTextContext(true) as string;
+  const theme = useTheme();
+
+  const setHeight = useNavBarHeightContext(true) as React.Dispatch<
+    React.SetStateAction<number>
+  >;
+  const ref = useRef() as RefObject<HTMLDivElement>;
+
+  useEffect(() => {
+    if (!ref.current) return;
+
+    setHeight(ref.current.clientHeight);
+  });
+
+  return (
+    <>
+      <ElevationScroll>
+        <AppBar position="sticky">
+          <Toolbar ref={ref} sx={{ px: { xs: 2, sm: 3 } }}>
+            <Grid container width={"100%"} spacing={2} alignItems="center">
+              <Grid size="auto">
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "40px",
+                  }}
+                >
+                  <IconButton
+                    color="inherit"
+                    aria-label="open drawer"
+                    edge="start"
+                    onClick={handleDrawerToggle}
+                    sx={{
+                      borderRadius: 2,
+                      position: "relative",
+                      transition: "all 0.3s ease",
+                      "&::before": {
+                        content: '""',
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        borderRadius: 2,
+                        background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0)}, ${alpha(theme.palette.primary.main, 0)})`,
+                        zIndex: -1,
+                        transition: "opacity 0.3s ease, background 0.3s ease",
+                        opacity: 0,
+                      },
+                      "&:hover": {
+                        backgroundColor: "transparent",
+                        transform: "translateY(-3px)",
+                        "& .MuiSvgIcon-root": {
+                          transform: "scale(1.1)",
+                          color: theme.palette.primary.main,
+                        },
+                        "&::before": {
+                          opacity: 1,
+                          background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.12)}, ${alpha(theme.palette.secondary.main, 0.08)})`,
+                        },
+                      },
+                      "&:active": {
+                        transform: "translateY(0)",
+                        "& .MuiSvgIcon-root": {
+                          transform: "scale(0.9)",
+                        },
+                      },
+                    }}
+                  >
+                    <MenuIcon
+                      sx={{
+                        fontSize: 24,
+                        transition: "all 0.3s ease",
+                      }}
+                    />
+                  </IconButton>
+                </Box>
+              </Grid>
+              <Grid
+                size="grow"
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Fade in={Boolean(text)} timeout={800}>
+                  <Typography
+                    variant="h6"
+                    component="div"
+                    fontWeight="medium"
+                    sx={{
+                      letterSpacing: "0.5px",
+                      borderRadius: 2,
+                      px: 3,
+                      py: 1,
+                      ...(!isDarkMode
+                        ? {
+                            color: "white",
+                            textShadow: "0px 1px 2px rgba(0, 0, 0, 0.2)",
+                          }
+                        : {
+                            background: text
+                              ? `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.9)}, ${alpha(theme.palette.primary.main, 0.7)})`
+                              : "transparent",
+                            WebkitBackgroundClip: text ? "text" : "none",
+                            WebkitTextFillColor: text
+                              ? "transparent"
+                              : "inherit",
+                          }),
+                    }}
+                  >
+                    {text}
+                  </Typography>
+                </Fade>
+              </Grid>
+              <Grid
+                size="auto"
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "40px",
+                    p: 0.5,
+                    borderRadius: 2,
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      backgroundColor: alpha(
+                        theme.palette.background.paper,
+                        0.6
+                      ),
+                      transform: "translateY(-2px)",
+                    },
+                  }}
+                >
+                  <DarkModeSwitch
+                    checked={isDarkMode}
+                    onChange={toggleDarkMode}
+                    size={26}
+                    sunColor="yellow"
+                  />
+                </Box>
+              </Grid>
+            </Grid>
+          </Toolbar>
+        </AppBar>
+      </ElevationScroll>
+      <NavDrawer
+        mobileOpen={mobileOpen}
+        handleDrawerToggle={handleDrawerToggle}
+      />
+      <Toolbar />
+    </>
+  );
+};
+
+interface ElevationType {
+  children: React.ReactElement<{ elevation?: number; sx?: object }>;
+}
+
+const ElevationScroll: FC<ElevationType> = function ({ children }) {
+  const trigger = useScrollTrigger({
+    disableHysteresis: true,
+    threshold: 10,
+  });
+
+  const isDarkMode = useIsDarkModeContext() as boolean;
+  const theme = useTheme();
+
+  const elevation = trigger ? 4 : 0;
+
+  // More harmonious colors for light mode
+  const color = isDarkMode ? theme.palette.background.paper : "#1976d2"; // Slightly lighter blue for navbar in light mode
+
+  // Using a more complementary color for the border in light mode
+  const borderColor = isDarkMode
+    ? theme.palette.primary.main
+    : theme.palette.warning.light;
+
+  const sx = {
+    transition: "all 0.3s ease",
+    backdropFilter: trigger ? "blur(10px)" : "none",
+    boxShadow: trigger
+      ? `0 4px 20px ${alpha(theme.palette.common.black, isDarkMode ? 0.2 : 0.1)}`
+      : "none",
+    backgroundColor: trigger ? alpha(color, isDarkMode ? 0.8 : 0.85) : color,
+    color: isDarkMode ? theme.palette.text.primary : "#ffffff",
+    position: "fixed",
+    top: 0,
+    zIndex: theme.zIndex.appBar,
+    // Enhanced border transition with conditional thickness based on theme
+    "&::after": {
+      content: '""',
+      position: "absolute",
+      bottom: 0,
+      left: 0,
+      right: 0,
+      height: isDarkMode ? "1px" : "2px",
+      background: `linear-gradient(90deg, transparent, ${borderColor} 20%, ${borderColor} 80%, transparent)`,
+      transition:
+        "transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease",
+      transform: trigger ? "scaleX(0)" : "scaleX(1)",
+      opacity: trigger ? 0 : 1,
+      transformOrigin: "center",
+    },
+  };
+
+  return cloneElement(children, {
+    elevation: elevation,
+    sx: sx,
+  });
+};
+
 interface NavDrawerProps {
   mobileOpen: boolean;
   handleDrawerToggle: () => void;
@@ -64,7 +298,7 @@ const NavDrawer: FC<NavDrawerProps> = function ({
   const theme = useTheme();
 
   const handleClick = (path: string) => () => {
-    if (path === "/add_entry") ls.clear();
+    if (path === "/add_entry") ls.clearWorkingOn();
 
     navigate(path);
     handleDrawerToggle();
@@ -259,208 +493,6 @@ const NavDrawer: FC<NavDrawerProps> = function ({
     >
       {drawer}
     </Drawer>
-  );
-};
-
-interface ElevationType {
-  children: React.ReactElement<{ elevation?: number; sx?: object }>;
-}
-
-const ElevationScroll: FC<ElevationType> = function ({ children }) {
-  const trigger = useScrollTrigger({
-    disableHysteresis: true,
-    threshold: 10,
-  });
-
-  const isDarkMode = useIsDarkModeContext(true) as boolean;
-  const theme = useTheme();
-
-  const elevation = trigger ? 4 : 0;
-  const sx = {
-    backgroundColor: trigger
-      ? alpha(theme.palette.background.paper, isDarkMode ? 0.8 : 0.9)
-      : !isDarkMode
-        ? "transparent"
-        : theme.palette.background.default,
-    transition: "all 0.3s ease",
-    backdropFilter: trigger ? "blur(10px)" : "none",
-    boxShadow: trigger
-      ? `0 4px 20px ${alpha(theme.palette.common.black, isDarkMode ? 0.2 : 0.1)}`
-      : "none",
-    borderBottom: trigger ? "none" : `1px solid ${theme.palette.divider}`,
-  };
-
-  return cloneElement(children, {
-    elevation: elevation,
-    sx: sx,
-  });
-};
-
-const NavBar: FC = function () {
-  const [isDarkMode, toggleDarkMode] = useIsDarkModeContext(true) as [
-    boolean,
-    () => void,
-  ];
-
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  const handleDrawerToggle = () => {
-    setMobileOpen((prevState) => !prevState);
-  };
-
-  const text = useNavBarTextContext(true) as string;
-  const theme = useTheme();
-
-  const setHeight = useNavBarHeightContext(true) as React.Dispatch<
-    React.SetStateAction<number>
-  >;
-  const ref = useRef() as RefObject<HTMLDivElement>;
-
-  useEffect(() => {
-    if (!ref.current) return;
-
-    setHeight(ref.current.clientHeight);
-  });
-
-  return (
-    <>
-      <ElevationScroll>
-        <AppBar>
-          <Toolbar ref={ref} sx={{ px: { xs: 2, sm: 3 } }}>
-            <Grid container width={"100%"} spacing={2} alignItems="center">
-              <Grid size="auto">
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    height: "40px",
-                  }}
-                >
-                  <IconButton
-                    color="inherit"
-                    aria-label="open drawer"
-                    edge="start"
-                    onClick={handleDrawerToggle}
-                    sx={{
-                      borderRadius: 2,
-                      position: "relative",
-                      transition: "all 0.3s ease",
-                      "&::before": {
-                        content: '""',
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        borderRadius: 2,
-                        background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0)}, ${alpha(theme.palette.primary.main, 0)})`,
-                        zIndex: -1,
-                        transition: "opacity 0.3s ease, background 0.3s ease",
-                        opacity: 0,
-                      },
-                      "&:hover": {
-                        backgroundColor: "transparent",
-                        transform: "translateY(-3px)",
-                        "& .MuiSvgIcon-root": {
-                          transform: "scale(1.1)",
-                          color: theme.palette.primary.main,
-                        },
-                        "&::before": {
-                          opacity: 1,
-                          background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.12)}, ${alpha(theme.palette.secondary.main, 0.08)})`,
-                        },
-                      },
-                      "&:active": {
-                        transform: "translateY(0)",
-                        "& .MuiSvgIcon-root": {
-                          transform: "scale(0.9)",
-                        },
-                      },
-                    }}
-                  >
-                    <MenuIcon
-                      sx={{
-                        fontSize: 24,
-                        transition: "all 0.3s ease",
-                      }}
-                    />
-                  </IconButton>
-                </Box>
-              </Grid>
-              <Grid
-                size="grow"
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Fade in={Boolean(text)} timeout={800}>
-                  <Typography
-                    variant="h6"
-                    component="div"
-                    fontWeight="medium"
-                    sx={{
-                      letterSpacing: "0.5px",
-                      borderRadius: 2,
-                      px: 3,
-                      py: 1,
-                      background: text
-                        ? `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.9)}, ${alpha(theme.palette.primary.main, 0.7)})`
-                        : "transparent",
-                      WebkitBackgroundClip: text ? "text" : "none",
-                      WebkitTextFillColor: text ? "transparent" : "inherit",
-                    }}
-                  >
-                    {text}
-                  </Typography>
-                </Fade>
-              </Grid>
-              <Grid
-                size="auto"
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "flex-end",
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    height: "40px",
-                    p: 0.5,
-                    borderRadius: 2,
-                    transition: "all 0.2s ease",
-                    "&:hover": {
-                      backgroundColor: alpha(
-                        theme.palette.background.paper,
-                        0.6
-                      ),
-                      transform: "translateY(-2px)",
-                    },
-                  }}
-                >
-                  <DarkModeSwitch
-                    checked={isDarkMode}
-                    onChange={toggleDarkMode}
-                    size={26}
-                    sunColor="yellow"
-                  />
-                </Box>
-              </Grid>
-            </Grid>
-          </Toolbar>
-        </AppBar>
-      </ElevationScroll>
-      <NavDrawer
-        mobileOpen={mobileOpen}
-        handleDrawerToggle={handleDrawerToggle}
-      />
-      <Toolbar />
-    </>
   );
 };
 

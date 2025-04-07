@@ -34,7 +34,11 @@ import { ErrorsType, SetErrorsType } from "../../../types/types";
 import { timingInputToPhoto } from "../../../utils/constants";
 
 interface FirstFootageFormProps {
-  handleNext: (newMaxSteps?: number, newActiveStep?: number) => void;
+  handleNext: (
+    newMaxSteps?: number,
+    newActiveStep?: number,
+    hasError?: boolean
+  ) => void;
 }
 
 const FirstFootageForm: FC<FirstFootageFormProps> = function ({ handleNext }) {
@@ -47,10 +51,12 @@ const FirstFootageForm: FC<FirstFootageFormProps> = function ({ handleNext }) {
 
     let hasError = false;
 
-    if (!report.incidentInformation.opsCenterAcknowledged)
+    // We don't really check for errors for drawing the acknowledgment box
+    if (!report.incidentInformation.opsCenterAcknowledged) {
       hasError = checkForError(errors, setErrors, report.cameraInformation);
+    }
 
-    if (!hasError) handleNext();
+    handleNext(undefined, undefined, hasError);
   };
 
   return (
@@ -215,18 +221,26 @@ const DrawingForm: FC = function () {
     const updateCanvasSize = () => {
       canvas.width = image.naturalWidth;
       canvas.height = image.naturalHeight;
+
+      // Calculate stroke width based on image dimensions
+      // Base stroke width is 3, but we'll scale it for larger images
+      const baseStrokeWidth = 2;
+      const referenceWidth = 300; // Reduced reference width to increase scaling
+      // Increase the upper limit of the scale factor from 2 to 4
+      const scaleFactor = Math.max(1, image.naturalWidth / referenceWidth);
+      const scaledStrokeWidth = baseStrokeWidth * scaleFactor;
+
+      if (context) {
+        setCanvasStroke(context, "red", scaledStrokeWidth);
+      }
     };
 
     if (!context) return;
 
     if (image.complete) {
       updateCanvasSize();
-      setCanvasStroke(context, "red", 3);
     } else {
-      image.onload = () => {
-        updateCanvasSize();
-        setCanvasStroke(context, "red", 3);
-      };
+      image.onload = updateCanvasSize;
     }
 
     const start = reportImage.start;

@@ -67,7 +67,7 @@ const DownloadPage: FC<DownloadPageProps> = function ({
   }, [generatingReport]);
 
   const onGenerateAnother = () => {
-    ls.clear();
+    ls.clearWorkingOn();
     setTimeout(() => {
       navigation("/add_entry");
     }, 0);

@@ -14,7 +14,7 @@ import { useReportContext } from "../context/contextFunctions";
 import { getToggleButtonOnChangeFn } from "../utils/helperFunctions";
 import { ReportValueTypes, SetErrorsType } from "../types/types";
 
-interface ButtonGroupInputType {
+interface ToggleButtonInputType {
   id: "opsCenterAcknowledged" | "reportType" | "hasBufferTime";
   title: string;
   buttonTextsValues: Record<string, ReportValueTypes>;
@@ -23,7 +23,7 @@ interface ButtonGroupInputType {
   accentColor?: string;
 }
 
-const ButtonGroupInput: FC<ButtonGroupInputType> = function ({
+const ToggleButtonInputType: FC<ToggleButtonInputType> = function ({
   id,
   title,
   buttonTextsValues,
@@ -204,4 +204,4 @@ const ButtonGroupInput: FC<ButtonGroupInputType> = function ({
   );
 };
 
-export default ButtonGroupInput;
+export default ToggleButtonInputType;

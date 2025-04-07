@@ -19,6 +19,7 @@ import {
   TextField as MuiTextField,
   Theme,
   useTheme,
+  FormLabel,
 } from "@mui/material";
 import {
   Info as InfoIcon,
@@ -28,7 +29,7 @@ import {
 } from "@mui/icons-material";
 
 // Component imports
-import ButtonGroupInput from "../../../components/ButtonGroupInput";
+import ToggleButtonInputType from "../../../components/ToggleButtonInputType";
 import Section from "../../../components/Section";
 import TextField from "../../../components/TextField";
 
@@ -83,7 +84,11 @@ interface CommonProps {
  * IncidentInfoForm props interface
  */
 interface IncidentInfoFormProps {
-  handleNext: (newMaxSteps?: number, newActiveStep?: number) => void;
+  handleNext: (
+    newMaxSteps?: number,
+    newActiveStep?: number,
+    hasError?: boolean
+  ) => void;
 }
 
 /**
@@ -114,7 +119,15 @@ const IncidentInfoForm: FC<IncidentInfoFormProps> = function ({ handleNext }) {
    */
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    if (checkForError(errors, setErrors, report.incidentInformation)) return;
+    const hasError = checkForError(
+      errors,
+      setErrors,
+      report.incidentInformation
+    );
+    if (hasError) {
+      handleNext(undefined, undefined, true);
+      return;
+    }
     handleNext(report.incidentInformation.opsCenterAcknowledged ? 3 : 4);
   }
 
@@ -205,6 +218,18 @@ const GeneralInformationSection: FC<CommonProps> = function ({
                 </MenuItem>
               ))}
             </Select>
+            {errors.station && (
+              <FormLabel
+                sx={{
+                  color: "error.main",
+                  fontSize: "0.75rem",
+                  marginTop: 0.5,
+                  marginLeft: 1.75,
+                }}
+              >
+                {errors.station}
+              </FormLabel>
+            )}
           </FormControl>
         </Grid>
         <Grid size={smallInput}>
@@ -320,7 +345,7 @@ const ReportTypeSection: FC<CommonProps> = function ({
     <Section
       title="Report Type"
       icon={<NoteIcon />}
-      accentColor={theme.palette.error.main}
+      accentColor={theme.palette.secondary.main}
     >
       <Box
         sx={{
@@ -330,7 +355,7 @@ const ReportTypeSection: FC<CommonProps> = function ({
           py: 2,
         }}
       >
-        <ButtonGroupInput
+        <ToggleButtonInputType
           title=""
           id="reportType"
           buttonTextsValues={{
@@ -339,7 +364,7 @@ const ReportTypeSection: FC<CommonProps> = function ({
           }}
           error={!!errors.reportType}
           setErrors={setErrors}
-          accentColor={theme.palette.error.main}
+          accentColor={theme.palette.secondary.main}
         />
       </Box>
     </Section>
@@ -369,7 +394,7 @@ const OpsCenterAcknowledgedSection: FC<CommonProps> = function ({
           py: 2,
         }}
       >
-        <ButtonGroupInput
+        <ToggleButtonInputType
           title=""
           id="opsCenterAcknowledged"
           buttonTextsValues={{

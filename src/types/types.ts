@@ -6,6 +6,7 @@ import { ReactNode } from "react";
 import CroppedPicture from "../classes/CroppedPicture";
 import DrawnOnPicture from "../classes/DrawnOnPicture";
 import type Report from "../classes/Report";
+import Time from "../classes/Time";
 
 // ====== BASIC TYPES ======
 
@@ -111,7 +112,14 @@ export interface DisplayReportDataType {
   incidentNumb: string;
   appliance: string;
   sc: string;
+  location: string;
+  acesTime: Time;
+  cameraTime: Time;
+  justification: string;
   reportType: ReportType;
+  turnoutFrom: string;
+  boundary: string;
+  opsCenterAcknowledged: boolean | null;
 }
 
 // Update operations

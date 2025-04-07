@@ -50,7 +50,11 @@ type TimingsKey =
  */
 interface AcesFormProps {
   /** Function to handle navigation to the next step in the form flow */
-  handleNext: (newMaxSteps?: number, newActiveStep?: number) => void;
+  handleNext: (
+    newMaxSteps?: number,
+    newActiveStep?: number,
+    hasError?: boolean
+  ) => void;
 }
 
 /**
@@ -80,7 +84,7 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
     isLR
       ? {
           timeDispatched: null,
-          timeEnRoute: null,
+          ...(opsCenterAcknowledged ? {} : { timeEnRoute: null }),
           timeArrived: null,
         }
       : {
@@ -101,7 +105,7 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
           boundary: "",
           incidentOutcome: "",
           timeDispatched: "",
-          timeEnRoute: "",
+          ...(opsCenterAcknowledged ? {} : { timeEnRoute: "" }),
           timeArrived: "",
         }
       : {
@@ -143,10 +147,7 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
     if (checkForError(errors, setErrors, acesInformation)) hasError = true;
     if (checkForError(errors, setErrors, generalInformation)) hasError = true;
 
-    // Only proceed if no validation errors are found
-    if (!hasError) {
-      handleNext();
-    }
+    handleNext(undefined, undefined, hasError);
   };
 
   return (

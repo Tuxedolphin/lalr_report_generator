@@ -94,6 +94,10 @@ class Time {
     return new Time(seconds, minutes, hours);
   }
 
+  public isZero(): boolean {
+    return this._second === 0 && this._minute === 0 && this._hour === 0;
+  }
+
   public static getHour(time: Time | dayjs.Dayjs): number {
     return dayjs.isDayjs(time) ? time.hour() : time.hour;
   }

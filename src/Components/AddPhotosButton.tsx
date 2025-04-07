@@ -385,7 +385,6 @@ interface CanvasProps {
 const DisplayPhotoCanvas: FC<CanvasProps> = function ({
   reportImage,
   isLoading = false,
-  onEditClick,
 }) {
   const theme = useTheme();
   const image = reportImage.image;

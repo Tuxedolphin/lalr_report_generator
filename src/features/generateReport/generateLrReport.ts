@@ -159,14 +159,14 @@ const getTopLRTableData = function (
       ? `STN${incidentInformation.station}`
       : generateAcronym(incidentInformation.turnoutFrom),
     respondFromStation
-      ? `${generalInformation.boundary ?? "0"} MIN\n(STN${incidentInformation.station})`
+      ? `${generalInformation.boundary || "0"} MIN\n(STN${incidentInformation.station})`
       : "-",
     respondFromStation
       ? "-"
-      : `${generalInformation.boundary ?? "0"} MIN\n(${generateAcronym(incidentInformation.turnoutFrom)})`,
-    generalInformation.justification ??
+      : `${generalInformation.boundary || "0"} MIN\n(${generateAcronym(incidentInformation.turnoutFrom)})`,
+    generalInformation.justification ||
       defaultJustification.LRpptShort(
-        generalInformation.boundary ?? "0",
+        generalInformation.boundary || "0",
         !!incidentInformation.opsCenterAcknowledged,
         totalTime
       ),
@@ -206,9 +206,9 @@ export const getLowerLRTableData = function (
     ),
     generalInformation.incidentOutcome,
     generalInformation.weather,
-    generalInformation.justification ??
+    generalInformation.justification ||
       defaultJustification.LRpptLong(
-        generalInformation.boundary ?? "0",
+        generalInformation.boundary || "0",
         acknowledged,
         cameraTotalTime
       ),

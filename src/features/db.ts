@@ -9,10 +9,13 @@ import {
   GeneralInformationType,
   IncidentInformationType,
   ReportKeys,
+  ReportType,
 } from "../types/types";
 import CroppedPicture from "../classes/CroppedPicture";
 import DrawnOnPicture from "../classes/DrawnOnPicture";
 import dayjs, { Dayjs } from "dayjs";
+import Time from "../classes/Time";
+import { defaultJustification } from "./generateReport/utils/constants";
 
 // =========================================
 //         Defining useful types
@@ -251,13 +254,119 @@ export async function retrieveReport(id: number) {
 
 export async function retrieveAll(): Promise<DisplayReportDataType[]> {
   const result = await db.reports.toArray();
+
   return result.map((report) => {
+    const incidentInformation = report.incidentInformation;
+
+    const acesInformation = report.acesInformation;
+
+    const acesTiming =
+      incidentInformation.reportType === "LA"
+        ? Time.calculateTime(
+            reconstructDayjs(acesInformation.timeDispatched),
+            reconstructDayjs(acesInformation.timeResponded)
+          )
+        : incidentInformation.reportType === "LR"
+          ? Time.calculateTime(
+              reconstructDayjs(acesInformation.timeDispatched),
+              reconstructDayjs(acesInformation.timeArrived)
+            )
+          : new Time(0, 0);
+
+    const [justification, cameraTime] = getDisplayJustificationAndCameraTime(
+      report,
+      acesTiming
+    );
+
     return {
       id: report.id,
-      incidentNumb: report.incidentInformation.incidentNumb,
-      appliance: report.incidentInformation.appliance,
-      sc: report.incidentInformation.SC,
-      reportType: report.incidentInformation.reportType,
-    };
+      incidentNumb: incidentInformation.incidentNumb,
+      appliance: incidentInformation.appliance,
+      sc: incidentInformation.SC,
+      reportType: incidentInformation.reportType,
+      location: incidentInformation.location,
+      opsCenterAcknowledged: incidentInformation.opsCenterAcknowledged,
+      turnoutFrom: incidentInformation.turnoutFrom,
+      acesTime: acesTiming,
+      justification: justification,
+      cameraTime: cameraTime,
+      boundary: report.generalInformation.boundary,
+    } as const;
   });
 }
+
+const defaultReturn = ["", new Time(0, 0)] as const;
+
+const getDisplayJustificationAndCameraTime = function (
+  report: ReportDBType,
+  acesTiming: Time
+): readonly [string, Time] {
+  const acesInformation = report.acesInformation;
+  const cameraInformation = report.cameraInformation;
+  const incidentInformation = report.incidentInformation;
+
+  const reportType = incidentInformation.reportType;
+  const opsCenterAcknowledged = incidentInformation.opsCenterAcknowledged;
+
+  if (!reportType || opsCenterAcknowledged === null || acesTiming.isZero())
+    return defaultReturn;
+
+  if (reportType === "LA") {
+    if (opsCenterAcknowledged) {
+      return [
+        "Ops Center acknowledged that appliance responded within 1 min - Network busy",
+        new Time(0, 0),
+      ];
+    }
+
+    const cameraActivationTime = Time.calculateTime(
+      reconstructDayjs(cameraInformation.timeDispatched),
+      reconstructDayjs(cameraInformation.timeMoveOff)
+    );
+
+    if (cameraActivationTime.isZero()) return defaultReturn;
+
+    return [
+      `Appliance activation time of ${cameraActivationTime.toString()} is less than or equals to 1 minute` +
+        " - justified from camera footage.",
+      cameraActivationTime,
+    ];
+  } else {
+    if (!report.generalInformation.boundary) return defaultReturn;
+
+    if (opsCenterAcknowledged) {
+      return [
+        `Ops Center acknowledged that appliance responded within ${report.generalInformation.boundary} min`,
+        new Time(0, 0),
+      ];
+    }
+
+    const activationTime = Time.calculateTime(
+      reconstructDayjs(acesInformation.timeDispatched),
+      reconstructDayjs(acesInformation.timeEnRoute)
+    );
+
+    const cameraTimeEnRoute = new Time(
+      reconstructDayjs(cameraInformation.timeMoveOff)
+    ).subtract(
+      cameraInformation.bufferingTime
+        ? new Time(reconstructDayjs(cameraInformation.bufferingTime))
+        : new Time(0, 0)
+    );
+
+    const cameraTimeDispatched = cameraTimeEnRoute.subtract(activationTime);
+
+    const cameraTotalTime = Time.calculateTime(
+      cameraTimeDispatched,
+      reconstructDayjs(cameraInformation.timeArrived)
+    );
+
+    if (cameraTotalTime.isZero()) return defaultReturn;
+
+    return [
+      `Appliance response time of ${cameraTotalTime.toString()} is` +
+        ` less than or equals to boundary time of ${report.generalInformation.boundary} min`,
+      cameraTotalTime,
+    ];
+  }
+};

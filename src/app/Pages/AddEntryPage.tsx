@@ -1,5 +1,5 @@
 // React and React Router imports
-import React, { useState, FC, useEffect, useRef } from "react";
+import React, { useState, FC, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Material UI imports
@@ -11,6 +11,8 @@ import {
   Paper,
   Fade,
   MobileStepper,
+  Alert,
+  Collapse,
 } from "@mui/material";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 
@@ -22,7 +24,6 @@ import SecondFootageForm from "./forms/SecondFootageForm";
 import Report from "../../classes/Report";
 
 // Features and utils
-import updateBackground from "../../features/updateBackground";
 import generateReportPpt from "../../features/generateReport/generateReport";
 import ls from "../../features/LocalStorage";
 import { retrieveReport } from "../../features/db";
@@ -45,6 +46,7 @@ const AddEntryPage: FC<AddEntryPageProps> = function ({ setGeneratingReport }) {
   const [report, updateReport] = useReportContext();
   const [activeStep, setActiveStep] = useState(0);
   const [maxSteps, setMaxSteps] = useState(4);
+  const [showError, setShowError] = useState(false);
   const navigate = useNavigate();
   const setNavBarText = useNavBarTextContext() as React.Dispatch<
     React.SetStateAction<string>
@@ -52,11 +54,7 @@ const AddEntryPage: FC<AddEntryPageProps> = function ({ setGeneratingReport }) {
   const navBarHeight = useNavBarHeightContext() as number;
   const theme = useTheme();
 
-  // Create a ref for the main content container
-  const contentRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    updateBackground();
     setNavBarText("Add Report");
 
     const id = ls.getWorkingOn();
@@ -76,25 +74,43 @@ const AddEntryPage: FC<AddEntryPageProps> = function ({ setGeneratingReport }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Scroll to top when step changes
-  useEffect(() => {
-    // Safely scroll to top when step changes
-    if (contentRef.current) {
-      contentRef.current.scrollTop = 0;
-    }
-
-    // Fallback to window scroll if the ref isn't accessible
+  // Function to scroll to the top of the page
+  const scrollToTop = () => {
+    // Using window.scrollTo is more reliable for this use case
     window.scrollTo({
       top: 0,
       behavior: "smooth",
     });
+  };
+
+  useEffect(() => {
+    // Scroll to top when step changes
+    scrollToTop();
+    setShowError(false);
   }, [activeStep]);
 
   const handleBack = function () {
     setActiveStep(activeStep - 1);
   };
 
-  const handleNext = function (newMaxSteps?: number, newActiveStep?: number) {
+  const handleNext = function (
+    newMaxSteps?: number,
+    newActiveStep?: number,
+    hasError?: boolean
+  ) {
+    if (hasError) {
+      setShowError(true);
+
+      setTimeout(() => {
+        setShowError(false);
+      }, 10000);
+      scrollToTop();
+      return;
+    }
+
+    // Clear any previous errors
+    setShowError(false);
+
     if (activeStep === maxSteps - 1) {
       // Updating to make sure that the DB report is saved correctly
       report.updateDBReport();
@@ -107,7 +123,7 @@ const AddEntryPage: FC<AddEntryPageProps> = function ({ setGeneratingReport }) {
           console.error(error);
           setGeneratingReport("error");
         });
-      ls.clear();
+      ls.clearWorkingOn();
 
       setGeneratingReport("inProgress");
       navigate("/download");
@@ -142,8 +158,20 @@ const AddEntryPage: FC<AddEntryPageProps> = function ({ setGeneratingReport }) {
           position: "relative",
         }}
       >
+        {/* Error Alert */}
+        <Collapse in={showError}>
+          <Alert
+            severity="error"
+            sx={{ mb: 2 }}
+            onClose={() => {
+              setShowError(false);
+            }}
+          >
+            Please resolve all validation issues before proceeding.
+          </Alert>
+        </Collapse>
+
         <Box
-          ref={contentRef}
           sx={{
             width: "100%",
             flexGrow: 1,
@@ -159,7 +187,7 @@ const AddEntryPage: FC<AddEntryPageProps> = function ({ setGeneratingReport }) {
       <Paper
         elevation={3}
         sx={{
-          position: 'fixed',
+          position: "fixed",
           bottom: 0,
           left: 0,
           right: 0,
@@ -172,50 +200,50 @@ const AddEntryPage: FC<AddEntryPageProps> = function ({ setGeneratingReport }) {
           position="static"
           activeStep={activeStep}
           sx={{
-        background: alpha(theme.palette.background.paper, 0.95),
-        backdropFilter: "blur(10px)",
-        "& .MuiLinearProgress-root": {
-          width: "100%",
-          height: 6,
-          borderRadius: 3,
-        },
-        "& .MuiLinearProgress-bar": {
-          borderRadius: 3,
-        },
+            background: alpha(theme.palette.background.paper, 0.95),
+            backdropFilter: "blur(10px)",
+            "& .MuiLinearProgress-root": {
+              width: "100%",
+              height: 6,
+              borderRadius: 3,
+            },
+            "& .MuiLinearProgress-bar": {
+              borderRadius: 3,
+            },
           }}
           nextButton={
-          <Button
-            form={Object.keys(stepsContent)[activeStep]}
-            type="submit"
-            size="small"
-            sx={{
-              fontWeight: 500,
-              minWidth: 80,
-              paddingRight: 0,
-              marginLeft: 2,
-            }}
-          >
-            {activeStep === maxSteps - 1 ? "Submit" : "Next"}
-            {activeStep !== maxSteps - 1 && <KeyboardArrowRight />}
-          </Button>
-        }
-        backButton={
-          <Button
-            size="small"
-            onClick={handleBack}
-            disabled={activeStep === 0}
-            sx={{
-              fontWeight: 500,
-              minWidth: 80,
-              paddingLeft: 0,
-              marginRight: 2,
-            }}
-          >
-            <KeyboardArrowLeft />
-            Back
-          </Button>
-        }
-      />
+            <Button
+              form={Object.keys(stepsContent)[activeStep]}
+              type="submit"
+              size="small"
+              sx={{
+                fontWeight: 500,
+                minWidth: 80,
+                paddingRight: 0,
+                marginLeft: 2,
+              }}
+            >
+              {activeStep === maxSteps - 1 ? "Submit" : "Next"}
+              {activeStep !== maxSteps - 1 && <KeyboardArrowRight />}
+            </Button>
+          }
+          backButton={
+            <Button
+              size="small"
+              onClick={handleBack}
+              disabled={activeStep === 0}
+              sx={{
+                fontWeight: 500,
+                minWidth: 80,
+                paddingLeft: 0,
+                marginRight: 2,
+              }}
+            >
+              <KeyboardArrowLeft />
+              Back
+            </Button>
+          }
+        />
       </Paper>
     </>
   );

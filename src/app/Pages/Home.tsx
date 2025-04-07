@@ -21,15 +21,12 @@ import {
   useNavBarHeightContext,
   useNavBarTextContext,
 } from "../../context/contextFunctions";
-import updateBackground from "../../features/updateBackground";
 import { Link } from "react-router-dom";
 import ls from "../../features/LocalStorage";
 import { fadeInAnimationSx } from "../../utils/constants";
 
 // Main Home Component
 const Home: FC = function () {
-  updateBackground();
-
   const NavHeight = useNavBarHeightContext() as number;
   const updateNavBarText = useNavBarTextContext() as React.Dispatch<
     React.SetStateAction<string>
@@ -42,7 +39,7 @@ const Home: FC = function () {
   }, []);
 
   const handleNewReport = () => {
-    ls.clear();
+    ls.clearWorkingOn();
   };
 
   return (

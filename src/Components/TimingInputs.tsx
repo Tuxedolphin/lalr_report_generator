@@ -3,7 +3,7 @@
 import { camelCaseToTitleCase } from "../utils/helperFunctions";
 import { TimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { Divider, Grid2 as Grid, alpha, useTheme } from "@mui/material";
+import { Divider, Grid2 as Grid, useTheme } from "@mui/material";
 import { Dayjs } from "dayjs";
 import { FC, useState, useEffect, useMemo } from "react";
 import { useReportContext } from "../context/contextFunctions";

@@ -165,7 +165,9 @@ export const generateOpsAcknowledgePhoto = function (
 
 export const mergeLowerTableDataHeader = function (
   headers: readonly string[],
-  data: ReturnType<typeof getLowerLATableData> | ReturnType<typeof getLowerLRTableData>
+  data:
+    | ReturnType<typeof getLowerLATableData>
+    | ReturnType<typeof getLowerLRTableData>
 ): TableRow[] {
   if (headers.length !== data.length)
     throw new Error("Headers and data do not match");
