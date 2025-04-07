@@ -41,6 +41,7 @@ import ToggleButtonInputType from "../../../components/ToggleButtonInputType";
 import {
   alternateGridFormatting,
   timingInputToPhoto,
+  fadeInAnimationSx,
 } from "../../../utils/constants";
 import { defaultJustification } from "../../../features/generateReport/utils/constants";
 
@@ -151,6 +152,7 @@ const SecondFootageForm: FC<SecondFootageFormType> = function ({ handleNext }) {
           title="Justification"
           icon={<Notes />}
           accentColor={theme.palette.secondary.main}
+          sx={fadeInAnimationSx(isLA ? "0.1s" : "0.2s")}
         >
           <TextField
             valueKey="justification"
@@ -176,6 +178,7 @@ const LAForm: FC<CommonFormProps> = function ({ report, errors, setErrors }) {
       errors={errors}
       setErrors={setErrors}
       icon={<FireTruck />}
+      sx={fadeInAnimationSx("0s")}
     />
   );
 };
@@ -214,6 +217,7 @@ const LRForm: FC<CommonFormProps> = function ({
         title="Buffer Time Settings"
         icon={<HourglassTop />}
         accentColor={theme.palette.warning.main}
+        sx={fadeInAnimationSx("0s")}
       >
         <Box sx={{ justifyContent: "center", display: "flex", mb: 3 }}>
           <FormControl
@@ -248,6 +252,7 @@ const LRForm: FC<CommonFormProps> = function ({
           title="Buffer Details"
           icon={<LocationOn />}
           accentColor={theme.palette.info.main}
+          sx={fadeInAnimationSx("0.1s")}
         >
           <Grid {...mainGridFormat}>
             <Grid size={smallInput}>

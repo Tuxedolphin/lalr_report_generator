@@ -31,7 +31,10 @@ import {
 import exampleImage from "../../../assets/example_image.png";
 import Section from "../../../components/Section";
 import { ErrorsType, SetErrorsType } from "../../../types/types";
-import { timingInputToPhoto } from "../../../utils/constants";
+import {
+  timingInputToPhoto,
+  fadeInAnimationSx,
+} from "../../../utils/constants";
 
 interface FirstFootageFormProps {
   handleNext: (
@@ -131,7 +134,7 @@ const TimingPhotoInputForm: FC<TimingPhotoInputFormProps> = function ({
 
   if (Object.keys(errors).length === 0) return; // Ensure that the errors are set
 
-  return timings.map((timing) => {
+  return timings.map((timing, index) => {
     const timingKey =
       Object.keys(timing).find((key) => key !== "icon" && key !== "title") ??
       "";
@@ -143,6 +146,7 @@ const TimingPhotoInputForm: FC<TimingPhotoInputFormProps> = function ({
         errors={errors}
         setErrors={setErrors}
         icon={timing.icon}
+        sx={fadeInAnimationSx(`${(index * 0.1).toString()}s`)}
       />
     );
   });
@@ -263,6 +267,7 @@ const DrawingForm: FC = function () {
       title="Draw Acknowledgment Box"
       icon={<DrawIcon />}
       accentColor={theme.palette.secondary.main}
+      sx={fadeInAnimationSx("0s")}
     >
       <Box
         sx={{

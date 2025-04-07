@@ -1,79 +1,77 @@
-import React from "react";
-import { Box, Typography, alpha, useTheme, Paper } from "@mui/material";
-import { defaultPaperSx } from "../utils/constants";
+import { FC, ReactNode } from "react";
+import {
+  Paper,
+  SxProps,
+  Theme,
+  Typography,
+  Box,
+  alpha,
+  useTheme,
+} from "@mui/material";
+import { paperSx } from "../utils/constants";
 
 interface SectionProps {
   title: string;
-  children: React.ReactNode;
+  icon?: ReactNode;
+  children: ReactNode;
+  accentColor?: string;
   time?: string;
   id?: string;
-  icon: React.ReactNode;
-  accentColor?: string;
+  sx?: SxProps<Theme>;
 }
 
-const Section = ({
-  id,
+const Section: FC<SectionProps> = function ({
   title,
-  children,
   icon,
+  children,
   accentColor,
-  time,
-}: SectionProps) => {
+  id,
+  sx = {},
+}) {
   const theme = useTheme();
   const color = accentColor ?? theme.palette.primary.main;
 
-  time = time ?? "0s";
-
   return (
-    <Paper sx={{ ...defaultPaperSx(time, theme, color), height: "100%" }} id={id}>
+    <Paper
+      id={id}
+      sx={{
+        ...paperSx(color, theme),
+        mb: 3,
+        // eslint-disable-next-line @typescript-eslint/no-misused-spread
+        ...(typeof sx === "object" ? sx : {}),
+      }}
+    >
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
-          mb: 2.5,
-          gap: 1.5,
+          mb: 3,
         }}
       >
         {icon && (
           <Box
             sx={{
-              height: 34,
-              width: 34,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              borderRadius: 1.5,
-              bgcolor: alpha(color, 0.12),
-              color,
+              borderRadius: "50%",
+              p: 1,
+              backgroundColor: alpha(color, 0.05),
+              color: color,
+              mr: 1.5,
+              "& svg": {
+                fontSize: "1.5rem",
+              },
             }}
           >
             {icon}
           </Box>
         )}
-        <Typography
-          variant="h6"
-          fontWeight={600}
-          sx={{
-            position: "relative",
-            color: theme.palette.text.primary,
-            "&::after": {
-              content: '""',
-              position: "absolute",
-              bottom: -6,
-              left: 0,
-              width: 45,
-              height: 3,
-              backgroundColor: color,
-              borderRadius: 1,
-            },
-          }}
-        >
+        <Typography variant="h6" fontWeight={500}>
           {title}
         </Typography>
       </Box>
-      <Box className="section-content" sx={{ width: "100%" }}>
-        {children}
-      </Box>
+      {children}
     </Paper>
   );
 };

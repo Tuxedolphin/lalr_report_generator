@@ -9,13 +9,11 @@ import {
   GeneralInformationType,
   IncidentInformationType,
   ReportKeys,
-  ReportType,
 } from "../types/types";
 import CroppedPicture from "../classes/CroppedPicture";
 import DrawnOnPicture from "../classes/DrawnOnPicture";
 import dayjs, { Dayjs } from "dayjs";
 import Time from "../classes/Time";
-import { defaultJustification } from "./generateReport/utils/constants";
 
 // =========================================
 //         Defining useful types

@@ -1,11 +1,12 @@
 import AddPhotosButton from "./AddPhotosButton";
 import { TimingInputs, type TimingInputsType } from "./TimingInputs";
-import { Box, useTheme } from "@mui/material";
+import { Box, SxProps, useTheme } from "@mui/material";
 import { FC } from "react";
 import Section from "./Section";
 import { PhotoCamera } from "@mui/icons-material";
 import { ErrorsType, SetErrorsType } from "../types/types";
 import { timingInputToPhoto } from "../utils/constants";
+import { camelCaseToTitleCase } from "../utils/helperFunctions";
 
 interface TimingAndPhotoInputProps {
   timingInput: TimingInputsType;
@@ -13,6 +14,7 @@ interface TimingAndPhotoInputProps {
   errors: ErrorsType;
   setErrors: SetErrorsType;
   icon?: React.ReactNode;
+  sx?: SxProps;
 }
 
 const TimingAndPhotoInput: FC<TimingAndPhotoInputProps> = function ({
@@ -21,6 +23,7 @@ const TimingAndPhotoInput: FC<TimingAndPhotoInputProps> = function ({
   errors,
   setErrors,
   icon,
+  sx,
 }) {
   const theme = useTheme();
 
@@ -31,21 +34,14 @@ const TimingAndPhotoInput: FC<TimingAndPhotoInputProps> = function ({
 
   const key = Object.keys(timingInput)[0] as keyof typeof timingInputToPhoto;
   const photoType = timingInputToPhoto[key];
-  const title =
-    key === "timeDispatched"
-      ? "Dispatch Photo & Time"
-      : key === "timeAllIn"
-        ? "All In Photo & Time"
-        : key === "timeMoveOff"
-          ? "Move Off Photo & Time"
-          : "Arrival Photo & Time";
 
   return (
     <Section
       id={`section-${key}`}
-      title={title}
+      title={`${camelCaseToTitleCase(key.replace("time", ""))} Timing & Screenshot`}
       icon={icon ?? <PhotoCamera />}
       accentColor={theme.palette.primary.main}
+      sx={sx}
     >
       <Box sx={{ mb: 3 }}>
         <AddPhotosButton

@@ -39,6 +39,7 @@ import {
   gridFormatting,
   sectionFormatting,
   inputSx,
+  fadeInAnimationSx,
 } from "../../../utils/constants";
 import {
   checkForError,
@@ -181,7 +182,11 @@ const GeneralInformationSection: FC<CommonProps> = function ({
   } as const;
 
   return (
-    <Section title="General Information" icon={<InfoIcon />}>
+    <Section
+      title="General Information"
+      icon={<InfoIcon />}
+      sx={fadeInAnimationSx("0s")}
+    >
       <Grid {...mainGridFormat}>
         <Grid size={largeInput}>
           <TextField
@@ -278,6 +283,7 @@ const TurnOutInformationSection: FC<CommonProps> = function ({
       title="Turnout Information"
       icon={<LocationIcon />}
       accentColor={theme.palette.warning.main}
+      sx={fadeInAnimationSx("0.1s")}
     >
       <Autocomplete
         options={
@@ -346,6 +352,7 @@ const ReportTypeSection: FC<CommonProps> = function ({
       title="Report Type"
       icon={<NoteIcon />}
       accentColor={theme.palette.secondary.main}
+      sx={fadeInAnimationSx("0.2s")}
     >
       <Box
         sx={{
@@ -385,6 +392,7 @@ const OpsCenterAcknowledgedSection: FC<CommonProps> = function ({
       title="Ops Center Acknowledged"
       icon={<MeasureIcon />}
       accentColor={theme.palette.info.main}
+      sx={fadeInAnimationSx("0.3s")}
     >
       <Box
         sx={{

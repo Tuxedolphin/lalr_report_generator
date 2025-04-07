@@ -23,7 +23,11 @@ import TextField from "../../../components/TextField";
 
 // Context and utilities
 import { useReportContext } from "../../../context/contextFunctions";
-import { gridFormatting, inputSx } from "../../../utils/constants";
+import {
+  gridFormatting,
+  inputSx,
+  fadeInAnimationSx,
+} from "../../../utils/constants";
 import {
   getSelectOnChangeFn,
   checkForError,
@@ -159,6 +163,7 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
             title="ACES Screenshot"
             icon={<ScreenshotMonitor />}
             accentColor={theme.palette.primary.main}
+            sx={fadeInAnimationSx("0s")}
           >
             <AddPhotosButton
               photoType="acesScreenshot"
@@ -173,8 +178,8 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
           <Section
             title="Incident Information"
             icon={<CloudQueue />}
-            time="0.1s"
             accentColor={theme.palette.warning.main}
+            sx={fadeInAnimationSx("0.1s")}
           >
             <Grid {...mainGridFormat}>
               <Grid size={inputSize}>
@@ -229,10 +234,10 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
 
         {/* Timing information section - for all report types */}
         <Section
-          time="0.2s"
           title="Timings From ACES"
           icon={<Schedule />}
           accentColor={theme.palette.secondary.main}
+          sx={fadeInAnimationSx("0.2s")}
         >
           <TimingInputs
             timingInputs={timings}
