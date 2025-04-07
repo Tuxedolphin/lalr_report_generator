@@ -1,0 +1,3 @@
+resolution-mode=highest
+auto-install-peers=true
+publish-branch=main
