@@ -1,48 +1,81 @@
+// External dependencies
+import { FC, useState, useEffect, useRef } from "react";
 import {
-  Divider,
-  Paper,
-  TextField,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
-  SelectChangeEvent,
   Grid2 as Grid,
+  useTheme,
+  Fade,
+  FormHelperText,
 } from "@mui/material";
-import { FC, useState, useEffect } from "react";
+import { CloudQueue, ScreenshotMonitor, Schedule } from "@mui/icons-material";
+
+// Internal components
 import {
   TimingInputs,
   type TimingInputsType,
 } from "../../../components/TimingInputs";
 import AddPhotosButton from "../../../components/AddPhotosButton";
+import Section from "../../../components/Section";
+import TextField from "../../../components/TextField";
+
+// Context and utilities
 import { useReportContext } from "../../../context/contextFunctions";
-import { gridFormatting } from "../../../utils/constants";
+import { gridFormatting, inputSx } from "../../../utils/constants";
+import {
+  getSelectOnChangeFn,
+  checkForError,
+} from "../../../utils/helperFunctions";
 
-const { mainGridFormat, smallInput } = gridFormatting;
+// Types
+import { ErrorsType } from "../../../types/types";
 
+// Constants
+const { mainGridFormat } = gridFormatting;
+const inputSize = { xs: 4, md: 6 } as const;
+
+/**
+ * Type for timing-related keys in the ACES information section
+ */
 type TimingsKey =
   | "timeDispatched"
   | "timeResponded"
   | "timeEnRoute"
   | "timeArrived";
 
+/**
+ * Props for the ACES Information Form component
+ */
 interface AcesFormProps {
+  /** Function to handle navigation to the next step in the form flow */
   handleNext: (newMaxSteps?: number, newActiveStep?: number) => void;
 }
 
+/**
+ * ACES Information Form Component
+ *
+ * Collects information from the ACES system including screenshots, incident details,
+ * and timing information based on the report type (LR or AR).
+ */
 export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    handleNext();
-  };
-
+  const theme = useTheme();
   const [report, updateReport] = useReportContext();
-  const acesInformation = report.acesInformation;
-  const generalInformation = report.generalInformation;
+  const { acesInformation, generalInformation, incidentInformation } = report;
 
-  const isLR = report.incidentInformation.reportType === "LR";
+  // Determine report type and settings
+  const isLR = incidentInformation.reportType === "LR";
+  const opsCenterAcknowledged = !!incidentInformation.opsCenterAcknowledged;
 
-  // Explicity defining the timings as the keys are to be used as the prompt for each entry
+  // References for text field elements
+  const textFieldRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
+  /**
+   * Initialize timings state based on report type
+   * LR reports need dispatch, en route, and arrival times
+   * AR reports need dispatch and response times
+   */
   const [timings, setTimings] = useState<TimingInputsType>(
     isLR
       ? {
@@ -56,90 +89,159 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
         }
   );
 
-  // On page load, make sure that all of the timings are loaded in correctly
+  /**
+   * Initialize error states based on report type
+   * Different validations apply depending on report type and acknowledgment status
+   */
+  const [errors, setErrors] = useState<ErrorsType>(
+    isLR
+      ? {
+          acesScreenshot: "",
+          weather: "",
+          boundary: "",
+          incidentOutcome: "",
+          timeDispatched: "",
+          timeEnRoute: "",
+          timeArrived: "",
+        }
+      : {
+          timeDispatched: "",
+          timeResponded: "",
+          ...(opsCenterAcknowledged ? { acesScreenshot: "" } : {}),
+        }
+  );
+
+  /**
+   * Load existing timing information when the component mounts
+   * This ensures form values persist when returning to this page
+   */
   useEffect(() => {
     const newTimings = {} as TimingInputsType;
 
-    for (const key of Object.keys(timings))
-      newTimings[key as TimingsKey] = acesInformation[key as TimingsKey];
+    // Copy existing timing values from the report context
+    for (const key of Object.keys(timings)) {
+      const typedKey = key as TimingsKey;
+      newTimings[typedKey] = acesInformation[typedKey];
+    }
 
     setTimings(newTimings);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [acesInformation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /**
+   * Validates the form fields and proceeds to the next step if valid
+   * Checks for errors in both ACES information and general information
+   *
+   * @param event - The form submission event
+   */
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    let hasError = false;
+
+    // Check for errors in both sections of the form
+    if (checkForError(errors, setErrors, acesInformation)) hasError = true;
+    if (checkForError(errors, setErrors, generalInformation)) hasError = true;
+
+    // Only proceed if no validation errors are found
+    if (!hasError) {
+      handleNext();
+    }
+  };
 
   return (
-    <form id="acesInfoForm" onSubmit={handleSubmit}>
-      {!(!isLR && !report.incidentInformation.opsCenterAcknowledged) && <AddPhotosButton photoType="acesScreenshot" />}
-      {isLR && (
-        <Paper sx={{ p: 1, textAlign: "center", marginTop: 2 }}>
-          <Divider sx={{ paddingBottom: 1 }}>Incident Information</Divider>
-          <Grid {...mainGridFormat}>
-            <Grid size={smallInput}>
-              <TextField
-                label="Weather"
-                value={generalInformation.weather ?? ""}
-                onChange={(event) => {
-                  updateReport.generalInformation(
-                    "weather",
-                    event.target.value
-                  );
-                }}
-                onBlur={() => {
-                  report.updateDBReport("generalInformation");
-                }}
-                fullWidth
-                sx={{ marginBottom: 2 }}
-              />
-            </Grid>
-            <Grid size={smallInput}>
-              <FormControl fullWidth>
-                <InputLabel id="response-zone">Response Zone</InputLabel>
-                <Select
-                  labelId="response-zone"
-                  label="Response Zone"
-                  value={generalInformation.boundary ?? ""}
-                  onChange={(event: SelectChangeEvent) => {
-                    updateReport.generalInformation(
-                      "boundary",
-                      event.target.value,
-                      true
-                    );
-                  }}
+    <Fade in={true} timeout={500}>
+      <form id="acesInfoForm" onSubmit={handleSubmit}>
+        {/* Only show screenshot section for LR reports or when ops center acknowledged */}
+        {(isLR || opsCenterAcknowledged) && (
+          <Section
+            title="ACES Screenshot"
+            icon={<ScreenshotMonitor />}
+            accentColor={theme.palette.primary.main}
+          >
+            <AddPhotosButton
+              photoType="acesScreenshot"
+              error={!!errors.acesScreenshot}
+              setErrors={setErrors}
+            />
+          </Section>
+        )}
+
+        {/* Incident information section - only for LR reports */}
+        {isLR && (
+          <Section
+            title="Incident Information"
+            icon={<CloudQueue />}
+            time="0.1s"
+            accentColor={theme.palette.warning.main}
+          >
+            <Grid {...mainGridFormat}>
+              <Grid size={inputSize}>
+                <TextField
+                  valueKey="weather"
+                  errorText={errors.weather ?? ""}
+                  setErrors={setErrors}
+                  refHook={textFieldRefs}
+                />
+              </Grid>
+              <Grid size={inputSize}>
+                <FormControl
+                  fullWidth
+                  sx={inputSx(theme.palette.warning.main)}
+                  error={!!errors.boundary}
                 >
-                  <MenuItem value={"8"}>8 Minutes</MenuItem>
-                  <MenuItem value={"11"}>11 Minutes</MenuItem>
-                  <MenuItem value={"13"}>13 Minutes</MenuItem>
-                  <MenuItem value={"15"}>15 Minutes</MenuItem>
-                  <MenuItem value={">15"}>{">15 Minutes"}</MenuItem>
-                </Select>
-              </FormControl>
+                  <InputLabel id="response-zone">Response Zone</InputLabel>
+                  <Select
+                    labelId="response-zone"
+                    label="Response Zone"
+                    fullWidth
+                    value={generalInformation.boundary}
+                    onChange={getSelectOnChangeFn(
+                      updateReport,
+                      setErrors,
+                      "boundary",
+                      report
+                    )}
+                    sx={inputSx(theme.palette.warning.main)}
+                  >
+                    <MenuItem value={"8"}>8 Minutes</MenuItem>
+                    <MenuItem value={"11"}>11 Minutes</MenuItem>
+                    <MenuItem value={"13"}>13 Minutes</MenuItem>
+                    <MenuItem value={"15"}>15 Minutes</MenuItem>
+                    <MenuItem value={">15"}>{">15 Minutes"}</MenuItem>
+                  </Select>
+                  <FormHelperText>{errors.boundary ?? ""}</FormHelperText>
+                </FormControl>
+              </Grid>
+              <Grid size={12}>
+                <TextField
+                  multiline
+                  valueKey="incidentOutcome"
+                  errorText={errors.incidentOutcome ?? ""}
+                  setErrors={setErrors}
+                  refHook={textFieldRefs}
+                />
+              </Grid>
             </Grid>
-          </Grid>
-          <TextField
-            label="Incident Outcome"
-            value={generalInformation.incidentOutcome ?? ""}
-            onChange={(event) => {
-              updateReport.generalInformation(
-                "incidentOutcome",
-                event.target.value
-              );
-            }}
-            onBlur={() => {
-              report.updateDBReport("generalInformation");
-            }}
-            multiline
-            rows={3}
-            fullWidth
+          </Section>
+        )}
+
+        {/* Timing information section - for all report types */}
+        <Section
+          time="0.2s"
+          title="Timings From ACES"
+          icon={<Schedule />}
+          accentColor={theme.palette.secondary.main}
+        >
+          <TimingInputs
+            timingInputs={timings}
+            reportKey="acesInformation"
+            errors={errors}
+            setErrors={setErrors}
+            accentColor={theme.palette.secondary.main}
           />
-        </Paper>
-      )}
-      <Paper sx={{ marginTop: 1, padding: 1 }}>
-        <TimingInputs
-          headerText="Timings From Aces"
-          timingInputs={timings}
-          reportKey="acesInformation"
-        />
-      </Paper>
-    </form>
+        </Section>
+      </form>
+    </Fade>
   );
 };

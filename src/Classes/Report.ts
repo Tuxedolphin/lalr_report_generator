@@ -34,10 +34,10 @@ class Report {
   };
 
   protected _generalInformation: GeneralInformationType = {
-    boundary: null,
-    justification: null,
-    weather: null,
-    incidentOutcome: null,
+    boundary: "",
+    justification: "",
+    weather: "",
+    incidentOutcome: "",
   };
 
   protected _acesInformation: AcesInformationType = {

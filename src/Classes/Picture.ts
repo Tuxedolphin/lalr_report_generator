@@ -12,6 +12,10 @@ class Picture {
   updateImage = (image: File | Blob): void => {
     this.image.src = URL.createObjectURL(image);
   };
+
+  isEmpty = (): boolean => {
+    return this.blob.size === 0;
+  }
 }
 
 export default Picture;

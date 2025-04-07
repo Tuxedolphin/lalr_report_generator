@@ -1,46 +1,67 @@
 import AddPhotosButton from "./AddPhotosButton";
 import { TimingInputs, type TimingInputsType } from "./TimingInputs";
-import { Paper } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
 import { FC } from "react";
-
-const timingInputToPhoto = {
-  timeDispatched: "dispatchPhoto",
-  timeResponded: "moveOffPhoto",
-  timeAllIn: "allInPhoto",
-  timeMoveOff: "moveOffPhoto",
-  timeArrived: "arrivedPhoto",
-} as const;
+import Section from "./Section";
+import { PhotoCamera } from "@mui/icons-material";
+import { ErrorsType, SetErrorsType } from "../types/types";
+import { timingInputToPhoto } from "../utils/constants";
 
 interface TimingAndPhotoInputProps {
   timingInput: TimingInputsType;
   reportKey: "cameraInformation" | "acesInformation";
+  errors: ErrorsType;
+  setErrors: SetErrorsType;
+  icon?: React.ReactNode;
 }
 
 const TimingAndPhotoInput: FC<TimingAndPhotoInputProps> = function ({
   timingInput,
   reportKey,
+  errors,
+  setErrors,
+  icon,
 }) {
+  const theme = useTheme();
+
   if (Object.keys(timingInput).length > 1)
     throw new Error(
       "Object argument of timingInput has more than 1 key, expected 1."
     );
 
-  const photoType =
-    timingInputToPhoto[
-      Object.keys(timingInput)[0] as keyof typeof timingInputToPhoto
-    ];
+  const key = Object.keys(timingInput)[0] as keyof typeof timingInputToPhoto;
+  const photoType = timingInputToPhoto[key];
+  const title =
+    key === "timeDispatched"
+      ? "Dispatch Photo & Time"
+      : key === "timeAllIn"
+        ? "All In Photo & Time"
+        : key === "timeMoveOff"
+          ? "Move Off Photo & Time"
+          : "Arrival Photo & Time";
 
   return (
-    <>
-      <AddPhotosButton photoType={photoType} />
-      <Paper sx={{ padding: 1, marginY: 1 }}>
-        <TimingInputs
-          headerText=""
-          timingInputs={timingInput}
-          reportKey={reportKey}
+    <Section
+      id={`section-${key}`}
+      title={title}
+      icon={icon ?? <PhotoCamera />}
+      accentColor={theme.palette.primary.main}
+    >
+      <Box sx={{ mb: 3 }}>
+        <AddPhotosButton
+          photoType={photoType}
+          error={!!errors[photoType]}
+          setErrors={setErrors}
         />
-      </Paper>
-    </>
+      </Box>
+      <TimingInputs
+        timingInputs={timingInput}
+        reportKey={reportKey}
+        accentColor={theme.palette.primary.main}
+        errors={errors}
+        setErrors={setErrors}
+      />
+    </Section>
   );
 };
 

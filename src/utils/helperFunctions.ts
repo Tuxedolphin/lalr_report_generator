@@ -1,5 +1,5 @@
 import Report from "../classes/Report";
-import { RefObject, SyntheticEvent } from "react";
+import { RefObject, SyntheticEvent, MouseEvent } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import ls from "../features/LocalStorage";
 import {
@@ -7,7 +7,15 @@ import {
   ReportKeys,
   ReportValueKeysType,
   UpdateReportType,
+  ErrorsType,
+  IncidentInformationType,
+  GeneralInformationType,
+  AcesInformationType,
+  CameraInformationType,
+  ReportValueTypes,
 } from "../types/types";
+import { SelectChangeEvent } from "@mui/material";
+import { TimingInputsType } from "../components/TimingInputs";
 
 const defaultReport = new Report();
 
@@ -175,7 +183,7 @@ export const checkAndUpdateID = async function (report: Report) {
   return report;
 };
 
-// -------------------- Form Utilities --------------------
+// -------------------- Report Utilities --------------------
 
 /**
  * Maps a field key to its parent section key in the report structure.
@@ -198,6 +206,57 @@ export const getReportKey = function (
   }
   return null;
 };
+
+/**
+ * Validates form data and marks empty required fields with errors.
+ *
+ * @param errors - Current validation errors object
+ * @param setErrors - State setter function for form validation errors
+ * @param information - The information object to validate
+ * @returns True if any validation errors were found, false otherwise
+ */
+export const checkForError = function (
+  errors: ErrorsType,
+  setErrors: SetErrorsType,
+  information:
+    | IncidentInformationType
+    | GeneralInformationType
+    | AcesInformationType
+    | CameraInformationType
+) {
+  let hasError = false;
+
+  Object.keys(errors).forEach((key) => {
+    if (!(key in information)) return;
+
+    const value = information[
+      key as keyof typeof information
+    ] as ReportValueTypes;
+
+    // Check if value is empty (string, null, undefined) or an empty Image
+    const isEmpty =
+      value === "" ||
+      value === null ||
+      (value instanceof Object &&
+        "isEmpty" in value &&
+        typeof (value as { isEmpty: () => boolean }).isEmpty === "function" &&
+        (value as { isEmpty: () => boolean }).isEmpty());
+
+    if (isEmpty) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [key]: "Required",
+      }));
+      hasError = true;
+    } else if (errors[key as keyof typeof errors]) {
+      hasError = true;
+    }
+  });
+
+  return hasError;
+};
+
+// -------------------- Form Input Handlers --------------------
 
 /**
  * Creates an onChange event handler function for form fields that updates the report state,
@@ -343,21 +402,31 @@ export const getTextFieldOnBlurFn = function (
   };
 };
 
+/**
+ * Creates an onChange event handler for Select components that updates the report state
+ * and clears errors.
+ *
+ * @param updateReport - Functions to update different sections of the report
+ * @param setErrors - State setter function for form validation errors
+ * @param key - The key identifying the specific field in the report
+ * @param report - The report object containing the current form data
+ * @returns A function that handles Select change events
+ */
 export const getSelectOnChangeFn = function (
   updateReport: UpdateReportType,
   setErrors: SetErrorsType,
-  key: "station" | "turnoutFrom" | "reportType" | "opsCenterAcknowledged",
+  key:
+    | "station"
+    | "turnoutFrom"
+    | "reportType"
+    | "opsCenterAcknowledged"
+    | "boundary",
   report: Report
 ) {
   const infoKey = getReportKey(key);
   if (!infoKey) throw new Error(`Key ${key} not found in keyToInfoKey mapping`);
 
-  return (
-    e:
-      | React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>
-      | React.SyntheticEvent,
-    value?: unknown
-  ) => {
+  return (e: SelectChangeEvent, value?: unknown) => {
     setErrors((prev) => ({ ...prev, [key]: "" }));
 
     ls.setWorkingOn(report.id);
@@ -366,11 +435,45 @@ export const getSelectOnChangeFn = function (
 
     if (typeof value === "string" || typeof value === "boolean")
       newValue = value;
-    else if ("target" in e && "value" in e.target)
-      newValue = e.target.value as string;
+    else if ("target" in e && "value" in e.target) newValue = e.target.value;
     else
       throw new Error(`Unexpected value type: ${typeof value} and ${typeof e}`);
 
+    (
+      updateReport[infoKey] as (
+        k: ReportValueKeysType,
+        v: string | boolean,
+        s: boolean
+      ) => void
+    )(key, newValue, true);
+  };
+};
+
+/**
+ * Creates an onChange event handler for ToggleButtonGroup components that updates the report state
+ * and clears errors.
+ *
+ * @param updateReport - Functions to update different sections of the report
+ * @param setErrors - State setter function for form validation errors
+ * @param key - The key identifying the specific field in the report
+ * @param report - The report object containing the current form data
+ * @returns A function that handles ToggleButtonGroup change events
+ */
+export const getToggleButtonOnChangeFn = function (
+  updateReport: UpdateReportType,
+  setErrors: SetErrorsType,
+  key: ReportValueKeysType,
+  report: Report
+) {
+  const infoKey = getReportKey(key);
+  if (!infoKey) throw new Error(`Key ${key} not found in keyToInfoKey mapping`);
+
+  return (_event: MouseEvent<HTMLElement>, newValue: string) => {
+    setErrors((prev) => ({ ...prev, [key]: "" }));
+
+    ls.setWorkingOn(report.id);
+
+    // With ToggleButtonGroup, the newValue is directly passed as the second parameter
     (
       updateReport[infoKey] as (
         k: ReportValueKeysType,

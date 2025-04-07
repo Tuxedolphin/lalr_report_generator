@@ -6,18 +6,21 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   useTheme,
+  alpha,
+  Box,
 } from "@mui/material";
 
 import { useReportContext } from "../context/contextFunctions";
-import { getSelectOnChangeFn } from "../utils/helperFunctions";
+import { getToggleButtonOnChangeFn } from "../utils/helperFunctions";
 import { ReportValueTypes, SetErrorsType } from "../types/types";
 
 interface ButtonGroupInputType {
-  id: "opsCenterAcknowledged" | "reportType";
+  id: "opsCenterAcknowledged" | "reportType" | "hasBufferTime";
   title: string;
   buttonTextsValues: Record<string, ReportValueTypes>;
   error: boolean;
   setErrors: SetErrorsType;
+  accentColor?: string;
 }
 
 const ButtonGroupInput: FC<ButtonGroupInputType> = function ({
@@ -26,10 +29,23 @@ const ButtonGroupInput: FC<ButtonGroupInputType> = function ({
   buttonTextsValues,
   error,
   setErrors,
+  accentColor,
 }) {
   const [report, updateReport] = useReportContext();
-  const errorColour = useTheme().palette.error.main;
-  const handleChange = getSelectOnChangeFn(updateReport, setErrors, id, report);
+  const theme = useTheme();
+  const errorColour = theme.palette.error.main;
+  const handleChange = getToggleButtonOnChangeFn(
+    updateReport,
+    setErrors,
+    id,
+    report
+  );
+  const color = accentColor ?? theme.palette.primary.main;
+
+  const key =
+    id in report.incidentInformation
+      ? "incidentInformation"
+      : "cameraInformation";
 
   const buttons = Object.entries(buttonTextsValues).map(([text, value]) => {
     if (value === null) {
@@ -38,14 +54,53 @@ const ButtonGroupInput: FC<ButtonGroupInputType> = function ({
       );
     }
 
+    const isSelected =
+      key === "incidentInformation"
+        ? value ===
+          report.incidentInformation[
+            id as keyof typeof report.incidentInformation
+          ]
+        : value ===
+          report.cameraInformation[id as keyof typeof report.cameraInformation];
+
     return (
       <ToggleButton
         value={value}
         key={text.replace(/ /g, "").toLowerCase()}
         sx={{
           marginTop: 1,
-          color: error ? errorColour : undefined,
-          borderColor: error ? errorColour : undefined,
+          borderRadius: 1.5,
+          px: 3,
+          py: 1.3,
+          fontWeight: isSelected ? 600 : 400,
+          color: error
+            ? errorColour
+            : isSelected
+              ? color
+              : theme.palette.text.secondary,
+          borderColor: error
+            ? errorColour
+            : isSelected
+              ? alpha(color, 0.5)
+              : alpha(theme.palette.divider, 0.5),
+          "&.Mui-selected": {
+            backgroundColor: alpha(color, 0.1),
+            color: error ? errorColour : color,
+            borderColor: error ? errorColour : alpha(color, 0.3),
+            boxShadow:
+              isSelected && !error
+                ? `inset 0 0 0 1px ${alpha(color, 0.3)}`
+                : "none",
+            "&:hover": {
+              backgroundColor: alpha(color, 0.15),
+              borderColor: error ? errorColour : alpha(color, 0.4),
+            },
+          },
+          transition: "all 0.2s ease",
+          "&:hover": {
+            backgroundColor: alpha(theme.palette.action.hover, 0.15),
+            transform: "translateY(-1px)",
+          },
         }}
       >
         {text}
@@ -57,21 +112,94 @@ const ButtonGroupInput: FC<ButtonGroupInputType> = function ({
     <FormControl
       sx={{
         width: "100%",
-        maxWidth: "80%",
+        maxWidth: "90%",
       }}
       error={error}
     >
-      <FormLabel id={id}>{title}</FormLabel>
-      <ToggleButtonGroup
-        value={report.incidentInformation[id]}
-        exclusive
-        aria-labelledby={id}
-        onChange={handleChange}
-        fullWidth
+      <FormLabel
+        id={id}
+        sx={{
+          mb: 1,
+          fontWeight: 500,
+          color: error ? errorColour : theme.palette.text.secondary,
+          textAlign: "center",
+        }}
       >
-        {buttons}
-      </ToggleButtonGroup>
-      {error && <FormHelperText>Required</FormHelperText>}
+        {title}
+      </FormLabel>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          width: "100%",
+        }}
+      >
+        <ToggleButtonGroup
+          value={
+            key === "incidentInformation"
+              ? report.incidentInformation[
+                  id as keyof typeof report.incidentInformation
+                ]
+              : report.cameraInformation[
+                  id as keyof typeof report.cameraInformation
+                ] // Have to be explicit here since TypeScript doesn't know the type of the key
+          }
+          exclusive
+          aria-labelledby={id}
+          onChange={handleChange}
+          sx={{
+            mt: 0.5,
+            boxShadow: error
+              ? "none"
+              : `0 1px 3px ${alpha(theme.palette.common.black, 0.06)}`,
+            borderRadius: 2,
+            overflow: "hidden",
+            "& .MuiToggleButtonGroup-grouped": {
+              border: error
+                ? `1px solid ${errorColour}`
+                : `1px solid ${alpha(theme.palette.divider, 0.2)}`,
+              "&:not(:first-of-type)": {
+                borderLeftColor: error
+                  ? errorColour
+                  : alpha(theme.palette.divider, 0.3),
+              },
+              "&:first-of-type": {
+                borderTopLeftRadius: 8,
+                borderBottomLeftRadius: 8,
+              },
+              "&:last-of-type": {
+                borderTopRightRadius: 8,
+                borderBottomRightRadius: 8,
+              },
+            },
+            transition: "transform 0.2s ease, box-shadow 0.2s ease",
+            "&:hover": {
+              transform: "translateY(-1px)",
+              boxShadow: error
+                ? `0 3px 10px ${alpha(errorColour, 0.15)}`
+                : `0 3px 10px ${alpha(color, 0.15)}`,
+            },
+          }}
+        >
+          {buttons}
+        </ToggleButtonGroup>
+      </Box>
+      {error && (
+        <FormHelperText
+          sx={{
+            textAlign: "center",
+            mt: 1.5,
+            fontWeight: 500,
+            animation: "fadeIn 0.3s ease-in",
+            "@keyframes fadeIn": {
+              "0%": { opacity: 0, transform: "translateY(-5px)" },
+              "100%": { opacity: 1, transform: "translateY(0)" },
+            },
+          }}
+        >
+          Required
+        </FormHelperText>
+      )}
     </FormControl>
   );
 };

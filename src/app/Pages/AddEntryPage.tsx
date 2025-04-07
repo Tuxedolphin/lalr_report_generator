@@ -1,9 +1,17 @@
 // React and React Router imports
-import React, { useState, FC, useEffect } from "react";
+import React, { useState, FC, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Material UI imports
-import { MobileStepper, Box, Button } from "@mui/material";
+import {
+  Box,
+  Button,
+  alpha,
+  useTheme,
+  Paper,
+  Fade,
+  MobileStepper,
+} from "@mui/material";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 
 // Local component imports
@@ -42,7 +50,10 @@ const AddEntryPage: FC<AddEntryPageProps> = function ({ setGeneratingReport }) {
     React.SetStateAction<string>
   >;
   const navBarHeight = useNavBarHeightContext() as number;
-  const buttonWidth = "77.5px";
+  const theme = useTheme();
+
+  // Create a ref for the main content container
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     updateBackground();
@@ -64,6 +75,20 @@ const AddEntryPage: FC<AddEntryPageProps> = function ({ setGeneratingReport }) {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Scroll to top when step changes
+  useEffect(() => {
+    // Safely scroll to top when step changes
+    if (contentRef.current) {
+      contentRef.current.scrollTop = 0;
+    }
+
+    // Fallback to window scroll if the ref isn't accessible
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, [activeStep]);
 
   const handleBack = function () {
     setActiveStep(activeStep - 1);
@@ -104,45 +129,95 @@ const AddEntryPage: FC<AddEntryPageProps> = function ({ setGeneratingReport }) {
   } as const;
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        minHeight: `calc(100vh - ${navBarHeight.toString()}px)`,
-      }}
-    >
+    <>
       <Box
         sx={{
-          width: "100%",
-          p: 1,
-          flexGrow: 2,
+          display: "flex",
+          flexDirection: "column",
+          minHeight: `calc(100vh - ${navBarHeight.toString()}px)`,
+          px: { xs: 1.5, sm: 2 },
+          pt: 2,
+          pb: 2,
+          background: alpha(theme.palette.background.default, 0.5),
+          position: "relative",
         }}
       >
-        {Object.values(stepsContent)[activeStep]}
+        <Box
+          ref={contentRef}
+          sx={{
+            width: "100%",
+            flexGrow: 1,
+            mb: 2,
+            overflow: "auto",
+          }}
+        >
+          <Fade in={true} timeout={400}>
+            <Box>{Object.values(stepsContent)[activeStep]}</Box>
+          </Fade>
+        </Box>
       </Box>
-      <MobileStepper
-        variant="progress"
-        steps={maxSteps}
-        position="static"
-        activeStep={activeStep}
-        nextButton={
+      <Paper
+        elevation={3}
+        sx={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1000,
+        }}
+      >
+        <MobileStepper
+          variant="progress"
+          steps={maxSteps}
+          position="static"
+          activeStep={activeStep}
+          sx={{
+        background: alpha(theme.palette.background.paper, 0.95),
+        backdropFilter: "blur(10px)",
+        "& .MuiLinearProgress-root": {
+          width: "100%",
+          height: 6,
+          borderRadius: 3,
+        },
+        "& .MuiLinearProgress-bar": {
+          borderRadius: 3,
+        },
+          }}
+          nextButton={
           <Button
             form={Object.keys(stepsContent)[activeStep]}
             type="submit"
-            sx={{ width: buttonWidth }}
+            size="small"
+            sx={{
+              fontWeight: 500,
+              minWidth: 80,
+              paddingRight: 0,
+              marginLeft: 2,
+            }}
           >
             {activeStep === maxSteps - 1 ? "Submit" : "Next"}
             {activeStep !== maxSteps - 1 && <KeyboardArrowRight />}
           </Button>
         }
         backButton={
-          <Button onClick={handleBack} disabled={activeStep === 0}>
+          <Button
+            size="small"
+            onClick={handleBack}
+            disabled={activeStep === 0}
+            sx={{
+              fontWeight: 500,
+              minWidth: 80,
+              paddingLeft: 0,
+              marginRight: 2,
+            }}
+          >
             <KeyboardArrowLeft />
             Back
           </Button>
         }
       />
-    </Box>
+      </Paper>
+    </>
   );
 };
 

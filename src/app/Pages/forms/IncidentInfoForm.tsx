@@ -1,33 +1,61 @@
+/**
+ * Incident Information Form Component
+ * This form collects general incident information, turnout details, and report type
+ */
+
+// React imports
 import React, { FC, useState, useRef } from "react";
+
+// Material UI imports
 import {
   Autocomplete,
   Box,
-  Divider,
+  Fade,
+  FormControl,
   Grid2 as Grid,
+  InputLabel,
   MenuItem,
-  Paper,
+  Select,
   TextField as MuiTextField,
+  Theme,
+  useTheme,
 } from "@mui/material";
+import {
+  Info as InfoIcon,
+  LocationOn as LocationIcon,
+  NoteAlt as NoteIcon,
+  Straighten as MeasureIcon,
+} from "@mui/icons-material";
 
+// Component imports
 import ButtonGroupInput from "../../../components/ButtonGroupInput";
+import Section from "../../../components/Section";
 import TextField from "../../../components/TextField";
-import { useReportContext } from "../../../context/contextFunctions";
-import { gridFormatting } from "../../../utils/constants";
-import {
-  ErrorsType,
-  IncidentInformationType,
-  SetErrorsType,
-} from "../../../types/types";
 
+// Context and utilities
+import { useReportContext } from "../../../context/contextFunctions";
 import {
+  gridFormatting,
+  sectionFormatting,
+  inputSx,
+} from "../../../utils/constants";
+import {
+  checkForError,
   getSelectOnChangeFn,
   getTextFieldOnBlurFn,
   getTextFieldOnChangeFn,
 } from "../../../utils/helperFunctions";
 
-const { mainGridFormat, smallInput, largeInput } = gridFormatting;
+// Types
+import { ErrorsType, SetErrorsType } from "../../../types/types";
 
-// The different fire posts/ fire stations corresponding to each fire station
+const { mainGridFormat, smallInput, largeInput } = gridFormatting;
+const { mainGrid: mainSectionFormat, input: sectionFormat } = sectionFormatting;
+
+/**
+ * Fire posts/stations mapping
+ * Maps station numbers to their corresponding fire posts
+ */
 const firePosts = {
   "31": [
     "Yishun Fire Station",
@@ -39,18 +67,34 @@ const firePosts = {
   "34": ["Punggol Fire Station"],
 } as const;
 
-interface GeneralInfoFormProps {
+/**
+ * Interface for common props used by section components
+ */
+interface CommonProps {
+  theme: Theme;
+  errors: ErrorsType;
+  setErrors: SetErrorsType;
+  textFieldRefs: React.MutableRefObject<
+    Record<string, HTMLInputElement | null>
+  >;
+}
+
+/**
+ * IncidentInfoForm props interface
+ */
+interface IncidentInfoFormProps {
   handleNext: (newMaxSteps?: number, newActiveStep?: number) => void;
 }
 
-const IncidentInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
-  function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    if (checkForError(errors, setErrors, report.incidentInformation)) return;
-    handleNext(report.incidentInformation.opsCenterAcknowledged ? 3 : 4);
-  }
-
-  const [report, updateReport] = useReportContext();
+/**
+ * Main IncidentInfoForm Component
+ * Collects incident information and validates input before proceeding to next step
+ *
+ * @param handleNext - Function to proceed to next step in form wizard
+ */
+const IncidentInfoForm: FC<IncidentInfoFormProps> = function ({ handleNext }) {
+  const theme = useTheme();
+  const [report] = useReportContext();
   const [errors, setErrors] = useState<ErrorsType>({
     incidentNumb: "",
     station: "",
@@ -62,8 +106,60 @@ const IncidentInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
     reportType: "",
     opsCenterAcknowledged: "",
   });
-
   const textFieldRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
+  /**
+   * Handles form submission
+   * Validates form before proceeding to next step
+   */
+  function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    if (checkForError(errors, setErrors, report.incidentInformation)) return;
+    handleNext(report.incidentInformation.opsCenterAcknowledged ? 3 : 4);
+  }
+
+  const commonProps = {
+    theme: theme,
+    errors: errors,
+    setErrors: setErrors,
+    textFieldRefs: textFieldRefs,
+  } as const;
+
+  return (
+    <Fade in={true} timeout={500}>
+      <form id="generalInfoForm" onSubmit={handleSubmit}>
+        <Grid {...mainSectionFormat}>
+          <Grid size={sectionFormat}>
+            <GeneralInformationSection {...commonProps} />
+          </Grid>
+
+          <Grid size={sectionFormat}>
+            <TurnOutInformationSection {...commonProps} />
+          </Grid>
+
+          <Grid size={sectionFormat}>
+            <ReportTypeSection {...commonProps} />
+          </Grid>
+          <Grid size={sectionFormat}>
+            <OpsCenterAcknowledgedSection {...commonProps} />
+          </Grid>
+        </Grid>
+      </form>
+    </Fade>
+  );
+};
+
+/**
+ * General Information Section Component
+ * Collects basic incident details like incident number, station, call sign, and SC info
+ */
+const GeneralInformationSection: FC<CommonProps> = function ({
+  theme,
+  errors,
+  setErrors,
+  textFieldRefs,
+}) {
+  const [report, updateReport] = useReportContext();
   const information = report.incidentInformation;
 
   const commonProps = {
@@ -72,21 +168,26 @@ const IncidentInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
   } as const;
 
   return (
-    <form id="generalInfoForm" onSubmit={handleSubmit}>
-      <Paper sx={{ p: 1 }}>
-        <Divider sx={{ paddingBottom: 1 }}>General Information</Divider>
-        <Grid {...mainGridFormat}>
-          <Grid size={largeInput}>
-            <TextField
-              {...commonProps}
-              label="Incident Number"
-              valueKey="incidentNumb"
-              errorText={errors.incidentNumb ?? ""}
-            />
-          </Grid>
-          <Grid size={smallInput}>
-            <MuiTextField
-              select
+    <Section title="General Information" icon={<InfoIcon />}>
+      <Grid {...mainGridFormat}>
+        <Grid size={largeInput}>
+          <TextField
+            {...commonProps}
+            label="Incident Number"
+            valueKey="incidentNumb"
+            errorText={errors.incidentNumb ?? ""}
+            sx={inputSx(theme.palette.primary.main)}
+          />
+        </Grid>
+        <Grid size={smallInput}>
+          <FormControl
+            fullWidth
+            sx={inputSx(theme.palette.warning.main)}
+            error={!!errors.station}
+          >
+            <InputLabel id="station">Station</InputLabel>
+            <Select
+              labelId="station"
               label="Station"
               fullWidth
               value={information.station}
@@ -96,132 +197,192 @@ const IncidentInfoForm: FC<GeneralInfoFormProps> = function ({ handleNext }) {
                 "station",
                 report
               )}
-              error={!!errors.station}
-              helperText={errors.station}
+              sx={inputSx(theme.palette.primary.main)}
             >
               {Object.keys(firePosts).map((key) => (
                 <MenuItem key={key} value={key}>
                   {key}
                 </MenuItem>
               ))}
-            </MuiTextField>
-          </Grid>
-          <Grid size={smallInput}>
-            <TextField
-              {...commonProps}
-              label="Call Sign"
-              valueKey="appliance"
-              errorText={errors.appliance ?? ""}
-            />
-          </Grid>
-          <Grid size={largeInput}>
-            <TextField
-              {...commonProps}
-              label="SC Rank and Name"
-              valueKey="SC"
-              errorText={errors.SC ?? ""}
-            />
-          </Grid>
+            </Select>
+          </FormControl>
         </Grid>
-      </Paper>
-
-      <Paper sx={{ p: 1, marginTop: 2 }}>
-        <Divider sx={{ paddingBottom: 1 }}>Turnout Information</Divider>
-        <Autocomplete
-          options={
-            information.station
-              ? firePosts[information.station as keyof typeof firePosts]
-              : Object.values(firePosts).flat()
-          }
-          fullWidth
-          clearOnBlur={false}
-          inputValue={information.turnoutFrom}
-          onInputChange={getTextFieldOnChangeFn(
-            updateReport,
-            setErrors,
-            "turnoutFrom",
-            textFieldRefs
-          )}
-          onBlur={getTextFieldOnBlurFn(setErrors, report, "turnoutFrom")}
-          renderInput={(params) => (
-            <MuiTextField
-              {...params}
-              label="Turnout From"
-              fullWidth
-              error={!!errors.turnoutFrom}
-              helperText={errors.turnoutFrom}
-            />
-          )}
-        />
-        <TextField
-          {...commonProps}
-          sx={{ marginTop: 2 }}
-          valueKey="typeOfCall"
-          errorText={errors.typeOfCall ?? ""}
-        />
-        <TextField
-          {...commonProps}
-          label="Incident Location"
-          sx={{ marginTop: 2 }}
-          valueKey="location"
-          errorText={errors.location ?? ""}
-        />
-      </Paper>
-
-      <Paper sx={{ p: 1, marginTop: 2 }}>
-        <Divider>Report Type</Divider>
-        <Box sx={{ justifyContent: "center", display: "flex" }}>
-          <ButtonGroupInput
-            title=""
-            id="reportType"
-            buttonTextsValues={{
-              "Late Activation": "LA",
-              "Late Response": "LR",
-            }}
-            error={!!errors.reportType}
-            setErrors={setErrors}
+        <Grid size={smallInput}>
+          <TextField
+            {...commonProps}
+            label="Call Sign"
+            valueKey="appliance"
+            errorText={errors.appliance ?? ""}
+            sx={inputSx(theme.palette.primary.main)}
           />
-        </Box>
-      </Paper>
-      <Paper sx={{ p: 1, marginTop: 2 }}>
-        <Divider>Ops Center Acknowledged</Divider>
-        <Box sx={{ justifyContent: "center", display: "flex" }}>
-          <ButtonGroupInput
-            title=""
-            id="opsCenterAcknowledged"
-            buttonTextsValues={{
-              yes: true,
-              no: false,
-            }}
-            error={!!errors.opsCenterAcknowledged}
-            setErrors={setErrors}
+        </Grid>
+        <Grid size={largeInput}>
+          <TextField
+            {...commonProps}
+            label="SC Rank and Name"
+            valueKey="SC"
+            errorText={errors.SC ?? ""}
+            sx={inputSx(theme.palette.primary.main)}
           />
-        </Box>
-      </Paper>
-    </form>
+        </Grid>
+      </Grid>
+    </Section>
   );
 };
 
-const checkForError = function (
-  errors: ErrorsType,
-  setErrors: SetErrorsType,
-  information: IncidentInformationType
-) {
-  let hasError = false;
+/**
+ * Turnout Information Section Component
+ * Collects information about where the turnout was from, type of call, and incident location
+ */
+const TurnOutInformationSection: FC<CommonProps> = function ({
+  theme,
+  errors,
+  setErrors,
+  textFieldRefs,
+}) {
+  const [report, updateReport] = useReportContext();
+  const information = report.incidentInformation;
 
-  for (const [key, value] of Object.entries(information)) {
-    if (value === "" || value === null || value === undefined) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        [key]: `Required`,
-      }));
-      hasError = true;
-    } else if (errors[key as keyof IncidentInformationType]) {
-      hasError = true;
-    }
-  }
+  const commonProps = {
+    setErrors: setErrors,
+    refHook: textFieldRefs,
+  } as const;
 
-  return hasError;
+  return (
+    <Section
+      title="Turnout Information"
+      icon={<LocationIcon />}
+      accentColor={theme.palette.warning.main}
+    >
+      <Autocomplete
+        options={
+          information.station
+            ? firePosts[information.station as keyof typeof firePosts]
+            : Object.values(firePosts).flat()
+        }
+        fullWidth
+        clearOnBlur={false}
+        inputValue={information.turnoutFrom}
+        onInputChange={getTextFieldOnChangeFn(
+          updateReport,
+          setErrors,
+          "turnoutFrom",
+          textFieldRefs
+        )}
+        onBlur={getTextFieldOnBlurFn(setErrors, report, "turnoutFrom")}
+        renderInput={(params) => (
+          <MuiTextField
+            {...params}
+            label="Turnout From"
+            fullWidth
+            error={!!errors.turnoutFrom}
+            helperText={errors.turnoutFrom}
+            sx={inputSx(theme.palette.warning.main)}
+          />
+        )}
+      />
+
+      <TextField
+        {...commonProps}
+        label="Type of Call"
+        sx={{
+          marginTop: 2.5,
+          ...inputSx(theme.palette.warning.main),
+        }}
+        valueKey="typeOfCall"
+        errorText={errors.typeOfCall ?? ""}
+      />
+
+      <TextField
+        {...commonProps}
+        label="Incident Location"
+        sx={{
+          marginTop: 2.5,
+          ...inputSx(theme.palette.warning.main),
+        }}
+        valueKey="location"
+        errorText={errors.location ?? ""}
+      />
+    </Section>
+  );
+};
+
+/**
+ * Report Type Section Component
+ * Collects information about the type of report (Late Activation or Late Response)
+ */
+const ReportTypeSection: FC<CommonProps> = function ({
+  theme,
+  errors,
+  setErrors,
+}) {
+  return (
+    <Section
+      title="Report Type"
+      icon={<NoteIcon />}
+      accentColor={theme.palette.error.main}
+    >
+      <Box
+        sx={{
+          justifyContent: "center",
+          display: "flex",
+          width: "100%",
+          py: 2,
+        }}
+      >
+        <ButtonGroupInput
+          title=""
+          id="reportType"
+          buttonTextsValues={{
+            "Late Activation": "LA",
+            "Late Response": "LR",
+          }}
+          error={!!errors.reportType}
+          setErrors={setErrors}
+          accentColor={theme.palette.error.main}
+        />
+      </Box>
+    </Section>
+  );
+};
+
+/**
+ * Ops Center Acknowledged Section Component
+ * Collects information about whether the operations center acknowledged the incident
+ */
+const OpsCenterAcknowledgedSection: FC<CommonProps> = function ({
+  theme,
+  errors,
+  setErrors,
+}) {
+  return (
+    <Section
+      title="Ops Center Acknowledged"
+      icon={<MeasureIcon />}
+      accentColor={theme.palette.info.main}
+    >
+      <Box
+        sx={{
+          justifyContent: "center",
+          display: "flex",
+          width: "100%",
+          py: 2,
+        }}
+      >
+        <ButtonGroupInput
+          title=""
+          id="opsCenterAcknowledged"
+          buttonTextsValues={{
+            yes: true,
+            no: false,
+          }}
+          error={!!errors.opsCenterAcknowledged}
+          setErrors={setErrors}
+          accentColor={theme.palette.info.main}
+        />
+      </Box>
+    </Section>
+  );
 };
 
 export default IncidentInfoForm;

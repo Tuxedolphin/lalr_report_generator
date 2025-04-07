@@ -226,7 +226,7 @@ const DownloadPage: FC<DownloadPageProps> = function ({
               onClick={onGenerateAnother}
               sx={{ mt: 2 }}
             >
-              Start Generation
+              Get Started
             </Button>
           </Box>
         );
