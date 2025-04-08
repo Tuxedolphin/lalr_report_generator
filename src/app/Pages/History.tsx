@@ -1029,29 +1029,63 @@ const SectionDivider: FC<{ title: string }> = ({ title }) => {
   const theme = useTheme();
 
   return (
-    <Box sx={{ mt: 2, mb: 1 }}>
-      <Typography
-        variant="subtitle1"
-        component="h3"
+    <Box sx={{ mt: 3, mb: 2 }}>
+      <Box
         sx={{
-          fontWeight: 600,
-          color: theme.palette.text.primary,
           display: "flex",
           alignItems: "center",
-          "&::before": {
+          mb: 1.5,
+          pb: 0.75,
+          position: "relative",
+          "&::after": {
             content: '""',
-            display: "inline-block",
-            width: 4,
-            height: 18,
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            width: 80,
+            height: 2,
             backgroundColor: theme.palette.primary.main,
             borderRadius: 1,
-            mr: 1.5,
+            opacity: 0.8,
           },
         }}
       >
-        {title}
-      </Typography>
-      <Divider sx={{ mt: 1, opacity: 0.6 }} />
+        <Typography
+          variant="subtitle1"
+          component="h3"
+          sx={{
+            fontWeight: 600,
+            color:
+              theme.palette.mode === "dark"
+                ? alpha(theme.palette.primary.main, 0.9)
+                : theme.palette.primary.main,
+            letterSpacing: "0.02em",
+            textTransform: "uppercase",
+            fontSize: "0.85rem",
+            display: "flex",
+            alignItems: "center",
+            "&::before": {
+              content: '""',
+              display: "inline-block",
+              width: 4,
+              height: 16,
+              backgroundColor: theme.palette.primary.main,
+              borderRadius: 1,
+              mr: 1.5,
+              boxShadow: `0 0 8px ${alpha(theme.palette.primary.main, 0.4)}`,
+            },
+          }}
+        >
+          {title}
+        </Typography>
+      </Box>
+      <Divider
+        sx={{
+          mb: 2,
+          opacity: 0.5,
+          borderColor: alpha(theme.palette.divider, 0.5),
+        }}
+      />
     </Box>
   );
 };
