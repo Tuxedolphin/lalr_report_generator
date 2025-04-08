@@ -81,19 +81,42 @@ The app will be available at: [https://tuxedolphin.github.io/lalr_report_generat
 lalr_report_generator/
 ├── src/
 │   ├── app/
-│   │   ├── pages/          # Main pages (Add Entry, History, Download, etc.)
-│   │   ├── components/     # Reusable UI components
+│   │   ├── pages/          # Main pages of the app
+│   │   │   ├── AddEntryPage.tsx       # Add Entry page
+│   │   │   ├── Home.tsx               # Home page
+│   │   │   ├── DownloadPage.tsx       # Download page
+│   │   │   ├── History.tsx            # History page
+│   │   │   ├── forms/                 # Step-by-step form components
+│   │   │   │   ├── IncidentInfoForm.tsx
+│   │   │   │   ├── AcesInfoForm.tsx
+│   │   │   │   ├── FirstFootageForm.tsx
+│   │   │   │   ├── SecondFootageForm.tsx
 │   ├── features/
 │   │   ├── generateReport/ # Report generation logic
+│   │   │   ├── generateReport.ts
+│   │   │   ├── generateLaReport.ts
+│   │   │   ├── generateLrReport.ts
+│   │   │   ├── utils/      # Helper functions for report generation
+│   │   │       ├── helperFunctions.ts
 │   │   ├── db/             # Database utilities (Dexie.js)
 │   │   ├── LocalStorage/   # LocalStorage utilities
 │   ├── context/            # React Context for global state
+│   ├── components/         # Reusable UI components
+│   ├── classes/            # Core data model classes
+│   │   ├── Report.ts       # Report data structure
+│   │   ├── Time.ts         # Time utilities
+│   │   ├── ReportImage.ts  # Image handling
 │   ├── types/              # TypeScript type definitions
-│   ├── utils/              # Helper functions and constants
+│   │   ├── types.ts
+│   ├── utils/              # General helper functions and constants
+│   │   ├── constants.ts
 │   ├── main.tsx            # App entry point
 ├── public/                 # Static assets
 ├── index.html              # HTML entry point
 ├── vite.config.ts          # Vite configuration
+├── package.json            # Project metadata and dependencies
+├── README.md               # Project documentation
+├── LICENSE                 # License file
 ```
 
 ## Key Components
