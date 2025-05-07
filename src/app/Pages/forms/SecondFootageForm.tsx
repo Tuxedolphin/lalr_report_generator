@@ -43,7 +43,7 @@ import {
   timingInputToPhoto,
   fadeInAnimationSx,
 } from "../../../utils/constants";
-import { defaultJustification } from "../../../features/generateReport/utils/constants";
+import { defaultJustification } from "../../../features/generateReport/generateReportUtils/generateReportConstants";
 
 // Project types
 import {

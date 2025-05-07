@@ -9,8 +9,8 @@ import {
   generateLeftTable,
   generateOpsAcknowledgePhoto,
   generateRightTable,
-} from "./utils/helperFunctions";
-import { TableCell } from "./utils/types";
+} from "./generateReportUtils/generateReportHelperFunctions";
+import { TableCell } from "./generateReportUtils/generateReportTypes";
 import {
   topTableHeaders,
   lowerTableHeaders,
@@ -19,7 +19,7 @@ import {
   topTableOptions,
   lowerTableCellFormat,
   defaultBorder,
-} from "./utils/constants";
+} from "./generateReportUtils/generateReportConstants";
 import { generateAcronym } from "../../utils/helperFunctions";
 import DrawnOnPicture from "../../classes/DrawnOnPicture";
 

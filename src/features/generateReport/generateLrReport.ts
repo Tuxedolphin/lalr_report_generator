@@ -11,7 +11,7 @@ import {
   mergeLowerTableDataHeader,
   formatIncidentNumber,
   formatAcesCameraTiming,
-} from "./utils/helperFunctions";
+} from "./generateReportUtils/generateReportHelperFunctions";
 import {
   defaultBorder,
   enDash,
@@ -21,9 +21,9 @@ import {
   lowerTableHeaders,
   lowerTableCellFormat,
   defaultJustification,
-} from "./utils/constants";
+} from "./generateReportUtils/generateReportConstants";
 import { generateAcronym } from "../../utils/helperFunctions";
-import { TableRow, TableCell } from "./utils/types";
+import { TableRow, TableCell } from "./generateReportUtils/generateReportTypes";
 import DrawnOnPicture from "../../classes/DrawnOnPicture";
 
 const { red } = colors;
