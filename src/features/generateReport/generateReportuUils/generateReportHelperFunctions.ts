@@ -7,8 +7,8 @@ import {
   monthNames,
   secondPageTableHeight,
   defaultBorder,
-} from "./constants";
-import { TableCell, TableRow } from "./types";
+} from "./generateReportConstants";
+import { TableCell, TableRow } from "./generateReportTypes";
 import DrawnOnPicture from "../../../classes/DrawnOnPicture";
 import Background from "../assets/ppt_background.png";
 import Header from "../assets/ppt_header.png";
