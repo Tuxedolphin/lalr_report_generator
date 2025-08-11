@@ -19,7 +19,7 @@ import {
   arrowPositions,
   remarksTimePositions,
   shortLongStation
-} from './utils/newConstants.js'
+} from './utils/newConstants'
 
 const getLRTableData = function (
   report: Report,

@@ -142,7 +142,6 @@ const generateLaReport = async function (pptx: PptxGenJS, report: Report) {
         fill: { color: colors.blue }
       })
     );
-
     //hardcoded Resource Dispatched... etc... above photos
     ["Resource Dispatched", "Responding", "Resource Moved Off"].forEach((text, i) =>
       first.addText([{ text }], {
