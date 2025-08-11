@@ -204,8 +204,6 @@ export const getLowerLRTableData = function (
       acesResponseTime.toString(),
       acknowledged ? "" : cameraTotalTime.toString()
     ),
-    generalInformation.incidentOutcome,
-    generalInformation.weather,
     generalInformation.justification ||
       defaultJustification.LRpptLong(
         generalInformation.boundary || "0",

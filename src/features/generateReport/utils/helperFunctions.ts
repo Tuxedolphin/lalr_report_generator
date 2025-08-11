@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import Time from "../../../classes/Time.js";
 import PptxGenJS from "pptxgenjs";
 import {
   colors,
@@ -7,7 +8,7 @@ import {
   monthNames,
   secondPageTableHeight,
   defaultBorder,
-} from "./constants";
+} from "./newConstants";
 import { TableCell, TableRow } from "./types";
 import DrawnOnPicture from "../../../classes/DrawnOnPicture";
 import Background from "../assets/ppt_background.png";
@@ -74,59 +75,6 @@ export const formatPage = function (
 
   // Adds the background image
   slide.background = { path: Background };
-
-  // Adds the header image along with the texts
-  slide.addImage({ path: Header, h: 1.24, w: 12.95, x: 0.25, y: 0.38 });
-
-  slide
-    .addText("OPS", {
-      h: 0.84,
-      w: 1.48,
-      x: 2.23,
-      y: 0.45,
-      fontSize: 44,
-      bold: true,
-      color: white,
-      shadow: {
-        type: "outer",
-        angle: 45,
-        blur: 3,
-        opacity: 0.57,
-        offset: 3,
-        color: black.replace("#", ""),
-      },
-    })
-    .addText(`FRS ${shortFormToLongForm[reportType]}`, {
-      h: 0.84,
-      w: 8.3,
-      x: 4.13,
-      y: 0.51,
-      align: "center",
-      fontSize: 44,
-      bold: true,
-    })
-    .addText(
-      `${monthNames[day.month()]} ${day.year().toString()} (STATION ${station})`,
-      page === "first"
-        ? {
-            h: 0.4,
-            w: 4.92,
-            x: 4.2,
-            y: 1.59,
-            align: "center",
-            fontSize: 24,
-            bold: true,
-          }
-        : {
-            h: 0.4,
-            w: 4.92,
-            x: 4.2,
-            y: 1.56,
-            align: "center",
-            fontSize: 24,
-            bold: true,
-          }
-    );
 
   return slide;
 };
@@ -297,4 +245,9 @@ export const formatAcesCameraTiming = function (
 
 export const formatIncidentNumber = function (incidentNumber: string) {
   return incidentNumber.replace("/", "");
+};
+
+export const formatTimetoMinSec = function (time: Time): string {
+  const minPart = time.minute > 0 ? `${time.minute} Min ` : "";
+  return `${minPart}${time.second} Sec`;
 };

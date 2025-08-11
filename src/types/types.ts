@@ -42,17 +42,25 @@ export interface IncidentInformationType {
   station: string;
   appliance: string;
   SC: string;
+  PO: string;
   turnoutFrom: string;
   typeOfCall: string;
   reportType: ReportType;
   opsCenterAcknowledged: boolean | null;
 }
 
+export type LRJustificationType = {
+  selected: boolean;
+  remarks: string;
+};
+
 export interface GeneralInformationType {
   boundary: string;
   justification: string;
-  weather: string;
-  incidentOutcome: string;
+  sftl: LRJustificationType;
+  trafficCongestion: LRJustificationType;
+  inclementWeather: LRJustificationType;
+  acesRouteDeviation: LRJustificationType;
 }
 
 export interface AcesInformationType {
@@ -112,6 +120,7 @@ export interface DisplayReportDataType {
   incidentNumb: string;
   appliance: string;
   sc: string;
+  po: string;
   location: string;
   acesTime: Time;
   cameraTime: Time;
@@ -144,6 +153,7 @@ export interface UpdateReportType {
     key: keyof IncidentInformationType,
     value: IncidentInformationType[typeof key],
     saveToDB?: boolean
+
   ) => void;
   all: (report: Report) => void;
 }

@@ -485,7 +485,57 @@ export const getSelectOnChangeFn = function (
  * @param report - The report object containing the current form data
  * @returns A function that handles ToggleButtonGroup change events
  */
+
 export const getToggleButtonOnChangeFn = function (
+  updateReport: UpdateReportType,
+  setErrors: SetErrorsType,
+  key: ReportValueKeysType,
+  report: Report
+) {
+  const infoKey = getReportKey(key);
+  if (!infoKey) throw new Error(`Key ${key} not found in keyToInfoKey mapping`);
+
+  return (_event: MouseEvent<HTMLElement>, newValue: string | boolean | null) => {
+    if (newValue === null) return;
+
+    setErrors((prev) => ({ ...prev, [key]: "" }));
+
+    ls.setWorkingOn(report.id);
+
+    // Handle justification fields (LRJustificationType)
+    if (["sftl", "trafficCongestion", "inclementWeather", "acesRouteDeviation"].includes(key)) {
+      // Type assertion since we've confirmed this is a justification field
+      const justificationKey = key as keyof Pick<GeneralInformationType, 
+        "sftl" | "trafficCongestion" | "inclementWeather" | "acesRouteDeviation">;
+      
+      // Create updated justification object
+      const updatedJustification = {
+        ...report.generalInformation[justificationKey],
+        selected: newValue as boolean
+      };
+
+      updateReport.generalInformation(
+        justificationKey, 
+        updatedJustification, 
+        true
+      );
+    } 
+    // Handle normal toggle button fields
+    else {
+      // Type assertion for the specific section
+      const sectionKey = infoKey as "incidentInformation" | "generalInformation" | "acesInformation" | "cameraInformation";
+      const fieldKey = key as keyof (typeof report)[typeof sectionKey];
+
+      (updateReport[sectionKey] as (
+        k: typeof fieldKey,
+        v: typeof newValue,
+        s: boolean
+      ) => void)(fieldKey, newValue, true);
+    }
+  };
+};  
+
+export const OLDgetToggleButtonOnChangeFn = function (
   updateReport: UpdateReportType,
   setErrors: SetErrorsType,
   key: ReportValueKeysType,

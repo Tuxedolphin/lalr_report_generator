@@ -1,7 +1,7 @@
 import Report from "../../classes/Report";
 import PptxGenJS from "pptxgenjs";
-import generateLaReport from "./generateLaReport";
-import generateLrReport from "./generateLrReport";
+import generateLaReport from "./newGenLA";
+import generateLrReport from "./newGenLR";
 import { formatIncidentNumber } from "./utils/helperFunctions";
 
 const generateReportPpt = async function (report: Report): Promise<number> {
