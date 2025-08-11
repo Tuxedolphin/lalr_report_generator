@@ -1,6 +1,6 @@
 import { FC, useRef, useState } from 'react';
 import { Grid2 as Grid } from '@mui/material';
-import TextField from "../components/TextField";
+import TextField from "../Components/TextField";
 import ToggleButtonInputType from './ToggleButtonInputType';
 import { useReportContext } from '../context/contextFunctions';
 import { LRJustificationType } from '../types/types';
