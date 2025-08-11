@@ -19,7 +19,7 @@ import {
   shortLongStation,
   laPhotoPositions,
   miniRemarksLAxpos
-} from './utils/newConstants.js'
+} from './utils/newConstants'
 
 import { formatIncidentNumber } from "./utils/helperFunctions.js";
 
