@@ -25,7 +25,7 @@ import {
 import { FC, useState, useRef, useEffect } from "react";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import CroppedPicture from "../classes/CroppedPicture";
+import CroppedPicture from "../Classes/CroppedPicture";
 import { Crop, makeAspectCrop, centerCrop } from "react-image-crop";
 import { useReportContext } from "../context/contextFunctions";
 import { camelCaseToTitleCase } from "../utils/helperFunctions";

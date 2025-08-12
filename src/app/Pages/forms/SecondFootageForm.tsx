@@ -27,15 +27,15 @@ import {
 import { useReportContext } from "../../../context/contextFunctions";
 
 // Project classes
-import Report from "../../../classes/Report";
-import Time from "../../../classes/Time";
+import Report from "../../../Classes/Report";
+import Time from "../../../Classes/Time";
 
 // Project components
-import Section from "../../../components/Section";
-import TextField from "../../../components/TextField";
-import TimeLengthPicker from "../../../components/TimeLengthPicker";
-import TimingAndPhotoInput from "../../../components/TimingAndPhotoInput";
-import ToggleButtonInputType from "../../../components/ToggleButtonInputType";
+import Section from "../../../Components/Section";
+import TextField from "../../../Components/TextField";
+import TimeLengthPicker from "../../../Components/TimeLengthPicker";
+import TimingAndPhotoInput from "../../../Components/TimingAndPhotoInput";
+import ToggleButtonInputType from "../../../Components/ToggleButtonInputType";
 
 // Project constants
 import {

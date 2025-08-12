@@ -1,4 +1,4 @@
-import Time from "../../../classes/Time";
+import Time from "../../../Classes/Time";
 
 export const colors = {
   red: "#FF0000",

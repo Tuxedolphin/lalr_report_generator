@@ -1,7 +1,7 @@
 import Dexie, { type EntityTable } from "dexie";
 
-import Report from "../classes/Report";
-import DBPhoto from "../classes/DBPhoto";
+import Report from "../Classes/Report";
+import DBPhoto from "../Classes/DBPhoto";
 import {
   AcesInformationType,
   CameraInformationType,
@@ -10,10 +10,10 @@ import {
   IncidentInformationType,
   ReportKeys,
 } from "../types/types";
-import CroppedPicture from "../classes/CroppedPicture";
-import DrawnOnPicture from "../classes/DrawnOnPicture";
+import CroppedPicture from "../Classes/CroppedPicture";
+import DrawnOnPicture from "../Classes/DrawnOnPicture";
 import dayjs, { Dayjs } from "dayjs";
-import Time from "../classes/Time";
+import Time from "../Classes/Time";
 
 // =========================================
 //         Defining useful types
@@ -281,6 +281,7 @@ export async function retrieveAll(): Promise<DisplayReportDataType[]> {
       incidentNumb: incidentInformation.incidentNumb,
       appliance: incidentInformation.appliance,
       sc: incidentInformation.SC,
+      po: incidentInformation.PO,
       reportType: incidentInformation.reportType,
       location: incidentInformation.location,
       opsCenterAcknowledged: incidentInformation.opsCenterAcknowledged,

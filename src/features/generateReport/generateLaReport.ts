@@ -1,5 +1,5 @@
-import Report from "../../classes/Report";
-import Time from "../../classes/Time";
+import Report from "../../Classes/Report";
+import Time from "../../Classes/Time";
 import PptxGenJS from "pptxgenjs";
 import {
   formatPage,
@@ -21,7 +21,7 @@ import {
   defaultBorder,
 } from "./utils/constants";
 import { generateAcronym } from "../../utils/helperFunctions";
-import DrawnOnPicture from "../../classes/DrawnOnPicture";
+import DrawnOnPicture from "../../Classes/DrawnOnPicture";
 
 const { red } = colors;
 

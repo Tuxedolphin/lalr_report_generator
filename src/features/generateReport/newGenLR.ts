@@ -1,11 +1,11 @@
-import Report from "../../classes/Report";
-import Time from "../../classes/Time";
+import Report from "../../Classes/Report.js";
+import Time from "../../Classes/Time";
 import PptxGenJS from "pptxgenjs";
 import {
   formatPage,
   dayjsToString
 } from "./utils/helperFunctions";
-import { TableRow, TableCell } from "./utils/types";
+import { TableRow} from "./utils/types";
 
 import {
   colors,
@@ -63,9 +63,11 @@ const getLRTableData = function (
 };
 
 const generateLrReport = async function (pptx: PptxGenJS, report: Report) {
+  // @ts-ignore TS6133
   const { incidentInformation, acesInformation, cameraInformation ,generalInformation} = report;
 
   const opsCenterAcknowledged = !!incidentInformation.opsCenterAcknowledged;
+  if (opsCenterAcknowledged){}
 
   const acesResponseTime = Time.calculateTime(
     acesInformation.timeDispatched,
@@ -77,18 +79,18 @@ const generateLrReport = async function (pptx: PptxGenJS, report: Report) {
     acesInformation.timeEnRoute
   );
 
-  const cameraTimeEnRoute = new Time(cameraInformation.timeMoveOff).subtract(
-    cameraInformation.bufferingTime
-      ? new Time(cameraInformation.bufferingTime)
-      : new Time(0, 0)
-  );
+  // const cameraTimeEnRoute = new Time(cameraInformation.timeMoveOff).subtract(
+  //   cameraInformation.bufferingTime
+  //     ? new Time(cameraInformation.bufferingTime)
+  //     : new Time(0, 0)
+  // );
 
-  const cameraTimeDispatched = cameraTimeEnRoute.subtract(activationTime);
+  // const cameraTimeDispatched = cameraTimeEnRoute.subtract(activationTime);
 
-  const cameraTotalTime = Time.calculateTime(
-    cameraTimeDispatched,
-    cameraInformation.timeArrived
-  );
+  // const cameraTotalTime = Time.calculateTime(
+  //   cameraTimeDispatched,
+  //   cameraInformation.timeArrived
+  // );
 
   const first = formatPage(
     pptx,
@@ -158,7 +160,7 @@ const generateLrReport = async function (pptx: PptxGenJS, report: Report) {
       item.label,
       item.selected ? "Y" : "N",
       item.selected ? item.remarks : "NIL"
-    ].map((header, idx) => ({
+    ].map((header) => ({
       text: header,
       options: { fill: { color: colors.white }, fontSize: 9 },
     }))
@@ -199,6 +201,7 @@ let genImage = [""].map((header) => ({
   }));
 
 second.addTable([tableHeaders.generalTop("LR", incidentInformation.appliance),tableHeaders.general("LR"),placeholderGen, genImage],generalTableOptions);
+// @ts-ignore TS6133
 second.addTable([tableHeaders.remarks], remarksTableOptions);
 
 arrowPositions.forEach((xpos) => {

@@ -3,10 +3,10 @@ import { Dayjs } from "dayjs";
 import { ReactNode } from "react";
 
 // Internal imports
-import CroppedPicture from "../classes/CroppedPicture";
-import DrawnOnPicture from "../classes/DrawnOnPicture";
-import type Report from "../classes/Report";
-import Time from "../classes/Time";
+import CroppedPicture from "../Classes/CroppedPicture";
+import DrawnOnPicture from "../Classes/DrawnOnPicture";
+import type Report from "../Classes/Report";
+import Time from "../Classes/Time";
 
 // ====== BASIC TYPES ======
 

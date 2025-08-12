@@ -1,4 +1,4 @@
-import Report from "../classes/Report";
+import Report from "../Classes/Report";
 import { RefObject, SyntheticEvent, MouseEvent } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import ls from "../features/LocalStorage";

@@ -1,6 +1,6 @@
 import { Crop } from "react-image-crop";
-import CroppedPicture from "./CroppedPicture";
-import DrawnOnPicture from "./DrawnOnPicture";
+import CroppedPicture from "../Classes/CroppedPicture";
+import DrawnOnPicture from "../Classes/DrawnOnPicture";
 
 class DBPhoto {
   blob: Blob;

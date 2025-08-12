@@ -12,7 +12,7 @@ import {
   getTextFieldOnBlurFn,
   getTextFieldOnChangeFn,
 } from "../utils/helperFunctions";
-import Report from "../classes/Report";
+import Report from "../Classes/Report";
 import { inputSx } from "../utils/constants";
 
 interface TextFieldProps {

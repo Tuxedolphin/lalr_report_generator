@@ -29,9 +29,9 @@ import {
 } from "@mui/icons-material";
 
 // Component imports
-import ToggleButtonInputType from "../../../components/ToggleButtonInputType";
-import Section from "../../../components/Section";
-import TextField from "../../../components/TextField";
+import ToggleButtonInputType from "../../../Components/ToggleButtonInputType";
+import Section from "../../../Components/Section";
+import TextField from "../../../Components/TextField";
 
 // Context and utilities
 import { useReportContext } from "../../../context/contextFunctions";

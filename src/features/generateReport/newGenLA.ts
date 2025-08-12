@@ -1,52 +1,45 @@
-import Report from "../../classes/Report.js";
-import Time from "../../classes/Time.js";
+import Report from "../../Classes/Report.js";
+import Time from "../../Classes/Time.js";
 import PptxGenJS from "pptxgenjs";
 import {
-  formatPage,
   dayjsToString,
   formatTimetoMinSec
 } from "./utils/helperFunctions.js";
-import { TableRow, TableCell } from "./utils/types.js";
+// import { TableRow} from "./utils/types.js";
 
 import {
   colors,
   tableHeaders,
-  lrFirstTableOptions,
-  secondTableOptions,
-  imagePositions,
   generalTableOptions,
   remarksTableOptions,
-  shortLongStation,
   laPhotoPositions,
   miniRemarksLAxpos
 } from './utils/newConstants.js'
 
-import { formatIncidentNumber } from "./utils/helperFunctions.js";
+// const getLATableData = function (
+//   report: Report,
+//   acesResponseTime: Time,
+//   activationTime: Time,
+// ): TableRow {
+//   const { incidentInformation, acesInformation, generalInformation } = report;
+//   const timeExceed = acesResponseTime.subtract(new Time(0, 8));
+//   const tableData = [
+//     { value: incidentInformation.incidentNumb, color: colors.black },
+//     { value: dayjsToString(acesInformation.timeDispatched), color: colors.black },
+//     { value: dayjsToString(acesInformation.timeArrived), color: colors.black },
+//     { value: acesResponseTime.toString(), color: colors.red },
+//     { value: timeExceed.toString(), color: colors.red },
+//     { value: activationTime.minute < 1 ? "Y" : "N", color: colors.black },
+//   ];
 
-const getLATableData = function (
-  report: Report,
-  acesResponseTime: Time,
-  activationTime: Time,
-): TableRow {
-  const { incidentInformation, acesInformation, generalInformation } = report;
-  const timeExceed = acesResponseTime.subtract(new Time(0, 8));
-  const tableData = [
-    { value: incidentInformation.incidentNumb, color: colors.black },
-    { value: dayjsToString(acesInformation.timeDispatched), color: colors.black },
-    { value: dayjsToString(acesInformation.timeArrived), color: colors.black },
-    { value: acesResponseTime.toString(), color: colors.red },
-    { value: timeExceed.toString(), color: colors.red },
-    { value: activationTime.minute < 1 ? "Y" : "N", color: colors.black },
-  ];
-
-    return tableData.map(({ value, color }) => ({
-      text: value,
-      options: { fontSize: 9, fill: colors.white, color },
-    }));
-};
+//     return tableData.map(({ value, color }) => ({
+//       text: value,
+//       options: { fontSize: 9, fill: colors.white, color },
+//     }));
+// };
 
 const generateLaReport = async function (pptx: PptxGenJS, report: Report) {
-  const { incidentInformation, acesInformation, generalInformation, cameraInformation } = report;
+  const { incidentInformation, acesInformation, generalInformation: _generalInformation, cameraInformation } = report;
 
   const acesActivationTime = Time.calculateTime(
     acesInformation.timeDispatched,
@@ -76,6 +69,7 @@ const generateLaReport = async function (pptx: PptxGenJS, report: Report) {
   first.addTable([tableHeaders.generalTop("LA", incidentInformation.appliance),tableHeaders.general("LA"),placeholderGen, genImage],generalTableOptions);
   
   if (!incidentInformation.opsCenterAcknowledged) {
+    // @ts-ignore TS6133
     first.addTable([tableHeaders.remarks(`${incidentInformation.appliance} responded within 1 Min.`)], remarksTableOptions);
 
     const photoFields = [
@@ -109,8 +103,8 @@ const generateLaReport = async function (pptx: PptxGenJS, report: Report) {
       first.addText([
       { text: "Remark: ", options: { bold: true } },
       { text: `${remarkText}\n` },
-      { text: "Time: ", options: { bold: true } },
-      { text: `${timeValue}`, options: { bold: true, underline: "sng" } },
+      { text: "Time: ", options: { bold: true } },  // @ts-ignore TS6133
+      { text: `${timeValue}`, options: { bold: true, underline: "sng" } }, 
       ], {
       x: miniRemarksLAxpos[i],
       y: 4.57,
@@ -160,7 +154,7 @@ const generateLaReport = async function (pptx: PptxGenJS, report: Report) {
   }
 
   else{
-    first.addTable([tableHeaders.remarks(`Ops Centre Acknowledge Respond < 1 Min`)], remarksTableOptions);
+    // first.addTable([tableHeaders.remarks(`Ops Centre Acknowledge Respond < 1 Min`)], remarksTableOptions);
 
     const screenshotData = acesInformation.acesScreenshot;
     const base64Data = screenshotData ? await screenshotData.getBase64() : "";

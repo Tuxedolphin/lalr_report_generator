@@ -21,7 +21,7 @@ import IncidentInfoForm from "./forms/IncidentInfoForm";
 import { AcesForm } from "./forms/AcesInfoForm";
 import FirstFootageForm from "./forms/FirstFootageForm";
 import SecondFootageForm from "./forms/SecondFootageForm";
-import Report from "../../classes/Report";
+import Report from "../../Classes/Report";
 
 // Features and utils
 import generateReportPpt from "../../features/generateReport/generateReport";

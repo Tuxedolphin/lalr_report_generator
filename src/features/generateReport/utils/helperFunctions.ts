@@ -1,19 +1,19 @@
 import dayjs from "dayjs";
-import Time from "../../../classes/Time.js";
+import Time from "../../../Classes/Time.js";
 import PptxGenJS from "pptxgenjs";
 import {
   colors,
   enDash,
-  shortFormToLongForm,
-  monthNames,
+  //shortFormToLongForm,
+  //monthNames,
   secondPageTableHeight,
   defaultBorder,
 } from "./newConstants";
 import { TableCell, TableRow } from "./types";
-import DrawnOnPicture from "../../../classes/DrawnOnPicture";
+import DrawnOnPicture from "../../../Classes/DrawnOnPicture";
 import Background from "../assets/ppt_background.png";
-import Header from "../assets/ppt_header.png";
-import { checkIncNumber } from "../../../utils/helperFunctions";
+//import Header from "../assets/ppt_header.png";
+//import { checkIncNumber } from "../../../utils/helperFunctions";
 import { getLowerLATableData } from "../generateLaReport";
 import { getLowerLRTableData } from "../generateLrReport";
 
@@ -63,13 +63,12 @@ const leftTableHeader: TableRow = ["S/N", "INCIDENT NO.", "APPL."].map(
 // =========================================
 
 export const formatPage = function (
-  pptx: PptxGenJS,
-  reportType: "LA" | "LR",
-  incNumber: string,
-  station: string,
+  pptx: PptxGenJS,          // @ts-ignore TS6133
+  reportType: "LA" | "LR",  // @ts-ignore TS6133
+  incNumber: string,        // @ts-ignore TS6133
+  station: string,          // @ts-ignore TS6133
   page: "first" | "second"
 ): PptxGenJS.Slide {
-  const day = checkIncNumber(incNumber) ?? dayjs();
 
   const slide = pptx.addSlide();
 

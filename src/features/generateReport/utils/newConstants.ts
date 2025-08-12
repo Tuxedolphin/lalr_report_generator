@@ -1,4 +1,4 @@
-import Time from "../../../classes/Time";
+//import Time from "../../../classes/Time";
 
 export const colors = {
     red: "#FF0000",
@@ -120,7 +120,7 @@ export const colors = {
     LRpptShort: (
       boundary: string,
       opsCenterAcknowledged: boolean,
-      totalTime?: 1
+      //totalTime?: 1
     ) => {
       return opsCenterAcknowledged
         ? `MVC < ${boundary} min \n(Ops Center Acknowledged)`

@@ -1,4 +1,4 @@
-import Report from "../../classes/Report";
+import Report from "../../Classes/Report";
 import PptxGenJS from "pptxgenjs";
 import generateLaReport from "./newGenLA";
 import generateLrReport from "./newGenLR";

@@ -4,11 +4,11 @@ import { FC, useState } from "react";
 import { useIsDarkModeContext } from "../context/contextFunctions";
 import ReportProvider from "../context/ReportProvider";
 
-import Home from "./pages/Home";
-import History from "./pages/History";
-import AddEntryPage from "./pages/AddEntryPage";
-import Layout from "./pages/Layout";
-import DownloadPage from "./pages/DownloadPage";
+import Home from "./Pages/Home";
+import History from "./Pages/History";
+import AddEntryPage from "./Pages/AddEntryPage";
+import Layout from "./Pages/Layout";
+import DownloadPage from "./Pages/DownloadPage";
 import { ReportGenerationStatusType } from "../types/types";
 
 const App: FC = () => {

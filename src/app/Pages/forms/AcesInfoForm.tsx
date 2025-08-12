@@ -1,5 +1,5 @@
 // External dependencies
-import { FC, useState, useEffect, useRef } from "react";
+import { FC, useState, useEffect} from "react";
 import {
   FormControl,
   InputLabel,
@@ -9,7 +9,6 @@ import {
   useTheme,
   Fade,
   FormHelperText,
-  Box,
 } from "@mui/material";
 import { CloudQueue, ScreenshotMonitor, Schedule } from "@mui/icons-material";
 
@@ -17,11 +16,10 @@ import { CloudQueue, ScreenshotMonitor, Schedule } from "@mui/icons-material";
 import {
   TimingInputs,
   type TimingInputsType,
-} from "../../../components/TimingInputs";
-import AddPhotosButton from "../../../components/AddPhotosButton";
-import Section from "../../../components/Section";
-import TextField from "../../../components/TextField";
-import JustificationFieldWrapper from "../../../components/JustificationWrapper";
+} from "../../../Components/TimingInputs";
+import AddPhotosButton from "../../../Components/AddPhotosButton";
+import Section from "../../../Components/Section";
+import JustificationFieldWrapper from "../../../Components/JustificationWrapper";
 
 // Context and utilities
 import { useReportContext } from "../../../context/contextFunctions";
@@ -79,7 +77,7 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
   const opsCenterAcknowledged = !!incidentInformation.opsCenterAcknowledged;
 
   // References for text field elements
-  const textFieldRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  //const textFieldRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   /**
    * Initialize timings state based on report type

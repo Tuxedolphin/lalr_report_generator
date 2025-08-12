@@ -1,16 +1,14 @@
 import { FC, useRef, useState } from 'react';
 import { Grid2 as Grid } from '@mui/material';
-import TextField from "../components/TextField";
+import TextField from "../Components/TextField";
 import ToggleButtonInputType from './ToggleButtonInputType';
 import { useReportContext } from '../context/contextFunctions';
 import { LRJustificationType } from '../types/types';
 import {
   gridFormatting,
-  inputSx,
-  fadeInAnimationSx,
 } from "../utils/constants";
 
-const { mainGridFormat, smallInput, largeInput } = gridFormatting;
+const { mainGridFormat, smallInput} = gridFormatting;
 
 interface JustificationFieldWrapperProps {
   id: 'sftl' | 'trafficCongestion' | 'inclementWeather' | 'acesRouteDeviation';
@@ -23,7 +21,6 @@ interface JustificationFieldWrapperProps {
 
 const JustificationFieldWrapper: FC<JustificationFieldWrapperProps> = ({
   id,
-  title,
   label,
   error,
   initialError = false, 
@@ -35,20 +32,21 @@ const JustificationFieldWrapper: FC<JustificationFieldWrapperProps> = ({
   const justification = report.generalInformation[id] as LRJustificationType;
   const isSelected = justification?.selected || false;
   const remarks = justification?.remarks || '';
-  const [hasInteracted, setHasInteracted] = useState(false);
+  const [hasInteracted] = useState(false);
+  //const [hasInteracted, setHasInteracted] = useState(false);
 
-  const handleToggleChange = (_event: any, newValue: boolean | null) => {
-    if (newValue === null) return;
+  // const handleToggleChange = (_event: any, newValue: boolean | null) => {
+  //   if (newValue === null) return;
 
-    setHasInteracted(true);
-    setErrors((prev: any) => ({ ...prev, [id]: '' }));
+  //   setHasInteracted(true);
+  //   setErrors((prev: any) => ({ ...prev, [id]: '' }));
 
-    updateReport.generalInformation(id, {
-      ...justification,
-      selected: newValue,
-      remarks: newValue ? remarks : ''
-    });
-  };
+  //   updateReport.generalInformation(id, {
+  //     ...justification,
+  //     selected: newValue,
+  //     remarks: newValue ? remarks : ''
+  //   });
+  // };
 
   const handleRemarksChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newRemarks = e.target.value;

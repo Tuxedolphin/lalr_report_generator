@@ -1,5 +1,5 @@
 import { FC, SyntheticEvent, useEffect, useRef, useState } from "react";
-import TimingAndPhotoInput from "../../../components/TimingAndPhotoInput";
+import TimingAndPhotoInput from "../../../Components/TimingAndPhotoInput";
 import { useReportContext } from "../../../context/contextFunctions";
 import {
   Accordion,
@@ -21,7 +21,7 @@ import {
   DirectionsCar,
   LocationOn,
 } from "@mui/icons-material";
-import DrawnOnPicture from "../../../classes/DrawnOnPicture";
+import DrawnOnPicture from "../../../Classes/DrawnOnPicture";
 import {
   checkForError,
   clearCanvas,
@@ -29,7 +29,7 @@ import {
   setCanvasStroke,
 } from "../../../utils/helperFunctions";
 import exampleImage from "../../../assets/example_image.png";
-import Section from "../../../components/Section";
+import Section from "../../../Components/Section";
 import { ErrorsType, SetErrorsType } from "../../../types/types";
 import {
   timingInputToPhoto,

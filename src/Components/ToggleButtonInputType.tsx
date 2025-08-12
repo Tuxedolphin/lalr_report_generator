@@ -12,6 +12,7 @@ import {
 
 import { useReportContext } from "../context/contextFunctions";
 import { getToggleButtonOnChangeFn } from "../utils/helperFunctions";
+// @ts-ignore TS6133
 import { ReportValueTypes, SetErrorsType, LRJustificationType } from "../types/types";
 
 interface ToggleButtonInputType {
