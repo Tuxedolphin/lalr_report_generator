@@ -8,7 +8,7 @@ const Layout: FC = () => {
   return (
     <NavBarHeightProvider>
       <NavBarTextProvider>
-        <NavBar/>
+        <NavBar />
         <main>
           <Outlet />
         </main>
