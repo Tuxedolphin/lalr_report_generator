@@ -38,7 +38,7 @@ const TimingAndPhotoInput: FC<TimingAndPhotoInputProps> = function ({
   return (
     <Section
       id={`section-${key}`}
-      title={`${camelCaseToTitleCase(key.replace("time", ""))} Timing & Screenshot`}
+      title={`${camelCaseToTitleCase(key.replace("time", ""))} Timing & Picture`}
       icon={icon ?? <PhotoCamera />}
       accentColor={theme.palette.primary.main}
       sx={sx}

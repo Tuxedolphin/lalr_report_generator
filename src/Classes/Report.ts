@@ -27,6 +27,7 @@ class Report {
     station: "",
     appliance: "",
     SC: "",
+    PO: "",
     turnoutFrom: "",
     typeOfCall: "",
     reportType: null,
@@ -36,8 +37,10 @@ class Report {
   protected _generalInformation: GeneralInformationType = {
     boundary: "",
     justification: "",
-    weather: "",
-    incidentOutcome: "",
+    sftl: {selected: false, remarks: ""},
+    trafficCongestion: {selected: false, remarks: ""},
+    inclementWeather: {selected: false, remarks: ""},
+    acesRouteDeviation: {selected: false, remarks: ""},
   };
 
   protected _acesInformation: AcesInformationType = {

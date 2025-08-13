@@ -125,12 +125,14 @@ const SecondFootageForm: FC<SecondFootageFormType> = function ({ handleNext }) {
     if (!reportType) return;
 
     if (report.generalInformation.justification === "") {
-      const justification = defaultJustification[reportType];
-      const value =
-        typeof justification === "function"
-          ? justification(report.generalInformation.boundary)
-          : justification;
-
+      let value = "";
+      if (reportType === "LA") {
+        const appliance = report.incidentInformation.appliance || "";
+        value = defaultJustification.LA(appliance);
+      } else if (reportType === "LR") {
+        const boundary = report.generalInformation.boundary || "";
+        value = defaultJustification.LR(boundary);
+      }
       updateReport.generalInformation("justification", value);
     }
   }, []);

@@ -106,6 +106,7 @@ const IncidentInfoForm: FC<IncidentInfoFormProps> = function ({ handleNext }) {
     station: "",
     appliance: "",
     SC: "",
+    PO: "",
     turnoutFrom: "",
     typeOfCall: "",
     location: "",
@@ -237,6 +238,15 @@ const GeneralInformationSection: FC<CommonProps> = function ({
             )}
           </FormControl>
         </Grid>
+        <Grid size={largeInput}>
+          <TextField
+            {...commonProps}
+            label="SC Rank and Name"
+            valueKey="SC"
+            errorText={errors.SC ?? ""}
+            sx={inputSx(theme.palette.primary.main)}
+          />
+        </Grid>
         <Grid size={smallInput}>
           <TextField
             {...commonProps}
@@ -249,9 +259,9 @@ const GeneralInformationSection: FC<CommonProps> = function ({
         <Grid size={largeInput}>
           <TextField
             {...commonProps}
-            label="SC Rank and Name"
-            valueKey="SC"
-            errorText={errors.SC ?? ""}
+            label="PO Rank and Name"
+            valueKey="PO"
+            errorText={errors.PO ?? ""}
             sx={inputSx(theme.palette.primary.main)}
           />
         </Grid>

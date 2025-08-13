@@ -281,6 +281,7 @@ export async function retrieveAll(): Promise<DisplayReportDataType[]> {
       incidentNumb: incidentInformation.incidentNumb,
       appliance: incidentInformation.appliance,
       sc: incidentInformation.SC,
+      po: incidentInformation.PO,
       reportType: incidentInformation.reportType,
       location: incidentInformation.location,
       opsCenterAcknowledged: incidentInformation.opsCenterAcknowledged,

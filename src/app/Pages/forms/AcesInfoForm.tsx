@@ -1,5 +1,5 @@
 // External dependencies
-import { FC, useState, useEffect, useRef } from "react";
+import { FC, useState, useEffect } from "react";
 import {
   FormControl,
   InputLabel,
@@ -19,7 +19,7 @@ import {
 } from "../../../components/TimingInputs";
 import AddPhotosButton from "../../../components/AddPhotosButton";
 import Section from "../../../components/Section";
-import TextField from "../../../components/TextField";
+import JustificationFieldWrapper from "../../../components/JustificationWrapper";
 
 // Context and utilities
 import { useReportContext } from "../../../context/contextFunctions";
@@ -77,7 +77,7 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
   const opsCenterAcknowledged = !!incidentInformation.opsCenterAcknowledged;
 
   // References for text field elements
-  const textFieldRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  //const textFieldRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   /**
    * Initialize timings state based on report type
@@ -105,9 +105,7 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
     isLR
       ? {
           acesScreenshot: "",
-          weather: "",
           boundary: "",
-          incidentOutcome: "",
           timeDispatched: "",
           ...(opsCenterAcknowledged ? {} : { timeEnRoute: "" }),
           timeArrived: "",
@@ -158,7 +156,7 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
     <Fade in={true} timeout={500}>
       <form id="acesInfoForm" onSubmit={handleSubmit}>
         {/* Only show screenshot section for LR reports or when ops center acknowledged */}
-        {(isLR || opsCenterAcknowledged) && (
+        {opsCenterAcknowledged && (
           <Section
             title="ACES Screenshot"
             icon={<ScreenshotMonitor />}
@@ -183,23 +181,17 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
           >
             <Grid {...mainGridFormat}>
               <Grid size={inputSize}>
-                <TextField
-                  valueKey="weather"
-                  errorText={errors.weather ?? ""}
-                  setErrors={setErrors}
-                  refHook={textFieldRefs}
-                />
-              </Grid>
-              <Grid size={inputSize}>
                 <FormControl
                   fullWidth
                   sx={inputSx(theme.palette.warning.main)}
                   error={!!errors.boundary}
                 >
-                  <InputLabel id="response-zone">Response Zone</InputLabel>
+                  <InputLabel id="response-zone">
+                    Response Zone From Station / FP
+                  </InputLabel>
                   <Select
                     labelId="response-zone"
-                    label="Response Zone"
+                    label="Response Zone From STN/FP"
                     fullWidth
                     value={generalInformation.boundary}
                     onChange={getSelectOnChangeFn(
@@ -219,16 +211,48 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
                   <FormHelperText>{errors.boundary ?? ""}</FormHelperText>
                 </FormControl>
               </Grid>
-              <Grid size={12}>
-                <TextField
-                  multiline
-                  valueKey="incidentOutcome"
-                  errorText={errors.incidentOutcome ?? ""}
-                  setErrors={setErrors}
-                  refHook={textFieldRefs}
-                />
-              </Grid>
             </Grid>
+          </Section>
+        )}
+
+        {isLR && (
+          <Section
+            title="Incident Justification"
+            icon={<ScreenshotMonitor />}
+            accentColor={theme.palette.secondary.main}
+            sx={fadeInAnimationSx("0.2s")}
+          >
+            <JustificationFieldWrapper
+              id="sftl"
+              label="SFTL" // Label is now part of the wrapper
+              error={errors.sftl !== ""}
+              initialError={false}
+              setErrors={setErrors}
+            />
+
+            <JustificationFieldWrapper
+              id="trafficCongestion"
+              label="Traffic Congestion" // Label is now part of the wrapper
+              error={errors.trafficCongestion !== ""}
+              initialError={false}
+              setErrors={setErrors}
+            />
+
+            <JustificationFieldWrapper
+              id="inclementWeather"
+              label="Inclement Weather" // Label is now part of the wrapper
+              error={errors.inclementWeather !== ""}
+              initialError={false}
+              setErrors={setErrors}
+            />
+
+            <JustificationFieldWrapper
+              id="acesRouteDeviation"
+              label="ACES Route Deviation" // Label is now part of the wrapper
+              error={errors.acesRouteDeviation !== ""}
+              initialError={false}
+              setErrors={setErrors}
+            />
           </Section>
         )}
 
@@ -236,7 +260,7 @@ export const AcesForm: FC<AcesFormProps> = function ({ handleNext }) {
         <Section
           title="Timings From ACES"
           icon={<Schedule />}
-          accentColor={theme.palette.secondary.main}
+          accentColor={theme.palette.primary.main}
           sx={fadeInAnimationSx("0.2s")}
         >
           <TimingInputs

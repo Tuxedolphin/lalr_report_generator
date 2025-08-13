@@ -24,6 +24,9 @@ interface TextFieldProps {
   sx?: SxProps<Theme>;
   accentColor?: string;
   multiline?: boolean;
+  disabled?: boolean;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const TextField: FC<TextFieldProps> = function ({
@@ -35,6 +38,9 @@ const TextField: FC<TextFieldProps> = function ({
   sx,
   accentColor,
   multiline,
+  disabled,
+  value,
+  onChange,
 }) {
   if (typeof sx === "function" || Array.isArray(sx))
     throw new Error("sx prop must be an object");
@@ -44,11 +50,15 @@ const TextField: FC<TextFieldProps> = function ({
 
   label = label ?? camelCaseToTitleCase(key);
 
-  const onChange = getTextFieldOnChangeFn(updateReport, setErrors, key, ref);
+  const onChangeHandler =
+    onChange ?? getTextFieldOnChangeFn(updateReport, setErrors, key, ref);
   const onBlur = getTextFieldOnBlurFn(setErrors, report, key);
 
   const infoKey = getReportKey(key);
   if (!infoKey) throw new Error(`Invalid key: ${key}`);
+
+  const fieldValue =
+    value ?? report[infoKey][key as keyof Report[typeof infoKey]];
 
   // Default improved styling that can be overridden with passed sx prop
   const defaultSx = {
@@ -63,11 +73,12 @@ const TextField: FC<TextFieldProps> = function ({
       label={label}
       variant="outlined"
       fullWidth
-      value={report[infoKey][key as keyof Report[typeof infoKey]]}
+      value={fieldValue} // ⬅️ Use the final value (from override or context)
+      onChange={onChangeHandler}
       sx={defaultSx}
-      onChange={onChange}
       onBlur={onBlur}
       error={!!errorText}
+      disabled={disabled}
       helperText={errorText}
       inputRef={(el: HTMLInputElement | null) => (ref.current[key] = el)}
       multiline={multiline}

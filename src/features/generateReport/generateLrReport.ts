@@ -90,7 +90,7 @@ const generateLrReport = async function (pptx: PptxGenJS, report: Report) {
     cameraTimeDispatched
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  // @ts-ignore TS6133
   if (lowerTableData.length !== lowerTableHeaders.LR.length)
     // For safety
     throw new Error("First page's lower data and headers do not match");
@@ -204,8 +204,6 @@ export const getLowerLRTableData = function (
       acesResponseTime.toString(),
       acknowledged ? "" : cameraTotalTime.toString()
     ),
-    generalInformation.incidentOutcome,
-    generalInformation.weather,
     generalInformation.justification ||
       defaultJustification.LRpptLong(
         generalInformation.boundary || "0",

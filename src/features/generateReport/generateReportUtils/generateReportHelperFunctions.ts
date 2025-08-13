@@ -1,18 +1,19 @@
 import dayjs from "dayjs";
+import Time from "../../../classes/Time.js";
 import PptxGenJS from "pptxgenjs";
 import {
   colors,
   enDash,
-  shortFormToLongForm,
-  monthNames,
+  //shortFormToLongForm,
+  //monthNames,
   secondPageTableHeight,
   defaultBorder,
-} from "./generateReportConstants";
+} from "./newConstants";
 import { TableCell, TableRow } from "./generateReportTypes";
 import DrawnOnPicture from "../../../classes/DrawnOnPicture";
 import Background from "../assets/ppt_background.png";
-import Header from "../assets/ppt_header.png";
-import { checkIncNumber } from "../../../utils/helperFunctions";
+//import Header from "../assets/ppt_header.png";
+//import { checkIncNumber } from "../../../utils/helperFunctions";
 import { getLowerLATableData } from "../generateLaReport";
 import { getLowerLRTableData } from "../generateLrReport";
 
@@ -62,71 +63,16 @@ const leftTableHeader: TableRow = ["S/N", "INCIDENT NO.", "APPL."].map(
 // =========================================
 
 export const formatPage = function (
-  pptx: PptxGenJS,
-  reportType: "LA" | "LR",
-  incNumber: string,
-  station: string,
+  pptx: PptxGenJS, // @ts-ignore TS6133
+  reportType: "LA" | "LR", // @ts-ignore TS6133
+  incNumber: string, // @ts-ignore TS6133
+  station: string, // @ts-ignore TS6133
   page: "first" | "second"
 ): PptxGenJS.Slide {
-  const day = checkIncNumber(incNumber) ?? dayjs();
-
   const slide = pptx.addSlide();
 
   // Adds the background image
   slide.background = { path: Background };
-
-  // Adds the header image along with the texts
-  slide.addImage({ path: Header, h: 1.24, w: 12.95, x: 0.25, y: 0.38 });
-
-  slide
-    .addText("OPS", {
-      h: 0.84,
-      w: 1.48,
-      x: 2.23,
-      y: 0.45,
-      fontSize: 44,
-      bold: true,
-      color: white,
-      shadow: {
-        type: "outer",
-        angle: 45,
-        blur: 3,
-        opacity: 0.57,
-        offset: 3,
-        color: black.replace("#", ""),
-      },
-    })
-    .addText(`FRS ${shortFormToLongForm[reportType]}`, {
-      h: 0.84,
-      w: 8.3,
-      x: 4.13,
-      y: 0.51,
-      align: "center",
-      fontSize: 44,
-      bold: true,
-    })
-    .addText(
-      `${monthNames[day.month()]} ${day.year().toString()} (STATION ${station})`,
-      page === "first"
-        ? {
-            h: 0.4,
-            w: 4.92,
-            x: 4.2,
-            y: 1.59,
-            align: "center",
-            fontSize: 24,
-            bold: true,
-          }
-        : {
-            h: 0.4,
-            w: 4.92,
-            x: 4.2,
-            y: 1.56,
-            align: "center",
-            fontSize: 24,
-            bold: true,
-          }
-    );
 
   return slide;
 };
@@ -297,4 +243,9 @@ export const formatAcesCameraTiming = function (
 
 export const formatIncidentNumber = function (incidentNumber: string) {
   return incidentNumber.replace("/", "");
+};
+
+export const formatTimetoMinSec = function (time: Time): string {
+  const minPart = time.minute > 0 ? `${time.minute} Min ` : "";
+  return `${minPart}${time.second} Sec`;
 };
