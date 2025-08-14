@@ -127,8 +127,7 @@ const SecondFootageForm: FC<SecondFootageFormType> = function ({ handleNext }) {
     if (report.generalInformation.justification === "") {
       let value = "";
       if (reportType === "LA") {
-        const appliance = report.incidentInformation.appliance || "";
-        value = defaultJustification.LA(appliance);
+        value = defaultJustification.LA;
       } else if (reportType === "LR") {
         const boundary = report.generalInformation.boundary || "";
         value = defaultJustification.LR(boundary);

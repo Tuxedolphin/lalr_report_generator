@@ -2,7 +2,7 @@ import Report from "../../classes/Report.js";
 import Time from "../../classes/Time";
 import PptxGenJS from "pptxgenjs";
 import { formatPage, dayjsToString } from "./generateReportUtils/generateReportHelperFunctions";
-import { TableRow } from "./generateReportUtils/generateReportTypes";
+import { TableRow} from "./generateReportUtils/generateReportTypes";
 
 import {
   colors,
@@ -223,7 +223,7 @@ const generateLrReport = function (pptx: PptxGenJS, report: Report) {
     ],
     generalTableOptions
   );
-  second.addTable([tableHeaders.remarks], remarksTableOptions);
+  second.addTable([tableHeaders.remarks("Some details")], remarksTableOptions);
 
   arrowPositions.forEach((xpos) => {
     second.addImage({

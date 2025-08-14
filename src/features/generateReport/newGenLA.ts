@@ -90,7 +90,7 @@ const generateLaReport = async function (pptx: PptxGenJS, report: Report) {
       [
         tableHeaders.remarks(
           `${incidentInformation.appliance} responded within 1 Min.`
-        ),
+        )
       ],
       remarksTableOptions
     );

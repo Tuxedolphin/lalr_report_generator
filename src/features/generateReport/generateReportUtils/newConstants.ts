@@ -1,4 +1,6 @@
 //import Time from "../../../classes/Time";
+import { TableRow} from "./generateReportTypes";
+
 
 export const colors = {
     red: "#FF0000",
@@ -195,18 +197,24 @@ export const colors = {
       options: {fill: { color: colors.grey }, fontSize: 14 }
     })),
 
-    remarks: (details: string) => [
-      "Remarks",
-      details
-    ].map((detail, idx) => ({
-      text: `   ${detail}`,
-      options: {
-        fill: { color: colors.white },
-        fontSize: 14,
-        align: idx === 1 ? "left" : "center"
-      }
-    })),
-
+    remarks: (details: string): TableRow => [
+      {
+        text: "Remarks",
+        options: {
+          fill: { color: colors.white },
+          fontSize: 14,
+          align: "center",
+        },
+      },
+      {
+        text: details,
+        options: {
+          fill: { color: colors.white },
+          fontSize: 14,
+          align: "left",
+        },
+      },
+    ],
   } as const;
 
   
