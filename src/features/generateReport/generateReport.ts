@@ -1,7 +1,7 @@
 import Report from "../../classes/Report";
 import PptxGenJS from "pptxgenjs";
-import generateLaReport from "./generateLaReport";
-import generateLrReport from "./generateLrReport";
+import generateLaReport from "./newGenLA";
+import generateLrReport from "./newGenLR";
 import { formatIncidentNumber } from "./generateReportUtils/generateReportHelperFunctions";
 
 const generateReportPpt = async function (report: Report): Promise<number> {
@@ -15,10 +15,10 @@ const generateReportPpt = async function (report: Report): Promise<number> {
 
   pptx.layout = "Widescreen";
 
-  const reportPromise =
+  const reportPromise: Promise<void> =
     incidentInformation.reportType === "LA"
-      ? generateLaReport(pptx, report)
-      : generateLrReport(pptx, report);
+      ? Promise.resolve(generateLaReport(pptx, report))
+      : Promise.resolve(generateLrReport(pptx, report));
 
   return reportPromise
     .catch((e: unknown) => {
