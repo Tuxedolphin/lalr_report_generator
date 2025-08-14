@@ -64,6 +64,7 @@ const generateLaReport = async function (pptx: PptxGenJS, report: Report) {
   }
 
   let first = pptx.addSlide();
+  first.background = { path: "./assets/ppt_background.png" }; 
 
   let placeholderGen = [
     incidentInformation.incidentNumb,
