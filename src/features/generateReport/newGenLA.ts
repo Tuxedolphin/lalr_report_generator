@@ -5,6 +5,7 @@ import {
   dayjsToString,
   formatTimetoMinSec,
 } from "./generateReportUtils/generateReportHelperFunctions";
+import Background from "./assets/ppt_background.png";
 // import { TableRow} from "./utils/types.js";
 
 import {
@@ -64,7 +65,7 @@ const generateLaReport = async function (pptx: PptxGenJS, report: Report) {
   }
 
   let first = pptx.addSlide();
-  first.background = { path: "./assets/ppt_background.png" }; 
+  first.background = { path: Background }; 
 
   let placeholderGen = [
     incidentInformation.incidentNumb,
