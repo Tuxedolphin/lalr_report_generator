@@ -51,16 +51,25 @@ const generateLaReport = async function (pptx: PptxGenJS, report: Report) {
     acesInformation.timeResponded
   );
 
-  const actualActivationTime = Time.calculateTime(
-    cameraInformation.timeDispatched,
-    cameraInformation.timeMoveOff
-  );
+  let actualActivationTime;
+  if (!incidentInformation.opsCenterAcknowledged){
+    actualActivationTime = Time.calculateTime(
+      cameraInformation.timeDispatched,
+      cameraInformation.timeMoveOff
+    );
+    actualActivationTime = formatTimetoMinSec(actualActivationTime);
+  }
+  else {
+    actualActivationTime = "Ops Ctr Ack < 1 Min";
+  }
 
   let first = pptx.addSlide();
+  first.background = { path: "./assets/ppt_background.png" }; 
+
   let placeholderGen = [
     incidentInformation.incidentNumb,
     formatTimetoMinSec(acesActivationTime),
-    formatTimetoMinSec(actualActivationTime),
+    actualActivationTime,
   ].map((header, idx) => ({
     text: header,
     options: {
@@ -177,7 +186,7 @@ const generateLaReport = async function (pptx: PptxGenJS, report: Report) {
         })
     );
   } else {
-    // first.addTable([tableHeaders.remarks(`Ops Centre Acknowledge Respond < 1 Min`)], remarksTableOptions);
+    first.addTable([tableHeaders.remarks(`Ops Centre Acknowledge Respond < 1 Min`)], remarksTableOptions);
 
     const screenshotData = acesInformation.acesScreenshot;
     const base64Data = screenshotData ? await screenshotData.getBase64() : "";
