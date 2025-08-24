@@ -1,6 +1,7 @@
 import Report from "../../classes/Report.js";
 import Time from "../../classes/Time";
 import PptxGenJS from "pptxgenjs";
+import Arrow from "./assets/arrow.png";
 import { formatPage, dayjsToString } from "./generateReportUtils/generateReportHelperFunctions";
 import { TableRow} from "./generateReportUtils/generateReportTypes";
 
@@ -129,7 +130,7 @@ const generateLrReport = function (pptx: PptxGenJS, report: Report) {
   let bigLRImage = [""].map((header) => ({
     text: header,
     options: { colspan: 6, fill: { color: colors.white } },
-  }));
+  }as { text: string; options?: Record<string, unknown> }));
 
   // Logic to add table for first page of LR
   first.addTable(
@@ -183,7 +184,7 @@ const generateLrReport = function (pptx: PptxGenJS, report: Report) {
     ].map((header) => ({
       text: header,
       options: { fill: { color: colors.white }, fontSize: 9 },
-    }))
+    }as { text: string; options?: Record<string, unknown> }))
   );
   //let remarksLRGenerated = formatRemarks(activationTime,);
 
@@ -193,7 +194,7 @@ const generateLrReport = function (pptx: PptxGenJS, report: Report) {
       index === array.length - 1
         ? { fill: { color: colors.white }, colspan: 2, fontSize: 9 }
         : { fill: { color: colors.white }, fontSize: 9 },
-  }));
+  }as { text: string; options?: Record<string, unknown> }));
 
   first.addTable(
     [tableHeaders.LRthird, ...lowerTableRows, placeholderLR3_5],
@@ -208,11 +209,11 @@ const generateLrReport = function (pptx: PptxGenJS, report: Report) {
   let placeholderGen = ["", "", ""].map((header) => ({
     text: header,
     options: { fill: { color: colors.white }, fontSize: 14 },
-  }));
+  }as { text: string; options?: Record<string, unknown> }));
   let genImage = [""].map((header) => ({
     text: header,
     options: { fill: { color: colors.white }, colspan: 3 },
-  }));
+  }as { text: string; options?: Record<string, unknown> }));
 
   second.addTable(
     [
@@ -227,7 +228,7 @@ const generateLrReport = function (pptx: PptxGenJS, report: Report) {
 
   arrowPositions.forEach((xpos) => {
     second.addImage({
-      path: "./assets/arrow.png",
+      path: Arrow,
       x: xpos,
       y: 2.93,
       w: 0.29,
@@ -237,7 +238,7 @@ const generateLrReport = function (pptx: PptxGenJS, report: Report) {
 
   imagePositions.forEach((xpos) => {
     second.addImage({
-      path: "./assets/arrow.png",
+      path: Arrow,
       x: xpos,
       y: 2.12,
       w: 2.16,
