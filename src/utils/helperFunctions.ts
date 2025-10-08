@@ -13,6 +13,8 @@ import {
   AcesInformationType,
   CameraInformationType,
   ReportValueTypes,
+  JustificationInput,
+  LRJustificationType
 } from "../types/types";
 import { SelectChangeEvent } from "@mui/material";
 
@@ -578,4 +580,74 @@ export const OLDgetToggleButtonOnChangeFn = function (
       ) => void
     )(key, newValue, true);
   };
+};
+
+// export const generateDynamicJustifications = (generalInfo: GeneralInformationType): JustificationInput[] => {
+//   const justifications: JustificationInput[] = [];
+  
+//   // Helper function to create justifications for a given type
+//   const createJustificationsForType = (type: string, quantity: number) => {
+//     for (let i = 0; i < quantity; i++) {
+//       justifications.push({
+//         id: `${type.toLowerCase().replace(/\s+/g, '-')}-${i}`,
+//         reason: type,
+//         index: i,
+//         timings: [null, null], // 2 timing inputs per justification
+//         photos: [undefined, undefined], // 2 photo inputs per justification
+//       });
+//     }
+//   };
+
+//   // Generate justifications based on quantities in generalInfo
+//   if (generalInfo.sftl?.quantity > 0) {
+//     createJustificationsForType("SFTL", generalInfo.sftl.quantity);
+//   }
+  
+//   if (generalInfo.trafficCongestion?.quantity > 0) {
+//     createJustificationsForType("Traffic Congestion", generalInfo.trafficCongestion.quantity);
+//   }
+  
+//   if (generalInfo.inclementWeather?.quantity > 0) {
+//     createJustificationsForType("Inclement Weather", generalInfo.inclementWeather.quantity);
+//   }
+  
+//   if (generalInfo.acesRouteDeviation?.quantity > 0) {
+//     createJustificationsForType("ACES Route Deviation", generalInfo.acesRouteDeviation.quantity);
+//   }
+
+//   return justifications;
+// };
+
+export const generateDynamicJustifications = (
+  generalInfo: GeneralInformationType,
+  existingJustifications: JustificationInput[] = []
+): JustificationInput[] => {
+  const justifications: JustificationInput[] = [];
+
+  // Helper to generate justifications for a type, reusing existing ones if available
+  const createJustificationsForType = (type: string, quantity: number) => {
+    for (let i = 0; i < quantity; i++) {
+      // Try to find an existing justification for this type and index
+      const existing = existingJustifications.find(
+        j => j.reason === type && j.index === i
+      );
+
+      justifications.push({
+        id: existing?.id ?? `${type.toLowerCase().replace(/\s+/g, '-')}-${i}`,
+        reason: type,
+        index: i,
+        timings: existing?.timings ?? [null, null],
+        photos: existing?.photos ?? [undefined, undefined],
+        remarks: existing?.remarks ?? "",
+      });
+    }
+  };
+
+  // Generate for each type according to current quantity
+  if (generalInfo.sftl?.quantity > 0) createJustificationsForType("SFTL", generalInfo.sftl.quantity);
+  if (generalInfo.trafficCongestion?.quantity > 0) createJustificationsForType("Traffic Congestion", generalInfo.trafficCongestion.quantity);
+  if (generalInfo.inclementWeather?.quantity > 0) createJustificationsForType("Inclement Weather", generalInfo.inclementWeather.quantity);
+  if (generalInfo.acesRouteDeviation?.quantity > 0) createJustificationsForType("ACES Route Deviation", generalInfo.acesRouteDeviation.quantity);
+
+  return justifications;
 };

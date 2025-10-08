@@ -41,6 +41,10 @@ interface DBCameraInformationType {
   allInPhoto: DBPhoto | undefined;
   moveOffPhoto: DBPhoto | undefined;
   arrivedPhoto: DBPhoto | undefined;
+  justifications?: {
+    photos?: DBPhoto[];
+    [key: string]: any; // keep all the other fields untouched
+  }[];
 }
 
 export interface ReportDBType {
@@ -103,6 +107,17 @@ function formatCameraInformationForDB(
     allInPhoto: formatImage(info.allInPhoto),
     moveOffPhoto: formatImage(info.moveOffPhoto),
     arrivedPhoto: formatImage(info.arrivedPhoto),
+    justifications: info.justifications
+      ? info.justifications.map((j) => ({
+          id: j.id,
+          reason: j.reason,
+          index: j.index,
+          timings: j.timings.map((t) => formatDayjs(t)), // store Dayjs as string
+          photos: j.photos
+            .map((p) => (p ? new DBPhoto(p) : undefined))
+            .filter(Boolean) as DBPhoto[],
+        }))
+      : undefined,
   };
 }
 
@@ -165,6 +180,18 @@ function formatCameraInformationForUse(
     allInPhoto: reconstructDBPhoto(info.allInPhoto)?.getCroppedPicture(),
     moveOffPhoto: reconstructDBPhoto(info.moveOffPhoto)?.getCroppedPicture(),
     arrivedPhoto: reconstructDBPhoto(info.arrivedPhoto)?.getCroppedPicture(),
+    justifications: info.justifications
+      ? info.justifications.map((j, idx) => ({
+          id: j.id ?? `just-${idx}`,        // fallback id
+          reason: j.reason ?? "",           // fallback reason
+          index: j.index ?? idx,            // fallback index
+          timings: (j.timings ?? []).map(reconstructDayjs), // convert string → Dayjs
+          photos: (j.photos ?? [])
+            .map((p: DBPhoto) => reconstructDBPhoto(p)?.getCroppedPicture())
+            .filter(Boolean),
+          remarks: j.remarks ?? "",         // fallback remarks
+        }))
+      : undefined,
   };
 }
 

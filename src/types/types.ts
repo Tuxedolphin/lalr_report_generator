@@ -49,10 +49,21 @@ export interface IncidentInformationType {
   opsCenterAcknowledged: boolean | null;
 }
 
+//LRJustificationType is for creation of form
 export type LRJustificationType = {
-  selected: boolean;
+  quantity: number;
   remarks: string;
 };
+
+//Justification input is for display of justifications in report
+export interface JustificationInput {
+  id: string;             // unique key e.g. "traffic-1"
+  reason: string;         
+  index: number;          
+  timings: (Dayjs | null)[]  
+  photos: (CroppedPicture | undefined)[]; // array of photos (e.g. 2 inputs)
+  remarks: string;        // additional remarks
+}
 
 export interface GeneralInformationType {
   boundary: string;
@@ -85,16 +96,21 @@ export interface CameraInformationType {
   allInPhoto: CroppedPicture | undefined;
   moveOffPhoto: CroppedPicture | undefined;
   arrivedPhoto: CroppedPicture | undefined;
+  justifications?: JustificationInput[];
 }
 
 // ====== DERIVED TYPES ======
+
+type NestedCameraKeys = 
+  | `justifications.${number}.${keyof JustificationInput}`
+  | keyof CameraInformationType;
 
 // Value types used across report models
 export type ReportValueKeysType =
   | keyof IncidentInformationType
   | keyof GeneralInformationType
   | keyof AcesInformationType
-  | keyof CameraInformationType
+  | NestedCameraKeys
   | "id";
 
 export type ReportValueTypes =
@@ -159,7 +175,8 @@ export interface UpdateReportType {
 
 // ====== ERROR TYPES ======
 
-export type ErrorsType = Partial<Record<ReportValueKeysType, string>>;
+//export type ErrorsType = Partial<Record<ReportValueKeysType, string>>;
+export type ErrorsType = Partial<Record<ReportValueKeysType | string, string>>;
 export type SetErrorsType = React.Dispatch<React.SetStateAction<ErrorsType>>;
 
 export type ReportGenerationStatusType =

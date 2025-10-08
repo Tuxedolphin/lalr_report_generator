@@ -12,17 +12,15 @@ import {
 
 import { useReportContext } from "../context/contextFunctions";
 import { getToggleButtonOnChangeFn } from "../utils/helperFunctions";
-// @ts-ignore TS6133
-import { ReportValueTypes, SetErrorsType, LRJustificationType } from "../types/types";
+import { ReportValueTypes, SetErrorsType } from "../types/types";
 
 interface ToggleButtonInputType {
   id: "opsCenterAcknowledged" | "reportType" | "hasBufferTime" | "sftl" | "trafficCongestion" | "inclementWeather" | "acesRouteDeviation";
-  title?: string;
+  title: string;
   buttonTextsValues: Record<string, ReportValueTypes>;
   error: boolean;
   setErrors: SetErrorsType;
   accentColor?: string;
-  onChange?: (event: React.MouseEvent<HTMLElement>, newValue: boolean | null) => void; 
 }
 
 const ToggleButtonInputType: FC<ToggleButtonInputType> = function ({
@@ -32,7 +30,6 @@ const ToggleButtonInputType: FC<ToggleButtonInputType> = function ({
   error,
   setErrors,
   accentColor,
-  onChange,
 }) {
   const [report, updateReport] = useReportContext();
   const theme = useTheme();
@@ -45,25 +42,10 @@ const ToggleButtonInputType: FC<ToggleButtonInputType> = function ({
   );
   const color = accentColor ?? theme.palette.primary.main;
 
-  // Explicitly type the possible field groups
-  const isIncidentInfoField = ["reportType", "opsCenterAcknowledged"].includes(id);
-  const isCameraInfoField = ["hasBufferTime"].includes(id);
-  const isJustificationField = ["sftl", "trafficCongestion", "inclementWeather", "acesRouteDeviation"].includes(id);
-
-  const getCurrentValue = (): boolean | string | null => {
-    if (isIncidentInfoField) {
-      return report.incidentInformation[id as "reportType" | "opsCenterAcknowledged"];
-    } else if (isCameraInfoField) {
-      return report.cameraInformation[id as "hasBufferTime"];
-    } else if (isJustificationField) {
-      const justification = report.generalInformation[id as keyof typeof report.generalInformation];
-      // Type guard to check if it's LRJustificationType
-      return typeof justification === 'object' && 'selected' in justification 
-        ? justification.selected 
-        : null;
-    }
-    return null;
-  };
+  const key =
+    id in report.incidentInformation
+      ? "incidentInformation"
+      : "cameraInformation";
 
   const buttons = Object.entries(buttonTextsValues).map(([text, value]) => {
     if (value === null) {
@@ -72,8 +54,14 @@ const ToggleButtonInputType: FC<ToggleButtonInputType> = function ({
       );
     }
 
-    const currentValue = getCurrentValue();
-    const isSelected = value === currentValue;
+    const isSelected =
+      key === "incidentInformation"
+        ? value ===
+          report.incidentInformation[
+            id as keyof typeof report.incidentInformation
+          ]
+        : value ===
+          report.cameraInformation[id as keyof typeof report.cameraInformation];
 
     return (
       <ToggleButton
@@ -147,13 +135,18 @@ const ToggleButtonInputType: FC<ToggleButtonInputType> = function ({
         }}
       >
         <ToggleButtonGroup
-          value={getCurrentValue()}
+          value={
+            key === "incidentInformation"
+              ? report.incidentInformation[
+                  id as keyof typeof report.incidentInformation
+                ]
+              : report.cameraInformation[
+                  id as keyof typeof report.cameraInformation
+                ] // Have to be explicit here since TypeScript doesn't know the type of the key
+          }
           exclusive
           aria-labelledby={id}
-          onChange={(event, newValue) => {
-            handleChange(event, newValue);          
-            if (onChange) onChange(event, newValue); 
-          }}
+          onChange={handleChange}
           sx={{
             mt: 0.5,
             boxShadow: error

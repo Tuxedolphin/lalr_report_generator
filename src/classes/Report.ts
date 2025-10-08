@@ -4,6 +4,7 @@ import {
   type AcesInformationType,
   type CameraInformationType,
   ReportKeys,
+  JustificationInput
 } from "../types/types";
 import {
   addReport,
@@ -37,10 +38,10 @@ class Report {
   protected _generalInformation: GeneralInformationType = {
     boundary: "",
     justification: "",
-    sftl: {selected: false, remarks: ""},
-    trafficCongestion: {selected: false, remarks: ""},
-    inclementWeather: {selected: false, remarks: ""},
-    acesRouteDeviation: {selected: false, remarks: ""},
+    sftl: {quantity: 0, remarks: ""},
+    trafficCongestion: {quantity: 0, remarks: ""},
+    inclementWeather: {quantity: 0, remarks: ""},
+    acesRouteDeviation: {quantity: 0, remarks: ""},
   };
 
   protected _acesInformation: AcesInformationType = {
@@ -65,6 +66,7 @@ class Report {
     allInPhoto: undefined,
     moveOffPhoto: undefined,
     arrivedPhoto: undefined,
+      justifications: [],
   };
 
   readonly keyToInfoKey = {
@@ -190,13 +192,24 @@ class Report {
    * @param key - The field to update
    * @param value - The new value for the field
    */
+  // updateCameraInformation(
+  //   key: keyof CameraInformationType,
+  //   value: CameraInformationType[typeof key]
+  // ) {
+  //   this._cameraInformation = {
+  //     ...this.cameraInformation,
+  //     [key]: value,
+  //   };
+  // }
   updateCameraInformation(
-    key: keyof CameraInformationType,
-    value: CameraInformationType[typeof key]
+  key: keyof CameraInformationType,
+  value: CameraInformationType[typeof key]
   ) {
     this._cameraInformation = {
       ...this.cameraInformation,
-      [key]: value,
+      [key]: Array.isArray(value)
+        ? [...(value as JustificationInput[])] // ✅ deep copy array
+        : value,
     };
   }
 
@@ -253,13 +266,30 @@ class Report {
    *
    * @param report - The source report to copy data from
    */
+  // updateAll(report: Report) {
+  //   this.id = report.id;
+  //   this._cameraInformation = report.cameraInformation;
+  //   this._acesInformation = report.acesInformation;
+  //   this._generalInformation = report.generalInformation;
+  //   this._incidentInformation = report.incidentInformation;
+  // }
   updateAll(report: Report) {
-    this.id = report.id;
-    this._cameraInformation = report.cameraInformation;
-    this._acesInformation = report.acesInformation;
-    this._generalInformation = report.generalInformation;
-    this._incidentInformation = report.incidentInformation;
-  }
+  this.id = report.id;
+  this._cameraInformation = {
+    ...report.cameraInformation,
+    justifications: report.cameraInformation.justifications
+      ? report.cameraInformation.justifications.map(j => ({
+          ...j,
+          timings: [...j.timings],
+          photos: [...j.photos],
+        }))
+      : [],
+  };
+  this._acesInformation = { ...report.acesInformation };
+  this._generalInformation = { ...report.generalInformation };
+  this._incidentInformation = { ...report.incidentInformation };
+}
+
 
   // =========================================
   //            Database Methods
@@ -327,15 +357,33 @@ class Report {
    *
    * @returns A new Report instance with the same data
    */
+  // copy() {
+  //   return new Report(
+  //     this.id,
+  //     this.incidentInformation,
+  //     this.generalInformation,
+  //     this.acesInformation,
+  //     this.cameraInformation
+  //   );
+  // }
   copy() {
-    return new Report(
-      this.id,
-      this.incidentInformation,
-      this.generalInformation,
-      this.acesInformation,
-      this.cameraInformation
-    );
-  }
+  return new Report(
+    this.id,
+    { ...this.incidentInformation },
+    { ...this.generalInformation },
+    { ...this.acesInformation },
+    {
+      ...this.cameraInformation,
+      justifications: this.cameraInformation.justifications
+        ? this.cameraInformation.justifications.map(j => ({
+            ...j,
+            timings: [...j.timings],
+            photos: [...j.photos],
+          }))
+        : [],
+    }
+  );
+}
 }
 
 export default Report;

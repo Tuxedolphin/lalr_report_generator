@@ -73,7 +73,7 @@ export const colors = {
     generalColW:[3.33, 3.33, 3.33],
     generalColH:[0.39, 0.32, 0.32, 3.97],
   
-    remarksColW:[2.16, 7.84],
+    remarksColW:[2.16, 7.83],
     remarksColH:[1.5],
   };
   
