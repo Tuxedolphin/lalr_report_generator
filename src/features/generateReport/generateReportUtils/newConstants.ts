@@ -116,8 +116,9 @@ export const colors = {
     LA: (appliance:string)=>{
       return `${appliance} responded within 1 Min.`;
     },
-    LR: (boundary: string) => {
-      return `MVC < ${boundary} min (Justified by MVC Footage)`;
+    LR: (appliance:string, station:string, boundary: string) => {
+      // return `MVC < ${boundary} min (Justified by MVC Footage)`;
+      return `${appliance} responded from ${station}, within ${boundary} minutes.`;
     },
     LRpptShort: (
       boundary: string,
