@@ -73,7 +73,7 @@ export const colors = {
     generalColW:[3.33, 3.33, 3.33],
     generalColH:[0.39, 0.32, 0.32, 3.97],
   
-    remarksColW:[2.16, 7.84],
+    remarksColW:[2.16, 7.83],
     remarksColH:[1.5],
   };
   
@@ -116,8 +116,9 @@ export const colors = {
     LA: (appliance:string)=>{
       return `${appliance} responded within 1 Min.`;
     },
-    LR: (boundary: string) => {
-      return `MVC < ${boundary} min (Justified by MVC Footage)`;
+    LR: (appliance:string, station:string, boundary: string) => {
+      // return `MVC < ${boundary} min (Justified by MVC Footage)`;
+      return `${appliance} responded from ${station}, within ${boundary} minutes.`;
     },
     LRpptShort: (
       boundary: string,

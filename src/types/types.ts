@@ -15,155 +15,174 @@ export type ReportType = "LA" | "LR" | null;
 
 // Report structure types
 export type ReportKeys =
-  | "incidentInformation"
-  | "generalInformation"
-  | "acesInformation"
-  | "cameraInformation";
+    | "incidentInformation"
+    | "generalInformation"
+    | "acesInformation"
+    | "cameraInformation";
 
 // Photo related types
 export type PhotosType =
-  | "acesScreenshot"
-  | "dispatchPhoto"
-  | "allInPhoto"
-  | "moveOffPhoto"
-  | "arrivedPhoto";
+    | "acesScreenshot"
+    | "dispatchPhoto"
+    | "allInPhoto"
+    | "moveOffPhoto"
+    | "arrivedPhoto"
+    | "mapPhoto";
 
 // ====== UI COMPONENTS ======
 export interface ChildrenOnly {
-  children: ReactNode;
+    children: ReactNode;
 }
 
 // ====== DATA MODELS ======
 
 // Core information models
 export interface IncidentInformationType {
-  incidentNumb: string;
-  location: string;
-  station: string;
-  appliance: string;
-  SC: string;
-  PO: string;
-  turnoutFrom: string;
-  typeOfCall: string;
-  reportType: ReportType;
-  opsCenterAcknowledged: boolean | null;
+    incidentNumb: string;
+    location: string;
+    station: string;
+    appliance: string;
+    SC: string;
+    PO: string;
+    turnoutFrom: string;
+    typeOfCall: string;
+    reportType: ReportType;
+    opsCenterAcknowledged: boolean | null;
 }
 
+//LRJustificationType is for creation of form
 export type LRJustificationType = {
-  selected: boolean;
-  remarks: string;
+    quantity: number;
+    remarks: string;
 };
 
+//Justification input is for display of justifications in report
+export interface JustificationInput {
+    id: string;             // unique key e.g. "traffic-1"
+    reason: string;
+    index: number;
+    timings: (Dayjs | null)[]
+    photos: (CroppedPicture | undefined)[]; // array of photos (e.g. 2 inputs)
+    remarks: string;        // additional remarks
+}
+
 export interface GeneralInformationType {
-  boundary: string;
-  justification: string;
-  sftl: LRJustificationType;
-  trafficCongestion: LRJustificationType;
-  inclementWeather: LRJustificationType;
-  acesRouteDeviation: LRJustificationType;
+    boundary: string;
+    justification: string;
+    sftl: LRJustificationType;
+    trafficCongestion: LRJustificationType;
+    inclementWeather: LRJustificationType;
+    acesRouteDeviation: LRJustificationType;
 }
 
 export interface AcesInformationType {
-  timeDispatched: Dayjs | null;
-  timeResponded: Dayjs | null;
-  timeEnRoute: Dayjs | null;
-  timeArrived: Dayjs | null;
-  acesScreenshot: CroppedPicture | undefined;
-  drawnScreenshot: DrawnOnPicture | undefined;
+    timeDispatched: Dayjs | null;
+    timeResponded: Dayjs | null;
+    timeEnRoute: Dayjs | null;
+    timeArrived: Dayjs | null;
+    acesScreenshot: CroppedPicture | undefined;
+    drawnScreenshot: DrawnOnPicture | undefined;
 }
 
 export interface CameraInformationType {
-  timeDispatched: Dayjs | null;
-  timeResponded: Dayjs | null;
-  timeAllIn: Dayjs | null;
-  timeMoveOff: Dayjs | null;
-  timeArrived: Dayjs | null;
-  hasBufferTime: boolean | null;
-  bufferingTime: Dayjs | null;
-  bufferingLocation: string;
-  dispatchPhoto: CroppedPicture | undefined;
-  allInPhoto: CroppedPicture | undefined;
-  moveOffPhoto: CroppedPicture | undefined;
-  arrivedPhoto: CroppedPicture | undefined;
+    timeDispatched: Dayjs | null;
+    timeResponded: Dayjs | null;
+    timeAllIn: Dayjs | null;
+    timeMoveOff: Dayjs | null;
+    timeArrived: Dayjs | null;
+    hasBufferTime: boolean | null;
+    bufferingTime: Dayjs | null;
+    bufferingLocation: string;
+    dispatchPhoto: CroppedPicture | undefined;
+    allInPhoto: CroppedPicture | undefined;
+    moveOffPhoto: CroppedPicture | undefined;
+    arrivedPhoto: CroppedPicture | undefined;
+    justifications?: JustificationInput[];
+    mapPhoto: CroppedPicture | undefined;
 }
 
 // ====== DERIVED TYPES ======
 
+type NestedCameraKeys =
+    | `justifications.${number}.${keyof JustificationInput}`
+    | keyof CameraInformationType;
+
 // Value types used across report models
 export type ReportValueKeysType =
-  | keyof IncidentInformationType
-  | keyof GeneralInformationType
-  | keyof AcesInformationType
-  | keyof CameraInformationType
-  | "id";
+    | keyof IncidentInformationType
+    | keyof GeneralInformationType
+    | keyof AcesInformationType
+    | NestedCameraKeys
+    | "id";
 
 export type ReportValueTypes =
-  | CroppedPicture
-  | DrawnOnPicture
-  | Dayjs
-  | string
-  | null
-  | number
-  | boolean;
+    | CroppedPicture
+    | DrawnOnPicture
+    | Dayjs
+    | string
+    | null
+    | number
+    | boolean;
 
 // ====== APPLICATION INTERFACES ======
 
 // Edit operations
 export interface EditType {
-  key: ReportValueKeysType;
-  value: ReportValueTypes;
+    key: ReportValueKeysType;
+    value: ReportValueTypes;
 }
 
 // Display interfaces
 export interface DisplayReportDataType {
-  id: number;
-  incidentNumb: string;
-  appliance: string;
-  sc: string;
-  po: string;
-  location: string;
-  acesTime: Time;
-  cameraTime: Time;
-  justification: string;
-  reportType: ReportType;
-  turnoutFrom: string;
-  boundary: string;
-  opsCenterAcknowledged: boolean | null;
+    id: number;
+    incidentNumb: string;
+    appliance: string;
+    sc: string;
+    po: string;
+    location: string;
+    acesTime: Time;
+    cameraTime: Time;
+    justification: string;
+    reportType: ReportType;
+    turnoutFrom: string;
+    boundary: string;
+    opsCenterAcknowledged: boolean | null;
 }
 
 // Update operations
 export interface UpdateReportType {
-  id: (id: number) => void;
-  cameraInformation: (
-    key: keyof CameraInformationType,
-    value: CameraInformationType[typeof key],
-    saveToDB?: boolean
-  ) => void;
-  acesInformation: (
-    key: keyof AcesInformationType,
-    value: AcesInformationType[typeof key],
-    saveToDB?: boolean
-  ) => void;
-  generalInformation: (
-    key: keyof GeneralInformationType,
-    value: GeneralInformationType[typeof key],
-    saveToDB?: boolean
-  ) => void;
-  incidentInformation: (
-    key: keyof IncidentInformationType,
-    value: IncidentInformationType[typeof key],
-    saveToDB?: boolean
-  ) => void;
-  all: (report: Report) => void;
+    id: (id: number) => void;
+    cameraInformation: (
+        key: keyof CameraInformationType,
+        value: CameraInformationType[typeof key],
+        saveToDB?: boolean
+    ) => void;
+    acesInformation: (
+        key: keyof AcesInformationType,
+        value: AcesInformationType[typeof key],
+        saveToDB?: boolean
+    ) => void;
+    generalInformation: (
+        key: keyof GeneralInformationType,
+        value: GeneralInformationType[typeof key],
+        saveToDB?: boolean
+    ) => void;
+    incidentInformation: (
+        key: keyof IncidentInformationType,
+        value: IncidentInformationType[typeof key],
+        saveToDB?: boolean
+    ) => void;
+    all: (report: Report) => void;
 }
 
 // ====== ERROR TYPES ======
 
-export type ErrorsType = Partial<Record<ReportValueKeysType, string>>;
+//export type ErrorsType = Partial<Record<ReportValueKeysType, string>>;
+export type ErrorsType = Partial<Record<ReportValueKeysType | string, string>>;
 export type SetErrorsType = React.Dispatch<React.SetStateAction<ErrorsType>>;
 
 export type ReportGenerationStatusType =
-  | "complete"
-  | "inProgress"
-  | "error"
-  | "none";
+    | "complete"
+    | "inProgress"
+    | "error"
+    | "none";

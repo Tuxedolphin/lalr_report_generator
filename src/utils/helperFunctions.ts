@@ -3,16 +3,17 @@ import { RefObject, SyntheticEvent, MouseEvent } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import ls from "../features/LocalStorage";
 import {
-  SetErrorsType,
-  ReportKeys,
-  ReportValueKeysType,
-  UpdateReportType,
-  ErrorsType,
-  IncidentInformationType,
-  GeneralInformationType,
-  AcesInformationType,
-  CameraInformationType,
-  ReportValueTypes,
+    SetErrorsType,
+    ReportKeys,
+    ReportValueKeysType,
+    UpdateReportType,
+    ErrorsType,
+    IncidentInformationType,
+    GeneralInformationType,
+    AcesInformationType,
+    CameraInformationType,
+    ReportValueTypes,
+    JustificationInput,
 } from "../types/types";
 import { SelectChangeEvent } from "@mui/material";
 
@@ -29,16 +30,16 @@ const capitalisedWords = ["ACES"] as const;
  * @returns The title-cased string
  */
 export const titleCaseString = function (text: string): string {
-  const words = text.split(" ");
+    const words = text.split(" ");
 
-  return words
-    .map((word) => {
-      if (word.toUpperCase() in capitalisedWords) {
-        return word.toUpperCase();
-      }
-      return word[0].toUpperCase() + word.substring(1);
-    })
-    .join(" ");
+    return words
+        .map((word) => {
+            if (word.toUpperCase() in capitalisedWords) {
+                return word.toUpperCase();
+            }
+            return word[0].toUpperCase() + word.substring(1);
+        })
+        .join(" ");
 };
 
 /**
@@ -48,8 +49,8 @@ export const titleCaseString = function (text: string): string {
  * @returns The Title Cased string
  */
 export const camelCaseToTitleCase = function (string: string): string {
-  const result = string.replace(/([A-Z])/g, " $1");
-  return result.charAt(0).toUpperCase() + result.slice(1);
+    const result = string.replace(/([A-Z])/g, " $1");
+    return result.charAt(0).toUpperCase() + result.slice(1);
 };
 
 /**
@@ -59,11 +60,11 @@ export const camelCaseToTitleCase = function (string: string): string {
  * @returns The generated acronym in uppercase
  */
 export const generateAcronym = function (text: string): string {
-  if (!text) return "";
+    if (!text) return "";
 
-  const words = text.split(" ").filter((word) => word.length > 0);
+    const words = text.split(" ").filter((word) => word.length > 0);
 
-  return words.map((word) => word[0].toUpperCase()).join("");
+    return words.map((word) => word[0].toUpperCase()).join("");
 };
 
 // -------------------- Time Utilities --------------------
@@ -76,7 +77,7 @@ export const generateAcronym = function (text: string): string {
  * @returns The total time in seconds
  */
 export const timeToSeconds = function (minute: number, second: number) {
-  return minute * 60 + second;
+    return minute * 60 + second;
 };
 
 /**
@@ -88,11 +89,11 @@ export const timeToSeconds = function (minute: number, second: number) {
  * @returns The total time difference in centiseconds (milliseconds/100)
  */
 export const getTotalTime = function (
-  start: Dayjs,
-  end: Dayjs,
-  buffer?: Dayjs
+    start: Dayjs,
+    end: Dayjs,
+    buffer?: Dayjs
 ) {
-  return (start.diff(end) + (buffer ? buffer.millisecond() : 0)) / 100;
+    return (start.diff(end) + (buffer ? buffer.millisecond() : 0)) / 100;
 };
 
 /**
@@ -102,27 +103,27 @@ export const getTotalTime = function (
  * @returns A dayjs object of the date if valid, null otherwise
  */
 export const checkIncNumber = function (incNumber: string) {
-  const regex = /^\d{8}\/\d{4}$/;
-  if (!regex.test(incNumber)) {
-    return null;
-  }
+    const regex = /^\d{8}\/\d{4}$/;
+    if (!regex.test(incNumber)) {
+        return null;
+    }
 
-  const dateStr = incNumber.split("/")[0];
-  const year = parseInt(dateStr.substring(0, 4), 10);
-  const month = parseInt(dateStr.substring(4, 6), 10);
-  const day = parseInt(dateStr.substring(6, 8), 10);
+    const dateStr = incNumber.split("/")[0];
+    const year = parseInt(dateStr.substring(0, 4), 10);
+    const month = parseInt(dateStr.substring(4, 6), 10);
+    const day = parseInt(dateStr.substring(6, 8), 10);
 
-  const date = dayjs(
-    `${year.toString()}-${month.toString()}-${day.toString()}`,
-    "YYYY-M-D"
-  );
+    const date = dayjs(
+        `${year.toString()}-${month.toString()}-${day.toString()}`,
+        "YYYY-M-D"
+    );
 
-  const formattedBack = date.format("YYYYMMDD");
-  if (formattedBack !== dateStr) {
-    return null;
-  }
+    const formattedBack = date.format("YYYYMMDD");
+    if (formattedBack !== dateStr) {
+        return null;
+    }
 
-  return date;
+    return date;
 };
 
 // -------------------- Canvas Utilities --------------------
@@ -135,21 +136,21 @@ export const checkIncNumber = function (incNumber: string) {
  * @returns An array containing the x and y coordinates
  */
 export const getOffset = function (
-  event: SyntheticEvent,
-  canvasRef: RefObject<HTMLCanvasElement>
+    event: SyntheticEvent,
+    canvasRef: RefObject<HTMLCanvasElement>
 ): [number, number] {
-  if (!canvasRef.current) return [0, 0];
+    if (!canvasRef.current) return [0, 0];
 
-  const rect = canvasRef.current.getBoundingClientRect();
-  const e = event.nativeEvent as MouseEvent | TouchEvent;
+    const rect = canvasRef.current.getBoundingClientRect();
+    const e = event.nativeEvent as MouseEvent | TouchEvent;
 
-  const x = "touches" in e ? e.touches[0].clientX : e.clientX;
-  const y = "touches" in e ? e.touches[0].clientY : e.clientY;
+    const x = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const y = "touches" in e ? e.touches[0].clientY : e.clientY;
 
-  const scaleX = canvasRef.current.width / rect.width;
-  const scaleY = canvasRef.current.height / rect.height;
+    const scaleX = canvasRef.current.width / rect.width;
+    const scaleY = canvasRef.current.height / rect.height;
 
-  return [(x - rect.left) * scaleX, (y - rect.top) * scaleY];
+    return [(x - rect.left) * scaleX, (y - rect.top) * scaleY];
 };
 
 /**
@@ -159,10 +160,10 @@ export const getOffset = function (
  * @param canvas - The canvas element to clear
  */
 export const clearCanvas = function (
-  context: CanvasRenderingContext2D,
-  canvas: HTMLCanvasElement
+    context: CanvasRenderingContext2D,
+    canvas: HTMLCanvasElement
 ) {
-  context.clearRect(0, 0, canvas.width, canvas.height);
+    context.clearRect(0, 0, canvas.width, canvas.height);
 };
 
 /**
@@ -173,12 +174,12 @@ export const clearCanvas = function (
  * @param width - The width to set for the stroke
  */
 export const setCanvasStroke = function (
-  context: CanvasRenderingContext2D,
-  color: string,
-  width: number
+    context: CanvasRenderingContext2D,
+    color: string,
+    width: number
 ) {
-  context.strokeStyle = color;
-  context.lineWidth = width;
+    context.strokeStyle = color;
+    context.lineWidth = width;
 };
 
 // -------------------- Database Operations --------------------
@@ -190,10 +191,10 @@ export const setCanvasStroke = function (
  * @returns A promise that resolves to the report
  */
 export const checkAndUpdateID = async function (report: Report) {
-  if (report.id >= 0) return Promise.resolve(report);
+    if (report.id >= 0) return Promise.resolve(report);
 
-  await report.addReportDB();
-  return report;
+    await report.addReportDB();
+    return report;
 };
 
 // -------------------- Report Utilities --------------------
@@ -210,14 +211,14 @@ export const checkAndUpdateID = async function (report: Report) {
  * the report structure and accessing values in the correct context.
  */
 export const getReportKey = function (
-  key: ReportValueKeysType
+    key: ReportValueKeysType
 ): ReportKeys | null {
-  for (const [iKey, keys] of Object.entries(defaultReport.keyToInfoKey)) {
-    if ((keys as ReportValueKeysType[]).includes(key)) {
-      return iKey as ReportKeys;
+    for (const [iKey, keys] of Object.entries(defaultReport.keyToInfoKey)) {
+        if ((keys as ReportValueKeysType[]).includes(key)) {
+            return iKey as ReportKeys;
+        }
     }
-  }
-  return null;
+    return null;
 };
 
 /**
@@ -229,44 +230,44 @@ export const getReportKey = function (
  * @returns True if any validation errors were found, false otherwise
  */
 export const checkForError = function (
-  errors: ErrorsType,
-  setErrors: SetErrorsType,
-  information:
-    | IncidentInformationType
-    | GeneralInformationType
-    | AcesInformationType
-    | CameraInformationType
+    errors: ErrorsType,
+    setErrors: SetErrorsType,
+    information:
+        | IncidentInformationType
+        | GeneralInformationType
+        | AcesInformationType
+        | CameraInformationType
 ) {
-  let hasError = false;
+    let hasError = false;
 
-  Object.keys(errors).forEach((key) => {
-    if (!(key in information)) return;
+    Object.keys(errors).forEach((key) => {
+        if (!(key in information)) return;
 
-    const value = information[
-      key as keyof typeof information
-    ] as ReportValueTypes;
+        const value = information[
+            key as keyof typeof information
+        ] as ReportValueTypes;
 
-    // Check if value is empty (string, null, undefined) or an empty Image
-    const isEmpty =
-      value === "" ||
-      value === null ||
-      (value instanceof Object &&
-        "isEmpty" in value &&
-        typeof (value as { isEmpty: () => boolean }).isEmpty === "function" &&
-        (value as { isEmpty: () => boolean }).isEmpty());
+        // Check if value is empty (string, null, undefined) or an empty Image
+        const isEmpty =
+            value === "" ||
+            value === null ||
+            (value instanceof Object &&
+                "isEmpty" in value &&
+                typeof (value as { isEmpty: () => boolean }).isEmpty === "function" &&
+                (value as { isEmpty: () => boolean }).isEmpty());
 
-    if (isEmpty) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        [key]: "Required",
-      }));
-      hasError = true;
-    } else if (errors[key as keyof typeof errors]) {
-      hasError = true;
-    }
-  });
+        if (isEmpty) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                [key]: "Required",
+            }));
+            hasError = true;
+        } else if (errors[key as keyof typeof errors]) {
+            hasError = true;
+        }
+    });
 
-  return hasError;
+    return hasError;
 };
 
 // -------------------- Form Input Handlers --------------------
@@ -284,50 +285,50 @@ export const checkForError = function (
  * @throws Will throw an error if the event object doesn't have target.value property
  */
 export const getTextFieldOnChangeFn = function (
-  updateReport: UpdateReportType,
-  setErrors: SetErrorsType,
-  key: ReportValueKeysType,
-  textFieldRefs: React.MutableRefObject<Record<string, HTMLInputElement | null>>
+    updateReport: UpdateReportType,
+    setErrors: SetErrorsType,
+    key: ReportValueKeysType,
+    textFieldRefs: React.MutableRefObject<Record<string, HTMLInputElement | null>>
 ) {
-  const infoKey = getReportKey(key);
-  if (!infoKey) throw new Error(`Key ${key} not found in keyToInfoKey mapping`);
+    const infoKey = getReportKey(key);
+    if (!infoKey) throw new Error(`Key ${key} not found in keyToInfoKey mapping`);
 
-  return (
-    e:
-      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-      | React.SyntheticEvent
-      | null,
-    value?: unknown
-  ) => {
-    if (!e) return;
+    return (
+        e:
+            | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+            | React.SyntheticEvent
+            | null,
+        value?: unknown
+    ) => {
+        if (!e) return;
 
-    setErrors((prev) => ({ ...prev, [key]: "" }));
+        setErrors((prev) => ({ ...prev, [key]: "" }));
 
-    let newValue;
+        let newValue;
 
-    if (typeof value === "string") newValue = value;
-    else if ("target" in e && "value" in e.target) newValue = e.target.value;
-    else
-      throw new Error(`Unexpected value type: ${typeof value} and ${typeof e}`);
+        if (typeof value === "string") newValue = value;
+        else if ("target" in e && "value" in e.target) newValue = e.target.value;
+        else
+            throw new Error(`Unexpected value type: ${typeof value} and ${typeof e}`);
 
-    // Save cursor position before update
-    const inputElement = textFieldRefs.current[key];
-    const cursorPosition = inputElement?.selectionStart ?? 0;
+        // Save cursor position before update
+        const inputElement = textFieldRefs.current[key];
+        const cursorPosition = inputElement?.selectionStart ?? 0;
 
-    if (key === "appliance") newValue = newValue.toUpperCase();
+        if (key === "appliance") newValue = newValue.toUpperCase();
 
-    (updateReport[infoKey] as (k: ReportValueKeysType, v: string) => void)(
-      key,
-      newValue
-    );
+        (updateReport[infoKey] as (k: ReportValueKeysType, v: string) => void)(
+            key,
+            newValue
+        );
 
-    // Restore cursor position after React updates the component
-    setTimeout(() => {
-      if (inputElement) {
-        inputElement.setSelectionRange(cursorPosition, cursorPosition);
-      }
-    }, 0);
-  };
+        // Restore cursor position after React updates the component
+        setTimeout(() => {
+            if (inputElement) {
+                inputElement.setSelectionRange(cursorPosition, cursorPosition);
+            }
+        }, 0);
+    };
 };
 
 /**
@@ -340,92 +341,78 @@ export const getTextFieldOnChangeFn = function (
  * @returns A function that handles blur events
  */
 export const getTextFieldOnBlurFn = function (
-  setErrors: SetErrorsType,
-  report: Report,
-  key: ReportValueKeysType
+    setErrors: SetErrorsType,
+    report: Report,
+    key: ReportValueKeysType
 ) {
-  let fn: (value: string) => boolean;
+    let fn: (value: string) => boolean;
 
-  switch (key) {
-    case "incidentNumb":
-      fn = (value: string) => {
-        const day = checkIncNumber(value.trim());
-        if (!day) {
-          setErrors((prev) => ({
-            ...prev,
-            incidentNumb: "Please Make Sure it is in the Format YYYYMMDD/XXXX",
-          }));
-          return true;
-        } else if (day.isAfter(dayjs())) {
-          setErrors((prev) => ({
-            ...prev,
-            incidentNumb: "Incident date cannot be in the future",
-          }));
-          return true;
-        }
+    switch (key) {
+        case "incidentNumb":
+            fn = (value: string) => {
+                const day = checkIncNumber(value.trim());
+                if (!day) {
+                    setErrors((prev) => ({
+                        ...prev,
+                        incidentNumb: "Please Make Sure it is in the Format YYYYMMDD/XXXX",
+                    }));
+                    return true;
+                } else if (day.isAfter(dayjs())) {
+                    setErrors((prev) => ({
+                        ...prev,
+                        incidentNumb: "Incident date cannot be in the future",
+                    }));
+                    return true;
+                }
 
-        setErrors((prev) => ({ ...prev, incidentNumb: "" }));
-        return false;
-      };
-      break;
-    case "typeOfCall":
-      fn = (value: string) => {
-        const trimmedValue = value.trim();
-        if (trimmedValue && !/^[^\s-]+ - [^\s-]+$/.test(trimmedValue)) {
-          setErrors((prev) => ({
-            ...prev,
-            typeOfCall: "Please be in the format of 'Call - Type'",
-          }));
-          return false;
-        }
-        setErrors((prev) => ({ ...prev, typeOfCall: "" }));
-        return true;
-      };
-      break;
+                setErrors((prev) => ({ ...prev, incidentNumb: "" }));
+                return false;
+            };
+            break;
 
-    default:
-      fn = () => {
-        setErrors((prev) => ({ ...prev, [key]: "" }));
-        return true;
-      };
-  }
-
-  /**
-   * Returns an onBlur event handler for form fields that performs validation
-   * and updates the database report when appropriate.
-   *
-   * @param e - The blur event from the input field
-   *
-   * @remarks
-   * This function retrieves the input value either from the event object or from
-   * the report context if the event doesn't contain a value. It then applies
-   * field-specific validation logic, updates the local storage to track the current
-   * report being worked on, and conditionally updates the database report.
-   */
-  return (
-    e:
-      | React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>
-      | React.SyntheticEvent
-  ) => {
-    // Get the value either from the target or from the report context
-    let value: string;
-
-    if ("target" in e && "value" in e.target) value = e.target.value;
-    else {
-      const infoKey = getReportKey(key);
-      if (!infoKey)
-        throw new Error(`Key ${key} not found in keyToInfoKey mapping`);
-      value = report[infoKey][key as keyof (typeof report)[typeof infoKey]];
+        default:
+            fn = () => {
+                setErrors((prev) => ({ ...prev, [key]: "" }));
+                return true;
+            };
     }
 
-    ls.setWorkingOn(report.id);
+    /**
+     * Returns an onBlur event handler for form fields that performs validation
+     * and updates the database report when appropriate.
+     *
+     * @param e - The blur event from the input field
+     *
+     * @remarks
+     * This function retrieves the input value either from the event object or from
+     * the report context if the event doesn't contain a value. It then applies
+     * field-specific validation logic, updates the local storage to track the current
+     * report being worked on, and conditionally updates the database report.
+     */
+    return (
+        e:
+            | React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>
+            | React.SyntheticEvent
+    ) => {
+        // Get the value either from the target or from the report context
+        let value: string;
 
-    const reportKey = getReportKey(key);
-    if (!reportKey)
-      throw new Error(`Key ${key} not found in keyToInfoKey mapping`);
+        if ("target" in e && "value" in e.target) value = e.target.value;
+        else {
+            const infoKey = getReportKey(key);
+            if (!infoKey)
+                throw new Error(`Key ${key} not found in keyToInfoKey mapping`);
+            value = report[infoKey][key as keyof (typeof report)[typeof infoKey]];
+        }
 
-    if (fn(value)) report.updateDBReport(reportKey);
-  };
+        ls.setWorkingOn(report.id);
+
+        const reportKey = getReportKey(key);
+        if (!reportKey)
+            throw new Error(`Key ${key} not found in keyToInfoKey mapping`);
+
+        if (fn(value)) report.updateDBReport(reportKey);
+    };
 };
 
 /**
@@ -439,40 +426,40 @@ export const getTextFieldOnBlurFn = function (
  * @returns A function that handles Select change events
  */
 export const getSelectOnChangeFn = function (
-  updateReport: UpdateReportType,
-  setErrors: SetErrorsType,
-  key:
-    | "station"
-    | "turnoutFrom"
-    | "reportType"
-    | "opsCenterAcknowledged"
-    | "boundary",
-  report: Report
+    updateReport: UpdateReportType,
+    setErrors: SetErrorsType,
+    key:
+        | "station"
+        | "turnoutFrom"
+        | "reportType"
+        | "opsCenterAcknowledged"
+        | "boundary",
+    report: Report
 ) {
-  const infoKey = getReportKey(key);
-  if (!infoKey) throw new Error(`Key ${key} not found in keyToInfoKey mapping`);
+    const infoKey = getReportKey(key);
+    if (!infoKey) throw new Error(`Key ${key} not found in keyToInfoKey mapping`);
 
-  return (e: SelectChangeEvent, value?: unknown) => {
-    setErrors((prev) => ({ ...prev, [key]: "" }));
+    return (e: SelectChangeEvent, value?: unknown) => {
+        setErrors((prev) => ({ ...prev, [key]: "" }));
 
-    ls.setWorkingOn(report.id);
+        ls.setWorkingOn(report.id);
 
-    let newValue: string | boolean;
+        let newValue: string | boolean;
 
-    if (typeof value === "string" || typeof value === "boolean")
-      newValue = value;
-    else if ("target" in e && "value" in e.target) newValue = e.target.value;
-    else
-      throw new Error(`Unexpected value type: ${typeof value} and ${typeof e}`);
+        if (typeof value === "string" || typeof value === "boolean")
+            newValue = value;
+        else if ("target" in e && "value" in e.target) newValue = e.target.value;
+        else
+            throw new Error(`Unexpected value type: ${typeof value} and ${typeof e}`);
 
-    (
-      updateReport[infoKey] as (
-        k: ReportValueKeysType,
-        v: string | boolean,
-        s: boolean
-      ) => void
-    )(key, newValue, true);
-  };
+        (
+            updateReport[infoKey] as (
+                k: ReportValueKeysType,
+                v: string | boolean,
+                s: boolean
+            ) => void
+        )(key, newValue, true);
+    };
 };
 
 /**
@@ -487,95 +474,165 @@ export const getSelectOnChangeFn = function (
  */
 
 export const getToggleButtonOnChangeFn = function (
-  updateReport: UpdateReportType,
-  setErrors: SetErrorsType,
-  key: ReportValueKeysType,
-  report: Report
+    updateReport: UpdateReportType,
+    setErrors: SetErrorsType,
+    key: ReportValueKeysType,
+    report: Report
 ) {
-  const infoKey = getReportKey(key);
-  if (!infoKey) throw new Error(`Key ${key} not found in keyToInfoKey mapping`);
+    const infoKey = getReportKey(key);
+    if (!infoKey) throw new Error(`Key ${key} not found in keyToInfoKey mapping`);
 
-  return (
-    _event: MouseEvent<HTMLElement>,
-    newValue: string | boolean | null
-  ) => {
-    if (newValue === null) return;
+    return (
+        _event: MouseEvent<HTMLElement>,
+        newValue: string | boolean | null
+    ) => {
+        if (newValue === null) return;
 
-    setErrors((prev) => ({ ...prev, [key]: "" }));
+        setErrors((prev) => ({ ...prev, [key]: "" }));
 
-    ls.setWorkingOn(report.id);
+        ls.setWorkingOn(report.id);
 
-    // Handle justification fields (LRJustificationType)
-    if (
-      [
-        "sftl",
-        "trafficCongestion",
-        "inclementWeather",
-        "acesRouteDeviation",
-      ].includes(key)
-    ) {
-      // Type assertion since we've confirmed this is a justification field
-      const justificationKey = key as keyof Pick<
-        GeneralInformationType,
-        "sftl" | "trafficCongestion" | "inclementWeather" | "acesRouteDeviation"
-      >;
+        // Handle justification fields (LRJustificationType)
+        if (
+            [
+                "sftl",
+                "trafficCongestion",
+                "inclementWeather",
+                "acesRouteDeviation",
+            ].includes(key)
+        ) {
+            // Type assertion since we've confirmed this is a justification field
+            const justificationKey = key as keyof Pick<
+                GeneralInformationType,
+                "sftl" | "trafficCongestion" | "inclementWeather" | "acesRouteDeviation"
+            >;
 
-      // Create updated justification object
-      const updatedJustification = {
-        ...report.generalInformation[justificationKey],
-        selected: newValue as boolean,
-      };
+            // Create updated justification object
+            const updatedJustification = {
+                ...report.generalInformation[justificationKey],
+                selected: newValue as boolean,
+            };
 
-      updateReport.generalInformation(
-        justificationKey,
-        updatedJustification,
-        true
-      );
-    }
-    // Handle normal toggle button fields
-    else {
-      // Type assertion for the specific section
-      const sectionKey = infoKey as
-        | "incidentInformation"
-        | "generalInformation"
-        | "acesInformation"
-        | "cameraInformation";
-      const fieldKey = key as keyof (typeof report)[typeof sectionKey];
+            updateReport.generalInformation(
+                justificationKey,
+                updatedJustification,
+                true
+            );
+        }
+        // Handle normal toggle button fields
+        else {
+            // Type assertion for the specific section
+            const sectionKey = infoKey as
+                | "incidentInformation"
+                | "generalInformation"
+                | "acesInformation"
+                | "cameraInformation";
+            const fieldKey = key as keyof (typeof report)[typeof sectionKey];
 
-      (
-        updateReport[sectionKey] as (
-          k: typeof fieldKey,
-          v: typeof newValue,
-          s: boolean
-        ) => void
-      )(fieldKey, newValue, true);
-    }
-  };
+            (
+                updateReport[sectionKey] as (
+                    k: typeof fieldKey,
+                    v: typeof newValue,
+                    s: boolean
+                ) => void
+            )(fieldKey, newValue, true);
+        }
+    };
 };
 
 export const OLDgetToggleButtonOnChangeFn = function (
-  updateReport: UpdateReportType,
-  setErrors: SetErrorsType,
-  key: ReportValueKeysType,
-  report: Report
+    updateReport: UpdateReportType,
+    setErrors: SetErrorsType,
+    key: ReportValueKeysType,
+    report: Report
 ) {
-  const infoKey = getReportKey(key);
-  if (!infoKey) throw new Error(`Key ${key} not found in keyToInfoKey mapping`);
+    const infoKey = getReportKey(key);
+    if (!infoKey) throw new Error(`Key ${key} not found in keyToInfoKey mapping`);
 
-  return (_event: MouseEvent<HTMLElement>, newValue: string | null) => {
-    if (newValue === null) return;
+    return (_event: MouseEvent<HTMLElement>, newValue: string | null) => {
+        if (newValue === null) return;
 
-    setErrors((prev) => ({ ...prev, [key]: "" }));
+        setErrors((prev) => ({ ...prev, [key]: "" }));
 
-    ls.setWorkingOn(report.id);
+        ls.setWorkingOn(report.id);
 
-    // With ToggleButtonGroup, the newValue is directly passed as the second parameter
-    (
-      updateReport[infoKey] as (
-        k: ReportValueKeysType,
-        v: string | boolean,
-        s: boolean
-      ) => void
-    )(key, newValue, true);
-  };
+        // With ToggleButtonGroup, the newValue is directly passed as the second parameter
+        (
+            updateReport[infoKey] as (
+                k: ReportValueKeysType,
+                v: string | boolean,
+                s: boolean
+            ) => void
+        )(key, newValue, true);
+    };
+};
+
+// export const generateDynamicJustifications = (generalInfo: GeneralInformationType): JustificationInput[] => {
+//   const justifications: JustificationInput[] = [];
+
+//   // Helper function to create justifications for a given type
+//   const createJustificationsForType = (type: string, quantity: number) => {
+//     for (let i = 0; i < quantity; i++) {
+//       justifications.push({
+//         id: `${type.toLowerCase().replace(/\s+/g, '-')}-${i}`,
+//         reason: type,
+//         index: i,
+//         timings: [null, null], // 2 timing inputs per justification
+//         photos: [undefined, undefined], // 2 photo inputs per justification
+//       });
+//     }
+//   };
+
+//   // Generate justifications based on quantities in generalInfo
+//   if (generalInfo.sftl?.quantity > 0) {
+//     createJustificationsForType("SFTL", generalInfo.sftl.quantity);
+//   }
+
+//   if (generalInfo.trafficCongestion?.quantity > 0) {
+//     createJustificationsForType("Traffic Congestion", generalInfo.trafficCongestion.quantity);
+//   }
+
+//   if (generalInfo.inclementWeather?.quantity > 0) {
+//     createJustificationsForType("Inclement Weather", generalInfo.inclementWeather.quantity);
+//   }
+
+//   if (generalInfo.acesRouteDeviation?.quantity > 0) {
+//     createJustificationsForType("ACES Route Deviation", generalInfo.acesRouteDeviation.quantity);
+//   }
+
+//   return justifications;
+// };
+
+export const generateDynamicJustifications = (
+    generalInfo: GeneralInformationType,
+    existingJustifications: JustificationInput[] = []
+): JustificationInput[] => {
+    const justifications: JustificationInput[] = [];
+
+    // Helper to generate justifications for a type, reusing existing ones if available
+    const createJustificationsForType = (type: string, quantity: number) => {
+        for (let i = 0; i < quantity; i++) {
+            // Try to find an existing justification for this type and index
+            const existing = existingJustifications.find(
+                j => j.reason === type && j.index === i
+            );
+
+            justifications.push({
+                id: existing?.id ?? `${type.toLowerCase().replace(/\s+/g, '-')}-${i}`,
+                reason: type,
+                index: i,
+                timings: existing?.timings ?? [null, null],
+                photos: existing?.photos ?? [undefined, undefined],
+                remarks: existing?.remarks ?? "",
+            });
+        }
+    };
+
+    // Generate for each type according to current quantity
+    if (generalInfo.sftl?.quantity > 0) createJustificationsForType("SFTL", generalInfo.sftl.quantity);
+    if (generalInfo.trafficCongestion?.quantity > 0) createJustificationsForType("Traffic Congestion", generalInfo.trafficCongestion.quantity);
+    if (generalInfo.inclementWeather?.quantity > 0) createJustificationsForType("Inclement Weather", generalInfo.inclementWeather.quantity);
+    if (generalInfo.acesRouteDeviation?.quantity > 0) createJustificationsForType("ACES Route Deviation", generalInfo.acesRouteDeviation.quantity);
+
+    return justifications;
 };
