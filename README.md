@@ -3,7 +3,7 @@
 A web app for writing Late Activation (LA) and Late Response (LR) incident
 reports. Officers fill in the incident details, ACES information and camera
 footage notes, and the app produces the report as a PowerPoint file in the
-standard format. It is used at Yishun Fire Station.
+standard format.
 
 Everything runs in the browser. Reports are saved in IndexedDB on the device
 and nothing is sent to a server, so incident data stays on the machine it was
